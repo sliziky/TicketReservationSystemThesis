@@ -7,12 +7,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
 using MediatR;
+using AutoMapper;
 using TicketReservationSystem.Server.Context;
 using Microsoft.EntityFrameworkCore;
 using TicketReservationSystem.Server.Data.Repository.Abstraction;
 using TicketReservationSystem.Server.Data.Repository;
 using TicketReservationSystem.Server.Models;
 using TicketReservationSystem.Server.Models.DTO;
+using TicketReservationSystem.Server.Data.Mapper;
 
 namespace TicketReservationSystem.Server
 {
@@ -29,7 +31,12 @@ namespace TicketReservationSystem.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+              mc.AddProfile(new MappingProfile());
+            });
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddTransient<MovieRepository>();

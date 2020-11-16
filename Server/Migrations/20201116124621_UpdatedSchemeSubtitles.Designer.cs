@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketReservationSystem.Server.Context;
 
 namespace TicketReservationSystem.Server.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20201116124621_UpdatedSchemeSubtitles")]
+    partial class UpdatedSchemeSubtitles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,20 +110,6 @@ namespace TicketReservationSystem.Server.Migrations
                     b.HasKey("MovieID");
 
                     b.ToTable("Movies");
-
-                    b.HasData(
-                        new
-                        {
-                            MovieID = 1,
-                            Country = "Country",
-                            Description = "Desc",
-                            Genre = "Genre",
-                            Language = "en",
-                            Length = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Released = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Subtitles = false,
-                            Title = "MovieTitle"
-                        });
                 });
 
             modelBuilder.Entity("TicketReservationSystem.Server.Models.MovieShow", b =>

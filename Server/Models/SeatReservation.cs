@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace TicketReservationSystem.Server.Models
 {
-    public class ReservationSeat
+    public class SeatReservation
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ReservationSeatID { get; set; }
+        public int SeatReservationID { get; set; }
         public ReservationSeatStatus Status { get; set; }
         public int Price { get; set; }
-        public Seat Seat { get; set; }
+        public List<Seat> Seats { get; set; }
         public MovieShow Show { get; set; }
         public Reservation Reservation { get; set; }
     }

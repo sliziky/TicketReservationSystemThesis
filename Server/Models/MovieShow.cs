@@ -15,7 +15,7 @@ namespace TicketReservationSystem.Server.Models
         public Movie Movie { get; set; }
         public Hall Hall { get; set; }
         public List<Reservation> Reservations { get; set; }
-        public List<ReservationSeat> ReservationSeats { get; set; }
+        public List<SeatReservation> ReservationSeats { get; set; }
 
 
     }

@@ -2,19 +2,36 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketReservationSystem.Server.Context;
 
 namespace TicketReservationSystem.Server.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20201116114247_UpdatedSchemeSalt")]
+    partial class UpdatedSchemeSalt
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "5.0.0");
+
+            modelBuilder.Entity("SeatSeatReservation", b =>
+                {
+                    b.Property<int>("ReservationSeatsSeatReservationID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SeatsSeatID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ReservationSeatsSeatReservationID", "SeatsSeatID");
+
+                    b.HasIndex("SeatsSeatID");
+
+                    b.ToTable("SeatSeatReservation");
+                });
 
             modelBuilder.Entity("TicketReservationSystem.Server.Models.Admin", b =>
                 {
@@ -99,8 +116,8 @@ namespace TicketReservationSystem.Server.Migrations
                     b.Property<bool>("Subtitles")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("SubtitlesLanguage")
-                        .HasColumnType("TEXT");
+                    b.Property<bool>("SubtitlesLanguage")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Title")
                         .HasColumnType("TEXT");
@@ -108,20 +125,6 @@ namespace TicketReservationSystem.Server.Migrations
                     b.HasKey("MovieID");
 
                     b.ToTable("Movies");
-
-                    b.HasData(
-                        new
-                        {
-                            MovieID = 1,
-                            Country = "Country",
-                            Description = "Desc",
-                            Genre = "Genre",
-                            Language = "en",
-                            Length = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Released = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Subtitles = false,
-                            Title = "MovieTitle"
-                        });
                 });
 
             modelBuilder.Entity("TicketReservationSystem.Server.Models.MovieShow", b =>
@@ -208,17 +211,12 @@ namespace TicketReservationSystem.Server.Migrations
                     b.Property<int>("Number")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("SeatReservationID")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("Type")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("SeatID");
 
                     b.HasIndex("HallID");
-
-                    b.HasIndex("SeatReservationID");
 
                     b.ToTable("Seats");
                 });
@@ -274,6 +272,21 @@ namespace TicketReservationSystem.Server.Migrations
                     b.HasKey("UserID");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("SeatSeatReservation", b =>
+                {
+                    b.HasOne("TicketReservationSystem.Server.Models.SeatReservation", null)
+                        .WithMany()
+                        .HasForeignKey("ReservationSeatsSeatReservationID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TicketReservationSystem.Server.Models.Seat", null)
+                        .WithMany()
+                        .HasForeignKey("SeatsSeatID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TicketReservationSystem.Server.Models.Admin", b =>
@@ -337,13 +350,7 @@ namespace TicketReservationSystem.Server.Migrations
                         .WithMany("Seats")
                         .HasForeignKey("HallID");
 
-                    b.HasOne("TicketReservationSystem.Server.Models.SeatReservation", "SeatReservation")
-                        .WithMany("Seats")
-                        .HasForeignKey("SeatReservationID");
-
                     b.Navigation("Hall");
-
-                    b.Navigation("SeatReservation");
                 });
 
             modelBuilder.Entity("TicketReservationSystem.Server.Models.SeatReservation", b =>
@@ -390,11 +397,6 @@ namespace TicketReservationSystem.Server.Migrations
                     b.Navigation("Payment");
 
                     b.Navigation("ReservationSeats");
-                });
-
-            modelBuilder.Entity("TicketReservationSystem.Server.Models.SeatReservation", b =>
-                {
-                    b.Navigation("Seats");
                 });
 
             modelBuilder.Entity("TicketReservationSystem.Server.Models.User", b =>

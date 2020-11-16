@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,38 +11,41 @@ using AutoMapper;
 
 namespace TicketReservationSystem.Server.Data.Repository
 {
-    public class MovieRepository : IRepository<MovieDTO>
+    public class MovieRepository : IRepository<Movie, MovieDTO>
     {
         private MyContext _context;
         private IMapper _mapper;
-        public MovieRepository(MyContext context)
+        public MovieRepository(MyContext context, IMapper mapper)
         {
             _context = context;
-            var config = new MapperConfiguration(cfg => {
-                cfg.CreateMap<Movie, MovieDTO>();
-            });
-            _mapper = config.CreateMapper();
+      _mapper = mapper;
         }
 
-        public void Delete(int entityId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public MovieDTO Save(MovieDTO entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public MovieDTO Get(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<MovieDTO> GetAll()
-        {
-            var x = 2;
-            return _context.Movies.ToList().Select(movie => _mapper.Map<Movie, MovieDTO>(movie));
-        }
+    public void Delete(int entityId)
+    {
+      throw new NotImplementedException();
     }
+
+    public Movie Get(int id)
+    {
+      throw new NotImplementedException();
+    }
+
+    public IEnumerable<Movie> GetAll()
+    {
+      return _context.Movies.ToList();
+    }
+
+    public Movie Save(MovieDTO entity)
+    {
+      throw new NotImplementedException();
+    }
+
+    public async Task<Movie> SaveAsync(MovieDTO entity)
+    {
+      await _context.Movies.AddAsync(_mapper.Map<MovieDTO, Movie>(entity));
+      await _context.SaveChangesAsync();
+      return _mapper.Map<MovieDTO, Movie>(entity);
+    }
+  }
 }

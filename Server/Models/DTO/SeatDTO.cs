@@ -10,7 +10,7 @@ namespace TicketReservationSystem.Server.Models.DTO
         public int Number { get; set; }
         public SeatType Type { get; set; }
         public Hall Hall { get; set; }
-        public List<ReservationSeat> ReservationSeats { get; set; }
+        public List<SeatReservation> ReservationSeats { get; set; }
     }
     public enum SeatType
     {
