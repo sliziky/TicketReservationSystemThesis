@@ -1,0 +1,49 @@
+@page "/movie/add"
+@inject HttpClient Http
+@inject IJSRuntime jsRuntime
+
+@using System.ComponentModel.DataAnnotations;
+
+<EditForm Model="@Movie" OnValidSubmit="@HandleValidSubmit" Class="login-form">
+  <DataAnnotationsValidator />
+  <Field>
+    <FieldLabel>Movie</FieldLabel>
+    <TextEdit @onchange="@onMovieTitleChange" @bind-Text="Movie.Title" />
+
+  </Field>
+  <Field>
+    @if (MoviesDetails != null)
+    {
+    <FieldLabel>Suggestions</FieldLabel>
+    <Select TValue="MovieResponseModel">
+      @foreach (var movie in MoviesDetails)
+      {
+        <SelectItem Value="movie">@movie.Title @movie.ReleaseDate</SelectItem>
+      }
+    </Select>
+    }
+    else {
+      <p>Loading movies...</p>
+    }
+  </Field>
+  <Button Color="Color.Primary" Type="ButtonType.Submit">Log In</Button>
+</EditForm>
+@code {
+    public MovieResponseModel suggestions { get; set; } = new MovieResponseModel();
+    public MovieModel Movie { get; set; } = new MovieModel();
+    public List<MovieDetailsModel> MoviesDetails { get; set; }
+    private void HandleValidSubmit(EditContext editContext) { }
+    private async void onMovieTitleChange()
+    {
+      if (Movie.Title.Length < 6) { return; }
+      var requestUrl = "https://api.themoviedb.org/3/search/movie?api_key=74ddab1b7a6a8f69231b82aa88e83966&language=en-US&query=" + Movie.Title + "&page=1&include_adult=false";
+      suggestions = await Http.GetFromJsonAsync<MovieResponseModel>(requestUrl);
+      foreach (var s in suggestions.Results) {
+        var detailsRequestUrl = "https://api.themoviedb.org/3/movie/" + s.Id +"?api_key=74ddab1b7a6a8f69231b82aa88e83966&language=en-US";
+        var details = await Http.GetFromJsonAsync<MovieDetailsModel>(detailsRequestUrl);
+        MoviesDetails.Add(details);
+      }
+      StateHasChanged();
+      await jsRuntime.InvokeAsync<string>("console.log", suggestions, MoviesDetails);
+    }
+}

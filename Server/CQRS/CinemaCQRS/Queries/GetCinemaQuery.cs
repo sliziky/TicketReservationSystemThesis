@@ -5,10 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using TicketReservationSystem.Shared.Domain;
 
-namespace TicketReservationSystem.Server.CQRS.Commands
+namespace TicketReservationSystem.Server.CQRS.CinemaCQRS.Queries
 {
-  public class UpdateMovieCommand : IRequest<Movie> {
-    public Movie Movie { get; set; }
+  public class GetCinemaQuery : IRequest<Cinema>
+  {
     public int Id { get; set; }
   }
 }

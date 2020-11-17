@@ -7,8 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using TicketReservationSystem.Server.CQRS.Commands;
 using TicketReservationSystem.Server.CQRS.Queries;
-using TicketReservationSystem.Server.Models;
-using TicketReservationSystem.Server.Models.DTO;
+using TicketReservationSystem.Shared.DTO;
+using TicketReservationSystem.Shared.Domain;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

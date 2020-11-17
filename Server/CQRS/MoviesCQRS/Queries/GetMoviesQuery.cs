@@ -6,8 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TicketReservationSystem.Server.Context;
 using TicketReservationSystem.Server.Data.Repository;
-using TicketReservationSystem.Server.Models;
-using TicketReservationSystem.Server.Models.DTO;
+using TicketReservationSystem.Shared.DTO;
 
 namespace TicketReservationSystem.Server.CQRS.Queries
 {

@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace TicketReservationSystem.Server.Models
+namespace TicketReservationSystem.Shared.Domain
 {
     public class Movie
     {
@@ -16,6 +14,7 @@ namespace TicketReservationSystem.Server.Models
         public string Description { get; set; }
         public string Genre { get; set; }
         public string Language { get; set; }
+        public string ImageUrl { get; set; }
         public bool Subtitles { get; set; }
         public string SubtitlesLanguage { get; set; }
         public DateTime Length { get; set; }

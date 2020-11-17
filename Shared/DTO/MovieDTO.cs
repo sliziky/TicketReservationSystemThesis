@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TicketReservationSystem.Shared.Domain;
 
-namespace TicketReservationSystem.Server.Models.DTO
+namespace TicketReservationSystem.Shared.DTO
 {
     public class MovieDTO
     {
@@ -12,6 +13,7 @@ namespace TicketReservationSystem.Server.Models.DTO
         public string Description { get; set; }
         public string Genre { get; set; }
         public string Language { get; set; }
+        public bool ImageUrl { get; set; }
         public bool Subtitles { get; set; }
         public bool SubtitlesLanguage { get; set; }
         public DateTime Length { get; set; }

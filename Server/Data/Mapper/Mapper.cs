@@ -1,10 +1,10 @@
-﻿using AutoMapper;
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TicketReservationSystem.Server.Models;
-using TicketReservationSystem.Server.Models.DTO;
+using TicketReservationSystem.Shared.DTO;
+using TicketReservationSystem.Shared.Domain;
 
 namespace TicketReservationSystem.Server.Data.Mapper
 {

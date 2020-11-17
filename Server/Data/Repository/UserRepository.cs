@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using TicketReservationSystem.Server.Context;
 using TicketReservationSystem.Server.Data.Repository.Abstraction;
-using TicketReservationSystem.Server.Models;
 using TicketReservationSystem.Shared.Domain;
 
 namespace TicketReservationSystem.Server.Data.Repository
@@ -19,11 +18,6 @@ namespace TicketReservationSystem.Server.Data.Repository
     }
 
     public void Delete(int entityId)
-    {
-      throw new NotImplementedException();
-    }
-
-    public Task DeleteAsync(int entityId)
     {
       throw new NotImplementedException();
     }
@@ -72,6 +66,16 @@ namespace TicketReservationSystem.Server.Data.Repository
     public Task<User> UpdateAsync(int id, User entity)
     {
       throw new NotImplementedException();
+    }
+
+    public async Task<User> DeleteAsync(int entityId)
+    {
+      var user = _context.Users.FirstOrDefault(user => user.UserID == entityId);
+      if (user != null) {
+        _context.Users.Remove(user);
+        await _context.SaveChangesAsync();
+      }
+      return user;
     }
   }
 }

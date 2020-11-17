@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TicketReservationSystem.Server.Models;
+using TicketReservationSystem.Shared.DTO;
 
 namespace TicketReservationSystem.Server.Data.Repository.Abstraction
 {
@@ -23,6 +23,6 @@ namespace TicketReservationSystem.Server.Data.Repository.Abstraction
 
 
     void Delete(int entityId);
-    Task DeleteAsync(int entityId);
+    Task<TEntity> DeleteAsync(int entityId);
   }
 }

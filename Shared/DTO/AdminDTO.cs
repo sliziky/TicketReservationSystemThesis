@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TicketReservationSystem.Shared.Domain;
 
-namespace TicketReservationSystem.Server.Models.DTO
+namespace TicketReservationSystem.Shared.DTO
 {
     public class AdminDTO
     {

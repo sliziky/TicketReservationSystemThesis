@@ -4,11 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using TicketReservationSystem.Server.Context;
 using TicketReservationSystem.Server.Data.Repository.Abstraction;
-using TicketReservationSystem.Server.Models;
-using TicketReservationSystem.Server.Models.DTO;
-using TicketReservationSystem.Server.Data.Mapper;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using TicketReservationSystem.Shared.Domain;
 
 namespace TicketReservationSystem.Server.Data.Repository
 {
@@ -32,7 +30,7 @@ namespace TicketReservationSystem.Server.Data.Repository
       }
     }
 
-    public async Task DeleteAsync(int entityId)
+    public async Task<Movie> DeleteAsync(int entityId)
     {
       var movie = _context.Movies.FirstOrDefault(movie => movie.MovieID == entityId);
       if (movie != null)
@@ -40,6 +38,7 @@ namespace TicketReservationSystem.Server.Data.Repository
         _context.Movies.Remove(movie);
         await _context.SaveChangesAsync();
       }
+      return movie;
     }
 
     public async Task<Movie> GetAsync(int id)
