@@ -14,7 +14,7 @@ namespace TicketReservationSystem.Server.CQRS.Commands
 {
   public class MovieHandler :
     IRequestHandler<AddMovieCommand, Movie>,
-    IRequestHandler<DeleteMovieCommand>,
+    IRequestHandler<DeleteMovieCommand, Movie>,
     IRequestHandler<UpdateMovieCommand, Movie>,
     IRequestHandler<GetMoviesQuery, IEnumerable<MovieDTO>>,
     IRequestHandler<GetMovieQuery, MovieDTO>
@@ -33,10 +33,9 @@ namespace TicketReservationSystem.Server.CQRS.Commands
       return await _repository.SaveAsync(request.Movie);
     }
 
-    public async Task<Unit> Handle(DeleteMovieCommand request, CancellationToken cancellationToken)
+    public async Task<Movie> Handle(DeleteMovieCommand request, CancellationToken cancellationToken)
     {
-      await _repository.DeleteAsync(request.Id);
-      return Unit.Value;
+      return await _repository.DeleteAsync(request.Id);
     }
 
     public async Task<Movie> Handle(UpdateMovieCommand request, CancellationToken cancellationToken)

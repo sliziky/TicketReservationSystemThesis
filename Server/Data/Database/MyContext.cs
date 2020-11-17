@@ -26,20 +26,6 @@ namespace TicketReservationSystem.Server.Context
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-      modelBuilder.Entity<Movie>().HasData(new Movie
-      {
-        MovieID = 1,
-        Title = "MovieTitle",
-        Country = "Country",
-        Description = "Desc",
-        Genre = "Genre",
-        Language = "en",
-        Length = new DateTime(),
-        Released = new DateTime(),
-        Shows = new List<MovieShow>(),
-        Subtitles = false,
-        SubtitlesLanguage = null
-      });
       base.OnModelCreating(modelBuilder);
     }
   }

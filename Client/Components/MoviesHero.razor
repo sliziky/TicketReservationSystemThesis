@@ -1,0 +1,17 @@
+@inject HttpClient Http
+@if (Movies.Count != 0)
+{
+  <Jumbotron Margin="Margin.Is4.FromBottom" Class="movies-hero">
+    @foreach (var movie in Movies) {
+      <MovieCard Movie="@movie"/>
+    }
+  </Jumbotron>
+}
+@code {
+    private List<MovieDTO> Movies { get; set; } = new List<MovieDTO>();
+    protected override async Task OnInitializedAsync()
+    {
+      Movies = await Http.GetFromJsonAsync<List<MovieDTO>>("api/movies/");
+    }
+
+}

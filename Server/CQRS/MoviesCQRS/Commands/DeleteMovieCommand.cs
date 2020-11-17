@@ -6,8 +6,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using TicketReservationSystem.Server.Data.Repository;
+using TicketReservationSystem.Shared.Domain;
 
 namespace TicketReservationSystem.Server.CQRS.Commands
 {
-    public class DeleteMovieCommand : IRequest { public int Id { get; set; } }
+    public class DeleteMovieCommand : IRequest<Movie> { public int Id { get; set; } }
 }

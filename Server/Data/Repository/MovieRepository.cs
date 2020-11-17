@@ -53,16 +53,20 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public Movie Save(Movie entity)
     {
-      _context.Movies.Add(entity);
-      _context.SaveChanges();
+        _context.Movies.Add(entity);
+        _context.SaveChanges();
       return entity;
     }
 
     public async Task<Movie> SaveAsync(Movie entity)
     {
-      await _context.Movies.AddAsync(entity);
-      await _context.SaveChangesAsync();
-      return entity;
+      var movie = _context.Movies.FirstOrDefault(movie => movie.Title == entity.Title && movie.Released == entity.Released);
+      if (movie == null)
+      {
+        await _context.Movies.AddAsync(entity);
+        await _context.SaveChangesAsync();
+      }
+      return movie;
     }
 
     public Movie Update(int id, Movie entity)
@@ -86,9 +90,8 @@ namespace TicketReservationSystem.Server.Data.Repository
         movie = _mapper.Map<Movie>(entity);
         movie.Title = entity.Title;
         await _context.SaveChangesAsync();
-        return movie;
       }
-      return null;
+      return movie;
     }
 
     public async Task<IEnumerable<Movie>> GetAllAsync()

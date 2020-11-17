@@ -9,6 +9,7 @@ using TicketReservationSystem.Server.CQRS.Commands;
 using TicketReservationSystem.Server.CQRS.Queries;
 using TicketReservationSystem.Shared.DTO;
 using TicketReservationSystem.Shared.Domain;
+using Microsoft.AspNetCore.Http;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -28,60 +29,62 @@ namespace TicketReservationSystem.Server.Controllers
 
     // GET: api/<MovieController>
     [HttpGet]
-    public async Task<IEnumerable<MovieDTO>> Get()
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<MovieDTO>>> Get()
     {
-      return await _mediator.Send(new GetMoviesQuery());
+      var movies = await _mediator.Send(new GetMoviesQuery());
+      return Ok(movies);
     }
 
     // GET api/<MovieController>/5
     [HttpGet("{id}")]
-    public async Task<MovieDTO> Get(int id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<MovieDTO>> Get(int id)
     {
-      return await _mediator.Send(new GetMovieQuery { Id = id });
+      var movie = await _mediator.Send(new GetMovieQuery { Id = id });
+      if (movie == null) { return NotFound(movie); }
+      return Ok(movie);
     }
 
     // POST api/<MovieController>
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<Movie>> Post([FromBody] MovieDTO Movie)
     {
-      try
-      {
-        Console.WriteLine(Movie);
-        return await _mediator.Send(new AddMovieCommand { Movie = _mapper.Map<Movie>(Movie) });
+      var movie = await _mediator.Send(new AddMovieCommand { Movie = _mapper.Map<Movie>(Movie) });
+      if (movie != null) {
+        return Conflict(movie);
       }
-      catch (Exception ex)
-      {
-        return BadRequest(ex.Message);
-      }
+      return Ok(movie);
     }
 
     // PUT api/<MovieController>/5
     [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Movie>> PutAsync(int id, [FromBody] MovieDTO movie)
     {
-      try
-      {
-        return await _mediator.Send(new UpdateMovieCommand { Movie = _mapper.Map<Movie>(movie), Id = id });
+      var movieFound = await _mediator.Send(new UpdateMovieCommand { Movie = _mapper.Map<Movie>(movie), Id = id });
+      if (movieFound == null) {
+        return NotFound(movieFound);
       }
-      catch (Exception ex)
-      {
-        return BadRequest(ex.Message);
-      }
+      return Ok(movieFound);
     }
 
     // DELETE api/<MovieController>/5
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Unit>> Delete(int id)
     {
-      try
+      var movieFound = await _mediator.Send(new DeleteMovieCommand { Id = id });
+      if (movieFound == null)
       {
-        return await _mediator.Send(new DeleteMovieCommand { Id = id });
+        return NotFound(movieFound);
       }
-      catch (Exception ex)
-      {
-        return BadRequest(ex.Message);
-      }
-
+      return Ok(movieFound);
     }
   }
 }

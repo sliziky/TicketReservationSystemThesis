@@ -17,6 +17,39 @@ body {
   margin-top: 10%;
   color: #F1C6A3 !important;
 }
+.movie-hero__card {
+  width: 30% !important;
+  margin: 0px !important;
+  flex: 2 !important;
+  border: 1px solid lightgrey !important;
+  display: flex !important; /* new */
+  flex-direction: column !important; /* new */
+}
+
+.movie-hero__card__reveal {
+  visibility: hidden;
+  opacity: 0;
+  height: 0;
+  padding: 0;
+}
+  .movie-hero__card__reveal:hover {
+    height: auto;
+    visibility: visible;
+    opacity: 10;
+    transition: opacity 1s ease;
+  }
+.movies-hero {
+  display: -webkit-flex;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #323f4b !important;
+}
+
+.movie-hero__card__body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
 
 .footer__column {
   display: flex;
@@ -28,6 +61,11 @@ body {
   color: #F1C6A3;
   margin-bottom: 10px;
   margin-top: 15px;
+}
+
+.card-body {
+  background-color: #1F2933;
+  color: white;
 }
 
 .footer__column__link:hover {

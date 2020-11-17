@@ -17,7 +17,7 @@ namespace TicketReservationSystem.Shared.Domain
         public string ImageUrl { get; set; }
         public bool Subtitles { get; set; }
         public string SubtitlesLanguage { get; set; }
-        public DateTime Length { get; set; }
+        public string Length { get; set; }
         public DateTime Released { get; set; }
         public List<MovieShow> Shows { get; set; }
         

@@ -9,41 +9,64 @@
   <Field>
     <FieldLabel>Movie</FieldLabel>
     <TextEdit @onchange="@onMovieTitleChange" @bind-Text="Movie.Title" />
-
   </Field>
   <Field>
-    @if (MoviesDetails != null)
+    @if (MoviesDetails.Count != 0)
     {
-    <FieldLabel>Suggestions</FieldLabel>
-    <Select TValue="MovieResponseModel">
-      @foreach (var movie in MoviesDetails)
-      {
-        <SelectItem Value="movie">@movie.Title @movie.ReleaseDate</SelectItem>
-      }
-    </Select>
-    }
-    else {
-      <p>Loading movies...</p>
-    }
-  </Field>
-  <Button Color="Color.Primary" Type="ButtonType.Submit">Log In</Button>
+            <FieldLabel>Suggestions</FieldLabel>
+            <Select  @bind-SelectedValue="@SelectedMovie" TValue="int">
+              @foreach (var movie in MoviesDetails)
+              {
+                <SelectItem Value="@movie.Id">@movie.Title @movie.ReleaseDate</SelectItem>
+              }
+            </Select>
+     }
+     else {
+            <p>Loading movies...</p>}
+</Field>
+  <Button Color="Color.Primary" Type="ButtonType.Submit" Clicked="@OnAddMovieClicked">Add Movie</Button>
 </EditForm>
 @code {
+    public int SelectedMovie { get; set; }
     public MovieResponseModel suggestions { get; set; } = new MovieResponseModel();
     public MovieModel Movie { get; set; } = new MovieModel();
-    public List<MovieDetailsModel> MoviesDetails { get; set; }
+    public List<MovieDetailsModel> MoviesDetails { get; set; } = new List<MovieDetailsModel>();
     private void HandleValidSubmit(EditContext editContext) { }
     private async void onMovieTitleChange()
     {
-      if (Movie.Title.Length < 6) { return; }
+      if (Movie.Title.Length < 3) { return; }
       var requestUrl = "https://api.themoviedb.org/3/search/movie?api_key=74ddab1b7a6a8f69231b82aa88e83966&language=en-US&query=" + Movie.Title + "&page=1&include_adult=false";
       suggestions = await Http.GetFromJsonAsync<MovieResponseModel>(requestUrl);
-      foreach (var s in suggestions.Results) {
-        var detailsRequestUrl = "https://api.themoviedb.org/3/movie/" + s.Id +"?api_key=74ddab1b7a6a8f69231b82aa88e83966&language=en-US";
+      MoviesDetails = new List<MovieDetailsModel>();
+      foreach (var s in suggestions.Results)
+      {
+        var detailsRequestUrl = "https://api.themoviedb.org/3/movie/" + s.Id + "?api_key=74ddab1b7a6a8f69231b82aa88e83966&language=en-US";
         var details = await Http.GetFromJsonAsync<MovieDetailsModel>(detailsRequestUrl);
         MoviesDetails.Add(details);
       }
       StateHasChanged();
       await jsRuntime.InvokeAsync<string>("console.log", suggestions, MoviesDetails);
+    }
+
+    private async void OnAddMovieClicked() {
+      var selectedMovie = MoviesDetails.Find(movie => movie.Id == SelectedMovie);
+      await jsRuntime.InvokeAsync<string>("console.log", SelectedMovie, selectedMovie);
+      MovieDTO movie = new MovieDTO();
+      movie.Country = selectedMovie.Title;
+      movie.Description = selectedMovie.Overview;
+      movie.Genre = selectedMovie.Genres.Count != 0 ? selectedMovie.Genres[0].Name : "";
+      movie.ImageUrl = selectedMovie.ImagePath;
+      movie.Language = selectedMovie.OriginalLanguage;
+      movie.Length = TimeSpan.FromMinutes(selectedMovie.Length).ToString();
+      movie.Released = selectedMovie.ReleaseDate != "" ? DateTime.Parse(selectedMovie.ReleaseDate) : null;
+      movie.Shows = new List<MovieShow>();
+      movie.Subtitles = false;
+      movie.SubtitlesLanguage = "";
+      movie.Title = selectedMovie.Title;
+      await Http.PostAsJsonAsync<MovieDTO>("api/movies", movie);
+    }
+    async void OnSelectedValueChanged(MovieDetailsModel selected)
+    {
+      await jsRuntime.InvokeAsync<string>("console.log", selected);
     }
 }
