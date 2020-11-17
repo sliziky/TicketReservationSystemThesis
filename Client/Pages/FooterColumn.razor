@@ -1,0 +1,10 @@
+<div class="footer__column">
+  @foreach (var link in Links) {
+    <a>@link</a>
+  }
+</div>
+@code {
+      private List<string> Links = new List<string>() {
+        "Test1", "Test2", "Test3", "Test4"
+      };
+}

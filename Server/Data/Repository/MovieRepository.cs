@@ -8,27 +8,43 @@ using TicketReservationSystem.Server.Models;
 using TicketReservationSystem.Server.Models.DTO;
 using TicketReservationSystem.Server.Data.Mapper;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace TicketReservationSystem.Server.Data.Repository
 {
-    public class MovieRepository : IRepository<Movie, MovieDTO>
+  public class MovieRepository : IRepository<Movie>
+  {
+    private MyContext _context;
+    private IMapper _mapper;
+    public MovieRepository(MyContext context, IMapper mapper)
     {
-        private MyContext _context;
-        private IMapper _mapper;
-        public MovieRepository(MyContext context, IMapper mapper)
-        {
-            _context = context;
+      _context = context;
       _mapper = mapper;
-        }
+    }
 
     public void Delete(int entityId)
     {
-      throw new NotImplementedException();
+      var movie = _context.Movies.FirstOrDefault(movie => movie.MovieID == entityId);
+      if (movie != null)
+      {
+        _context.Movies.Remove(movie);
+        _context.SaveChanges();
+      }
     }
 
-    public Movie Get(int id)
+    public async Task DeleteAsync(int entityId)
     {
-      throw new NotImplementedException();
+      var movie = _context.Movies.FirstOrDefault(movie => movie.MovieID == entityId);
+      if (movie != null)
+      {
+        _context.Movies.Remove(movie);
+        await _context.SaveChangesAsync();
+      }
+    }
+
+    public async Task<Movie> GetAsync(int id)
+    {
+      return await _context.Movies.FirstOrDefaultAsync(Movie => Movie.MovieID == id);
     }
 
     public IEnumerable<Movie> GetAll()
@@ -36,16 +52,49 @@ namespace TicketReservationSystem.Server.Data.Repository
       return _context.Movies.ToList();
     }
 
-    public Movie Save(MovieDTO entity)
+    public Movie Save(Movie entity)
     {
-      throw new NotImplementedException();
+      _context.Movies.Add(entity);
+      _context.SaveChanges();
+      return entity;
     }
 
-    public async Task<Movie> SaveAsync(MovieDTO entity)
+    public async Task<Movie> SaveAsync(Movie entity)
     {
-      await _context.Movies.AddAsync(_mapper.Map<MovieDTO, Movie>(entity));
+      await _context.Movies.AddAsync(entity);
       await _context.SaveChangesAsync();
-      return _mapper.Map<MovieDTO, Movie>(entity);
+      return entity;
+    }
+
+    public Movie Update(int id, Movie entity)
+    {
+      var movie = _context.Movies.FirstOrDefault(movie => movie.MovieID == id);
+      if (movie != null)
+      {
+        movie = _mapper.Map<Movie>(entity);
+        return movie;
+      }
+      return null;
+    }
+
+
+
+    public async Task<Movie> UpdateAsync(int id, Movie entity)
+    {
+      var movie = await _context.Movies.FirstOrDefaultAsync(movie => movie.MovieID == id);
+      if (movie != null)
+      {
+        movie = _mapper.Map<Movie>(entity);
+        movie.Title = entity.Title;
+        await _context.SaveChangesAsync();
+        return movie;
+      }
+      return null;
+    }
+
+    public async Task<IEnumerable<Movie>> GetAllAsync()
+    {
+      return await _context.Movies.ToListAsync();
     }
   }
 }

@@ -1,37 +1,39 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
-    <a class="navbar-brand" href="">TicketReservationSystem</a>
-    <button class="navbar-toggler" @onclick="ToggleNavMenu">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-</div>
-
-<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
-    <ul class="nav flex-column">
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </li>
-        <li class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
-        </li>
-    </ul>
-</div>
-
+@inject NavigationManager NavigationManager
+<Bar Breakpoint="Breakpoint.Desktop"
+     Background="Background.Primary"
+     ThemeContrast="ThemeContrast.Dark">
+  <BarToggler />
+  <BarMenu>
+    <BarStart Class="navbar-menu-center">
+      <BarItem>
+        <img src="./imgs/cinema_logo.png" class="cinema_logo" />
+      </BarItem>
+      <BarItem>
+        <BarLink To="#home" Style="" Class="navbar__link">PROGRAM</BarLink>
+      </BarItem>
+      <BarItem>
+        <BarLink To="#docs" Class="navbar__link">FILMY</BarLink>
+      </BarItem>
+      <BarItem>
+        <BarDropdown>
+          <BarDropdownToggle Class="navbar__link">AKCIE</BarDropdownToggle>
+          <BarDropdownMenu>
+            <BarDropdownItem>Action</BarDropdownItem>
+            <BarDropdownItem>Another action</BarDropdownItem>
+          </BarDropdownMenu>
+        </BarDropdown>
+      </BarItem>
+    </BarStart>
+    <BarEnd>
+      <BarItem>
+        <Button Color="Color.Primary" @onclick="@(e => NavigateTo("/signup"))">Sign up</Button>
+        <Button Color="Color.Secondary" @onclick="@(e => NavigateTo("/login"))">Log in</Button>
+      </BarItem>
+    </BarEnd>
+  </BarMenu>
+</Bar>
 @code {
-    private bool collapseNavMenu = true;
-
-    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
+    private void NavigateTo(string url) {
+      NavigationManager.NavigateTo(url);
     }
 }

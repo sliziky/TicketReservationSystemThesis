@@ -2,20 +2,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TicketReservationSystem.Server.Models;
 
 namespace TicketReservationSystem.Server.Data.Repository.Abstraction
 {
-    public interface IRepository<TEntity, TEntityDTO>
-    {
-        IEnumerable<TEntity> GetAll();
+  public interface IRepository<TEntity> where TEntity : class, new()
+  {
+    IEnumerable<TEntity> GetAll();
+    Task<IEnumerable<TEntity>> GetAllAsync();
 
-        TEntity Get(int id);
+    Task<TEntity> GetAsync(int id);
 
-        TEntity Save(TEntityDTO entity);
+    TEntity Update(int id, TEntity entity);
+    Task<TEntity> UpdateAsync(int id, TEntity entity);
 
-        Task<TEntity> SaveAsync(TEntityDTO entity);
+
+    TEntity Save(TEntity entity);
+
+    Task<TEntity> SaveAsync(TEntity entity);
 
 
     void Delete(int entityId);
-    }
+    Task DeleteAsync(int entityId);
+  }
 }

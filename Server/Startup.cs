@@ -40,7 +40,8 @@ namespace TicketReservationSystem.Server
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddTransient<MovieRepository>();
-            services.AddDbContext<MyContext>(options => options.UseSqlite("Data Source = blogging.db"));
+            services.AddTransient<UserRepository>();
+      services.AddDbContext<MyContext>(options => options.UseSqlite("Data Source = blogging.db"));
             services.AddMediatR(typeof(Startup));
         }
 

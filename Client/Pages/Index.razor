@@ -1,5 +1,5 @@
-﻿@page "/"
-@using System.Net.Http
+@page "/"
+@using System.Net.Http 
 @inject HttpClient Http
 
 
@@ -7,14 +7,6 @@
 
 Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
-
 @code {
-    protected override async Task OnInitializedAsync() {
-        var items = await Http.GetFromJsonAsync<string[]>("api/Movies");
-        foreach (var item in items)
-        {
-            Console.WriteLine(item.ToString());
-        }
-    }
+
 } 
