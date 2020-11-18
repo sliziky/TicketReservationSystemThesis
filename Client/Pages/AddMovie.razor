@@ -44,6 +44,7 @@
         var details = await Http.GetFromJsonAsync<MovieDetailsModel>(detailsRequestUrl);
         MoviesDetails.Add(details);
       }
+      SelectedMovie = MoviesDetails[0].Id;
       StateHasChanged();
       await jsRuntime.InvokeAsync<string>("console.log", suggestions, MoviesDetails);
     }
