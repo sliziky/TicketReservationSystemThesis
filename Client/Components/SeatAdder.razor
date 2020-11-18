@@ -1,59 +1,153 @@
-@using TicketReservationSystem.Shared 
+@inject HttpClient Http
+@using TicketReservationSystem.Shared
+@using Blazorise.Components
+@inject IJSRuntime JSRuntime
 <EditForm Model="@Seats" OnValidSubmit="@HandleValidSubmit" Class="hall-form">
   <DataAnnotationsValidator />
-  <Fields Class="seat-adder__form__row">
-    <Field ColumnSize="ColumnSize.Is2.OnDesktop">
-      <FieldLabel>Name</FieldLabel>
-      <TextEdit @bind-Text="@Seats.Name" />
-    </Field>
-    <Field ColumnSize="ColumnSize.Is2.OnDesktop">
-      <FieldLabel>Rows</FieldLabel>
-      <TextEdit @bind-Text="@Seats.Rows" />
-    </Field>
-    <Field ColumnSize="ColumnSize.Is2.OnDesktop">
-      <FieldLabel>Number of seats in 1 row</FieldLabel>
-      <TextEdit @bind-Text="@Seats.NumberOfSeatsInRow" />
-    </Field>
-  </Fields>
-  <Button Color="Color.Primary" Type="ButtonType.Submit" Class="hall-form__button">Generate layout</Button>
+  <Validations Mode="ValidationMode.Auto" Model="@Seats">
+    <Fields Class="seat-adder__form__row">
+      <Validation>
+        <Field Class="hall-form__field" ColumnSize="ColumnSize.Is2.OnDesktop">
+          <FieldLabel>Cinema</FieldLabel>
+          <SelectList TItem="@Cinema"
+                      TValue="int"
+                      Data="@Cinemas"
+                      TextField="@((item)=>item.Name)"
+                      ValueField="@((item)=>item.CinemaID)"
+                      SelectedValue="@SelectedCinema.CinemaID"
+                      SelectedValueChanged="@MyListValueChangedHandler" />
+        </Field>
+      </Validation>
+      <Validation>
+        <Field ColumnSize="ColumnSize.Is2.OnDesktop" Class="hall-form__field">
+          <FieldLabel>Name</FieldLabel>
+          <TextEdit @bind-Text="@Seats.Name">
+            <Feedback>
+              <ValidationError />
+            </Feedback>
+          </TextEdit>
+        </Field>
+      </Validation>
+      <Validation>
+        <Field ColumnSize="ColumnSize.Is2.OnDesktop" Class="hall-form__field">
+          <FieldLabel>Rows</FieldLabel>
+          <TextEdit @bind-Text="@Seats.Rows">
+            <Feedback>
+              <ValidationError />
+            </Feedback>
+          </TextEdit>
+        </Field>
+      </Validation>
+      <Validation>
+        <Field ColumnSize="ColumnSize.Is2.OnDesktop" Class="hall-form__field">
+          <FieldLabel>Number of seats in 1 row</FieldLabel>
+          <TextEdit @bind-Text="@Seats.NumberOfSeatsInRow">
+            <Feedback>
+              <ValidationError />
+            </Feedback>
+          </TextEdit>
+        </Field>
+        </Validation>
+    </Fields>
+  </Validations>
+    <Button Color="Color.Primary" Type="ButtonType.Submit" Class="hall-form__button">Generate layout</Button>
 
-  <div class="hall">
-    @if (DisplaySeats)
-    {
-      int rowIndex = 1;
-      foreach (var row in AllSeats)
+    <div class="hall">
+      @if (DisplaySeats)
       {
-        Console.WriteLine(AllSeats.Count.ToString(), row.Count.ToString());
+        int rowIndex = 1;
+        foreach (var row in AllSeats)
+        {
 <div class="hall-seats">
   <p class="row-index">@rowIndex</p>
   @for (int i = 0; i < row.Count; i++)
   {
-  <Seat Number="@i.ToString()"></Seat>}
-  </div>
-    rowIndex++;
+<SeatComponent Number="@(row[i].Number.ToString())" Row="@(row[i].Row.ToString())" CallBack="@OnSeatClicked" Type="@(row[i].Type)" DefaultNumber="@(row[i].Index.ToString())" />}
+</div>rowIndex++;
 }
 }
-  </div>
+    </div>
 
-  <Button Color="Color.Primary" Type="ButtonType.Submit" Disabled="!DisplaySeats" Class="hall-form__button">Add hall with layout</Button>
+    <Button Color="Color.Primary" Type="ButtonType.Submit" Disabled="!DisplaySeats" Clicked="OnAddHall" Class="hall-form__button">Add hall with layout</Button>
 </EditForm>
 
 
-@code { public bool DisplaySeats { get; set; } = false;
+@code {
+
+    public bool DisplaySeats { get; set; } = false;
     public HallDetailsModel Seats { get; set; } = new HallDetailsModel();
-    public List<List<Seat>> AllSeats { get; set; } = new List<List<Seat>>();
+    public List<List<SeatDTO>> AllSeats { get; set; } = new List<List<SeatDTO>>();
+    public List<Cinema> Cinemas { get; set; } = new List<Cinema>();
+    public Cinema SelectedCinema { get; set; } = new Cinema();
+    public bool CanGenerateLayout { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+      Cinemas = await Http.GetFromJsonAsync<List<Cinema>>("api/cinemas");
+      SelectedCinema.CinemaID = Cinemas[0].CinemaID;
+      await JSRuntime.InvokeVoidAsync("console.log", Cinemas);
+    }
+
+    void MyListValueChangedHandler(int newC)
+    {
+      SelectedCinema.CinemaID = newC;
+      Console.WriteLine(newC);
+    }
+
     public void HandleValidSubmit()
     {
+      GenerateSeatLayout();
       DisplaySeats = true;
-      AllSeats = new List<List<Seat>>();
+      StateHasChanged();
+    }
+
+    private void GenerateSeatLayout()
+    {
+      AllSeats = new List<List<SeatDTO>>();
       for (int i = 0; i < Int32.Parse(Seats.Rows); i++)
       {
-        List<Seat> Row = new List<Seat>();
+        List<SeatDTO> Row = new List<SeatDTO>();
         for (int j = 0; j < Int32.Parse(Seats.NumberOfSeatsInRow); j++)
         {
-          Row.Add(new Seat() {  });
+          Row.Add(new SeatDTO() { Number = j, Row = i, Type = SeatType.Classic, Index = j });
         }
         AllSeats.Add(Row);
       }
+    }
+
+    public void OnSeatClicked(string number, string rowIndex)
+    {
+      int numberInt = Int32.Parse(number);
+      int rowInt = Int32.Parse(rowIndex);
+      var seat = AllSeats[rowInt][numberInt];
+      if (seat.Type == SeatType.Classic)
+      {
+        // Gotta secure that all seat numbers will be recalculated
+        seat.Type = SeatType.Disabled;
+        var row = AllSeats[rowInt];
+        for (int index = seat.Index; index < row.Count; index++)
+        {
+          row[index].Number -= 1;
+        }
+      }
+      else if (seat.Type == SeatType.Disabled)
+      {
+        seat.Type = SeatType.Handicapped;
+        var row = AllSeats[rowInt];
+        for (int index = seat.Index; index < row.Count; index++)
+        {
+          row[index].Number += 1;
+        }
+      }
+      else
+      {
+        seat.Type = SeatType.Classic;
+      }
       StateHasChanged();
+    }
+    private void OnAddHall()
+    {
+      Console.WriteLine(SelectedCinema.CinemaID);
+      HallDTO hall = new HallDTO();
+
     } }

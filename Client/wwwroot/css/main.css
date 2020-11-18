@@ -17,7 +17,11 @@ body {
   margin-top: 10%;
   color: #F1C6A3 !important;
 }
+.hall-form__field {
+  margin-left: 15px;
+}
 .hall-form__button {
+  margin-top: 15px;
   margin-left: 40%;
   margin-right: 40%;
 }
@@ -33,6 +37,7 @@ body {
   display:flex;
   flex-direction: row;
   flex-wrap:wrap;
+  margin-bottom: -16px;
 }
 .seat-adder__form__row {
   display: flex;
@@ -86,6 +91,7 @@ body {
   display: flex;
   margin-right: 18px;
   /* text-align: center; */
+  width: 2em;
   align-items: center;
 }
 
@@ -170,3 +176,8 @@ body {
     right: 0.75rem;
     top: 0.5rem;
   }
+  
+@media only screen and (max-width: 600px) {
+  .seat {
+  }
+}

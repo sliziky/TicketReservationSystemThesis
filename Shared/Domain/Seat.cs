@@ -10,14 +10,10 @@ namespace TicketReservationSystem.Shared.Domain
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int SeatID { get; set; }
+        public int Row { get; set; }
         public int Number { get; set; }
         public SeatType Type { get; set; }
         public Hall Hall { get; set; }
         public SeatReservation SeatReservation{ get; set; }
-    }
-    public enum SeatType { 
-        Classic,
-        Disabled,
-        Handicapped
     }
 }

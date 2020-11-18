@@ -1,0 +1,40 @@
+<p class="seat" @onclick="@OnSeatClick">@GetSeatTypeInString()</p>
+
+@code {
+    [Parameter]
+    public string Number { get; set; }
+
+    [Parameter]
+    public string DefaultNumber { get; set; }
+
+    [Parameter]
+    public string Row { get; set; }
+
+    [Parameter]
+    public Action<string, string> CallBack { get; set; }
+
+    [Parameter]
+    public SeatType Type { get; set; }
+
+    private string GetSeatTypeInString() {
+      switch (Type) {
+        case SeatType.Classic:
+          return Number;
+        case SeatType.Disabled:
+          return "";
+        case SeatType.Handicapped:
+          return "D";
+      }
+      return "";
+    }
+
+    public string NumberCopy { get; set; }
+    protected override void OnInitialized()
+    {
+      NumberCopy = Number;
+    }
+    public void OnSeatClick()
+    {
+      CallBack.Invoke(DefaultNumber, Row);
+    }
+}

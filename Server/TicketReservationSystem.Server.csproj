@@ -39,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="CQRS\HallCQRS\Commands\Queries\" />
     <Folder Include="Models\" />
     <Folder Include="NewFolder\" />
   </ItemGroup>
