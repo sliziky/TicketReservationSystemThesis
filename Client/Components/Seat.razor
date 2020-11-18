@@ -1,0 +1,29 @@
+<p class="seat" @onclick="@OnSeatClick">@Number</p>
+
+@code {
+    [Parameter]
+    public string Number { get; set; }
+    public string NumberCopy { get; set; }
+    protected override void OnInitialized()
+    {
+      NumberCopy = Number;
+    }
+    public void OnSeatClick()
+    {
+      // Transition Number -> Empty -> Disabled -> Number
+      var isNumeric = int.TryParse(Number, out _);
+      if (isNumeric)
+      {
+        Number = "";
+      }
+      else if (Number == "D")
+      {
+        Number = NumberCopy;
+      }
+      else
+      {
+        Number = "D";
+      }
+      StateHasChanged();
+    }
+}

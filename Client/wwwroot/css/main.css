@@ -17,6 +17,36 @@ body {
   margin-top: 10%;
   color: #F1C6A3 !important;
 }
+.hall-form__button {
+  margin-left: 40%;
+  margin-right: 40%;
+}
+.hall-form {
+  margin-top: 10%;
+  margin-left: 5%;
+  margin-right: 5%;
+  display: flex;
+  flex-direction: column;
+  color: #F1C6A3 !important;
+}
+.hall-seats {
+  display:flex;
+  flex-direction: row;
+  flex-wrap:wrap;
+}
+.seat-adder__form__row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.hall {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  margin-top: 15px;
+}
 .movie-hero__card {
   width: calc(25% - 10px);
   margin-top: 15px;
@@ -31,6 +61,34 @@ body {
   height: 0;
   padding: 0;
 }
+
+.seat {
+  color: #F1C6A3;
+  width: 40px;
+  line-height: 40px;
+  /* border-radius: 50%; */
+  text-align: center;
+  font-size: 23px;
+  border: 2px solid #666;
+}
+.seat__clicked  {
+  color: #F1C6A3;
+  width: 40px;
+  line-height: 40px;
+  /* border-radius: 50%; */
+  text-align: center;
+  font-size: 23px;
+  border: 2px solid #666;
+}
+
+.row-index {
+  color: white;
+  display: flex;
+  margin-right: 18px;
+  /* text-align: center; */
+  align-items: center;
+}
+
   .movie-hero__card__reveal:hover {
     height: auto;
     visibility: visible;

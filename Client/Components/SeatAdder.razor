@@ -1,0 +1,59 @@
+@using TicketReservationSystem.Shared 
+<EditForm Model="@Seats" OnValidSubmit="@HandleValidSubmit" Class="hall-form">
+  <DataAnnotationsValidator />
+  <Fields Class="seat-adder__form__row">
+    <Field ColumnSize="ColumnSize.Is2.OnDesktop">
+      <FieldLabel>Name</FieldLabel>
+      <TextEdit @bind-Text="@Seats.Name" />
+    </Field>
+    <Field ColumnSize="ColumnSize.Is2.OnDesktop">
+      <FieldLabel>Rows</FieldLabel>
+      <TextEdit @bind-Text="@Seats.Rows" />
+    </Field>
+    <Field ColumnSize="ColumnSize.Is2.OnDesktop">
+      <FieldLabel>Number of seats in 1 row</FieldLabel>
+      <TextEdit @bind-Text="@Seats.NumberOfSeatsInRow" />
+    </Field>
+  </Fields>
+  <Button Color="Color.Primary" Type="ButtonType.Submit" Class="hall-form__button">Generate layout</Button>
+
+  <div class="hall">
+    @if (DisplaySeats)
+    {
+      int rowIndex = 1;
+      foreach (var row in AllSeats)
+      {
+        Console.WriteLine(AllSeats.Count.ToString(), row.Count.ToString());
+<div class="hall-seats">
+  <p class="row-index">@rowIndex</p>
+  @for (int i = 0; i < row.Count; i++)
+  {
+  <Seat Number="@i.ToString()"></Seat>}
+  </div>
+    rowIndex++;
+}
+}
+  </div>
+
+  <Button Color="Color.Primary" Type="ButtonType.Submit" Disabled="!DisplaySeats" Class="hall-form__button">Add hall with layout</Button>
+</EditForm>
+
+
+@code { public bool DisplaySeats { get; set; } = false;
+    public HallDetailsModel Seats { get; set; } = new HallDetailsModel();
+    public List<List<Seat>> AllSeats { get; set; } = new List<List<Seat>>();
+    public void HandleValidSubmit()
+    {
+      DisplaySeats = true;
+      AllSeats = new List<List<Seat>>();
+      for (int i = 0; i < Int32.Parse(Seats.Rows); i++)
+      {
+        List<Seat> Row = new List<Seat>();
+        for (int j = 0; j < Int32.Parse(Seats.NumberOfSeatsInRow); j++)
+        {
+          Row.Add(new Seat() {  });
+        }
+        AllSeats.Add(Row);
+      }
+      StateHasChanged();
+    } }
