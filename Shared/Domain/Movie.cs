@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TicketReservationSystem.Shared.Domain
@@ -8,7 +9,8 @@ namespace TicketReservationSystem.Shared.Domain
     {
         // PK 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int MovieID { get; set; }
+    [Key]
+    public int MovieID { get; set; }
         public string Title { get; set; }
         public string Country { get; set; }
         public string Description { get; set; }
@@ -19,7 +21,7 @@ namespace TicketReservationSystem.Shared.Domain
         public string SubtitlesLanguage { get; set; }
         public string Length { get; set; }
         public DateTime Released { get; set; }
-        public List<MovieShow> Shows { get; set; }
+    public List<MovieShow> Shows { get; set; } = new List<MovieShow>();
         
 
     }

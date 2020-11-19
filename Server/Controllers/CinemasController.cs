@@ -46,14 +46,33 @@ namespace TicketReservationSystem.Server.Controllers
       return Ok(movie);
     }
 
+
+
+    // POST api/<CinemaController>
+    [HttpPost("{id}/hall")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<Cinema>> PostHall(int id, [FromBody] Hall hall)
+    {
+      var hallResponse = await _mediator.Send(
+        new AddHallToCinemaCommand() { Hall = hall, Id = id }
+      );
+      if (hallResponse == null)
+      {
+        return Conflict(hall);
+      }
+      return Ok(hallResponse);
+    }
+
     // POST api/<CinemaController>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<Cinema>> Post([FromBody] Cinema cinema)
     {
-      var cinemaFound = await _mediator.Send(new AddCinemaCommand() { Cinema = cinema});
-      if (cinemaFound == null) {
+      var cinemaFound = await _mediator.Send(new AddCinemaCommand() { Cinema = cinema });
+      if (cinemaFound == null)
+      {
         return Conflict(cinema);
       }
       return Ok(cinemaFound);

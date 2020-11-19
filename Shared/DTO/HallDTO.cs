@@ -11,7 +11,9 @@ namespace TicketReservationSystem.Shared.DTO
         public string Name { get; set; }
         public uint Capacity { get; set; }
         public Cinema Cinema { get; set; }
-        public List<Seat> Seats { get; set; }
+    public int Rows { get; set; }
+
+    public List<SeatDTO> Seats { get; set; }
         public List<MovieShow> Shows { get; set; }
     }
 }

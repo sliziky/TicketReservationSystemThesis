@@ -45,6 +45,31 @@ namespace TicketReservationSystem.Server.Data.Repository
       return await _context.Cinemas.ToListAsync();
     }
 
+    public async Task<Hall> AddHall(int cinemaId, Hall hall) {
+      var cinema = await _context.Cinemas.FirstOrDefaultAsync(c => c.CinemaID == cinemaId);
+      if (cinema == null) { return null; }
+      var hallFound = cinema.Halls.FirstOrDefault(cinema => cinema.HallID == hall.HallID);
+      if (hallFound != null) { return null; }
+      hall.Cinema = cinema;
+      _context.Attach(cinema);
+      _context.Cinemas.Find(cinemaId).Halls
+        .Add(hall);
+      _context.Entry(cinema).State = EntityState.Modified;
+      await _context.SaveChangesAsync();
+      return hall;
+    }
+
+    public async Task<Seat> AddSeat(int cinemaId, int hallId, Seat seat)
+    {
+      var cinema = await _context.Cinemas.FirstOrDefaultAsync(c => c.CinemaID == cinemaId);
+      if (cinema == null) { return null; }
+      var hall = await _context.Halls.FirstOrDefaultAsync(h => h.HallID == hallId);
+      if (hall == null) { return null; }
+      seat.Hall = hall;
+      hall.Seats.Add(seat);
+      return seat;
+    }
+
     public async Task<Cinema> GetAsync(int id)
     {
       return await _context.Cinemas.FirstOrDefaultAsync(cinema => cinema.CinemaID == id);

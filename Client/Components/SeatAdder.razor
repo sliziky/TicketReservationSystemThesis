@@ -2,9 +2,9 @@
 @using TicketReservationSystem.Shared
 @using Blazorise.Components
 @inject IJSRuntime JSRuntime
-<EditForm Model="@Seats" OnValidSubmit="@HandleValidSubmit" Class="hall-form">
+<EditForm Model="@HallDetails" OnValidSubmit="@HandleValidSubmit" Class="hall-form">
   <DataAnnotationsValidator />
-  <Validations Mode="ValidationMode.Auto" Model="@Seats">
+  <Validations Mode="ValidationMode.Auto" Model="@HallDetails">
     <Fields Class="seat-adder__form__row">
       <Validation>
         <Field Class="hall-form__field" ColumnSize="ColumnSize.Is2.OnDesktop">
@@ -21,7 +21,7 @@
       <Validation>
         <Field ColumnSize="ColumnSize.Is2.OnDesktop" Class="hall-form__field">
           <FieldLabel>Name</FieldLabel>
-          <TextEdit @bind-Text="@Seats.Name">
+          <TextEdit @bind-Text="@HallDetails.Name">
             <Feedback>
               <ValidationError />
             </Feedback>
@@ -31,7 +31,7 @@
       <Validation>
         <Field ColumnSize="ColumnSize.Is2.OnDesktop" Class="hall-form__field">
           <FieldLabel>Rows</FieldLabel>
-          <TextEdit @bind-Text="@Seats.Rows">
+          <TextEdit @bind-Text="@HallDetails.Rows">
             <Feedback>
               <ValidationError />
             </Feedback>
@@ -41,7 +41,7 @@
       <Validation>
         <Field ColumnSize="ColumnSize.Is2.OnDesktop" Class="hall-form__field">
           <FieldLabel>Number of seats in 1 row</FieldLabel>
-          <TextEdit @bind-Text="@Seats.NumberOfSeatsInRow">
+          <TextEdit @bind-Text="@HallDetails.NumberOfSeatsInRow">
             <Feedback>
               <ValidationError />
             </Feedback>
@@ -75,7 +75,7 @@
 @code {
 
     public bool DisplaySeats { get; set; } = false;
-    public HallDetailsModel Seats { get; set; } = new HallDetailsModel();
+    public HallDetailsModel HallDetails { get; set; } = new HallDetailsModel();
     public List<List<SeatDTO>> AllSeats { get; set; } = new List<List<SeatDTO>>();
     public List<Cinema> Cinemas { get; set; } = new List<Cinema>();
     public Cinema SelectedCinema { get; set; } = new Cinema();
@@ -90,7 +90,7 @@
 
     void MyListValueChangedHandler(int newC)
     {
-      SelectedCinema.CinemaID = newC;
+      SelectedCinema = Cinemas.Where(c => c.CinemaID == newC).ToList()[0];
       Console.WriteLine(newC);
     }
 
@@ -104,10 +104,10 @@
     private void GenerateSeatLayout()
     {
       AllSeats = new List<List<SeatDTO>>();
-      for (int i = 0; i < Int32.Parse(Seats.Rows); i++)
+      for (int i = 0; i < Int32.Parse(HallDetails.Rows); i++)
       {
         List<SeatDTO> Row = new List<SeatDTO>();
-        for (int j = 0; j < Int32.Parse(Seats.NumberOfSeatsInRow); j++)
+        for (int j = 0; j < Int32.Parse(HallDetails.NumberOfSeatsInRow); j++)
         {
           Row.Add(new SeatDTO() { Number = j, Row = i, Type = SeatType.Classic, Index = j });
         }
@@ -145,9 +145,36 @@
       }
       StateHasChanged();
     }
-    private void OnAddHall()
+    private async void OnAddHall()
     {
       Console.WriteLine(SelectedCinema.CinemaID);
       HallDTO hall = new HallDTO();
+      hall.Name = HallDetails.Name;
+      hall.Shows = new List<MovieShow>();
+      hall.Capacity = (uint)GetHallCapacity();
+      hall.Cinema = Cinemas.Where(c => c.CinemaID == SelectedCinema.CinemaID).FirstOrDefault();
+      hall.Seats = FlattenSeatArray();
+      await Http.PostAsJsonAsync<HallDTO>("api/halls", hall);
 
-    } }
+    }
+    private int GetHallCapacity() {
+      int capacity = 0;
+      foreach (var row in AllSeats) {
+        foreach (var seat in row) {
+          if (seat.Type == SeatType.Classic || seat.Type == SeatType.Disabled) {
+            capacity++;
+          }
+        }
+      }
+      return capacity;
+    }
+    private List<SeatDTO> FlattenSeatArray() {
+      var result = new List<SeatDTO>();
+      foreach (var row in AllSeats) {
+        foreach (var seat in row) {
+          result.Add(seat);
+        }
+      }
+      return result;
+    }
+ }
