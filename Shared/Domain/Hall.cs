@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -16,7 +17,9 @@ namespace TicketReservationSystem.Shared.Domain
         public int CinemaId { get; set; }
         public Cinema Cinema { get; set; }
         public int Rows { get; set; }
-        public List<Seat> Seats { get; set; } = new List<Seat>();
-        public List<MovieShow> Shows { get; set; } = new List<MovieShow>();
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public List<Seat> Seats { get; set; } = new List<Seat>();
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public List<MovieShow> Shows { get; set; } = new List<MovieShow>();
     }
 }

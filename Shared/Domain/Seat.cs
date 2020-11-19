@@ -15,8 +15,9 @@ namespace TicketReservationSystem.Shared.Domain
         public int Row { get; set; }
         public int Number { get; set; }
         public SeatType Type { get; set; }
+    [ForeignKey("HallId")]
     public int HallId { get; set; }
-    public Hall Hall { get; set; } = new Hall();
+    public Hall Hall { get; set; }
     public int SeatReservationId { get; set; }
     public SeatReservation SeatReservation { get; set; } = new SeatReservation();
     }

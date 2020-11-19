@@ -1,0 +1,51 @@
+@page "/movie/{Id:int}"
+
+@inject HttpClient Http
+
+<div class="movie-details">
+  <img src="@("https://image.tmdb.org/t/p/w400" + Movie.ImageUrl)" alt="Picture" />
+  
+  <Fields Class="movie-details__fields">
+    <Field Class="movie-details__field">
+      <p>Title:</p>
+      <FieldLabel Class="movie-details__field__label">@Movie.Title</FieldLabel>
+    </Field>
+    <Field Class="movie-details__field">
+      <p>Description:</p>
+      <FieldLabel Class="movie-details__field__label">@Movie.Description</FieldLabel>
+    </Field>
+    <Field Class="movie-details__field">
+      <p>Language</p>
+      <FieldLabel Class="movie-details__field__label">@Movie.Language</FieldLabel>
+    </Field>
+    <Field Class="movie-details__field">
+      <p>Length:</p>
+      <FieldLabel Class="movie-details__field__label">@Movie.Length</FieldLabel>
+    </Field>
+    <Field Class="movie-details__field">
+      <p>Genre:</p>
+      <FieldLabel Class="movie-details__field__label">@Movie.Genre</FieldLabel>
+    </Field>
+    <Field Class="movie-details__field">
+      <p>Released:</p>
+      <FieldLabel Class="movie-details__field__label">@Movie.Released</FieldLabel>
+    </Field>
+    <Field Class="movie-details__field">
+      <p>Shows:</p>
+      <DisplayShows Shows="@Movie.Shows"/>
+    </Field>
+
+  </Fields>
+</div>
+
+@code {
+    public Movie Movie { get; set; } = new Movie();
+
+    [Parameter]
+    public int Id { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+      Movie = await Http.GetFromJsonAsync<Movie>("api/movies/" + Id);
+    }
+}

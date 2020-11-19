@@ -58,15 +58,27 @@ namespace TicketReservationSystem.Server.Controllers
       if (foundHall != null) { return Conflict(); }
       return Ok(hall);
     }
+
     [HttpPost("{id}/seat")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<ActionResult<Hall>> PostSeat(int hallId, [FromBody] Seat seat)
+    public async Task<ActionResult<Hall>> PostSeat(int id, [FromBody] Seat seat)
     {
-      var foundSeat = await _mediator.Send(new AddSeatToHallCommand() { HallId = hallId, Seat = seat });
+      var foundSeat = await _mediator.Send(new AddSeatToHallCommand() { Id = id, Seat = seat });
       if (foundSeat != null) { return Conflict(); }
       return Ok(foundSeat);
     }
+
+    [HttpPost("{id}/movies/{movieId}/show")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<Hall>> PostMovie(int id, int movieId, [FromBody] MovieShow show)
+    {
+      var foundSeat = await _mediator.Send(new AddMovieShowToHallCommand() { Id = id, MovieId = movieId, Show = show});
+      if (foundSeat != null) { return Conflict(); }
+      return Ok(foundSeat);
+    }
+
     // PUT api/<HallsController>/5
     [HttpPut("{id}")]
     public void Put(int id, [FromBody] string value)

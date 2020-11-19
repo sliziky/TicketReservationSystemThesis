@@ -18,23 +18,23 @@ namespace TicketReservationSystem.Server.CQRS.HallCQRS
     IRequestHandler<GetHallsQuery, IEnumerable<Hall>>,
     IRequestHandler<AddSeatToHallCommand, Seat>,
     IRequestHandler<DeleteHallCommand, Hall>,
-    IRequestHandler<DeleteHallsCommand, IEnumerable<Hall>>
+    IRequestHandler<DeleteHallsCommand, IEnumerable<Hall>>,
+    IRequestHandler<AddMovieShowToHallCommand, MovieShow>
   {
     private IMapper _mapper;
     private HallRepository _repository;
     private SeatRepository _seatRepository;
+    private ShowRepository _showRepository;
 
-    public HallHandler(IMapper mapper, HallRepository repository, SeatRepository seatRepository)
+    public HallHandler(IMapper mapper, HallRepository repository, SeatRepository seatRepository, ShowRepository showRepository)
     {
       _mapper = mapper;
       _repository = repository;
       _seatRepository = seatRepository;
+      _showRepository = showRepository;
     }
     public async Task<Hall> Handle(AddHallCommand request, CancellationToken cancellationToken)
     {
-      //foreach (var seat in request.Hall.Seats) {
-      //  await _seatRepository.SaveAsync(seat);
-      //}
       return await _repository.SaveAsync(request.Hall);
     }
 
@@ -50,7 +50,7 @@ namespace TicketReservationSystem.Server.CQRS.HallCQRS
 
     public async Task<Seat> Handle(AddSeatToHallCommand request, CancellationToken cancellationToken)
     {
-      return await _repository.AddSeat(request.HallId, request.Seat);
+      return await _repository.AddSeat(request.Id, request.Seat);
     }
 
     public async Task<Hall> Handle(DeleteHallCommand request, CancellationToken cancellationToken)
@@ -61,6 +61,11 @@ namespace TicketReservationSystem.Server.CQRS.HallCQRS
     public async Task<IEnumerable<Hall>> Handle(DeleteHallsCommand request, CancellationToken cancellationToken)
     {
       return await _repository.DeleteAllAsync();
+    }
+
+    public async Task<MovieShow> Handle(AddMovieShowToHallCommand request, CancellationToken cancellationToken)
+    {
+      return await _showRepository.AddMovieShow(request.Id, request.MovieId, request.Show);
     }
   }
 }

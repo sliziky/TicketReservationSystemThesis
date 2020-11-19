@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TicketReservationSystem.Server.CQRS.HallCQRS.Queries;
 using TicketReservationSystem.Server.CQRS.SeatsCQRS.Commands;
+using TicketReservationSystem.Server.CQRS.SeatsCQRS.Queries;
 using TicketReservationSystem.Shared.Domain;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -30,20 +31,20 @@ namespace TicketReservationSystem.Server.Controllers
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<Seat>>> Get()
     {
-      var halls = await _mediator.Send(new GetHallsQuery());
+      var halls = await _mediator.Send(new GetSeatsQuery());
       return Ok(halls);
     }
 
-    // GET api/<HallsController>/5
-    [HttpGet("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Hall>> Get(int id)
-    {
-      var hall = await _mediator.Send(new GetHallQuery() { Id = id });
-      if (hall == null) { return NotFound(); }
-      return Ok(hall);
-    }
+    //// GET api/<HallsController>/5
+    //[HttpGet("{id}")]
+    //[ProducesResponseType(StatusCodes.Status200OK)]
+    //[ProducesResponseType(StatusCodes.Status404NotFound)]
+    //public async Task<ActionResult<Hall>> Get(int id)
+    //{
+    //  var hall = await _mediator.Send(new GetSeatQuery() { Id = id });
+    //  if (hall == null) { return NotFound(); }
+    //  return Ok(hall);
+    //}
 
     // POST api/<HallsController>
     [HttpPost]
@@ -52,7 +53,7 @@ namespace TicketReservationSystem.Server.Controllers
     public async Task<ActionResult<Seat>> PostAsync([FromBody] Seat seat)
     {
       var foundSeat = await _mediator.Send(new AddSeatCommand() { Seat = seat });
-      if (foundSeat != null) { return Conflict(); }
+      if (foundSeat == null) { return Conflict(); }
       return Ok(seat);
     }
 

@@ -43,7 +43,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<IEnumerable<Hall>> GetAllAsync()
     {
-      return await _context.Halls.Include(h => h.Cinema).ToListAsync();
+      return await _context.Halls.Include(h => h.Cinema).Include(h => h.Shows).Include(h => h.Seats).ToListAsync();
     }
 
     public Task<Hall> GetAsync(int id)
@@ -74,10 +74,12 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<Seat> AddSeat(int hallId, Seat seat)
     {
-      var hall = await _context.Halls.FirstOrDefaultAsync(h => h.HallId == hallId);
+      var hall = await _context.Halls.Include(c => c.Seats).Include(c => c.Shows).FirstOrDefaultAsync(h => h.HallId == hallId);
       if (hall == null) { return null; }
-      seat.Hall = hall;
+      var seatFound = hall.Seats.FirstOrDefault(s => s.Row == seat.Row && s.Number == seat.Number);
+      if (seatFound != null) { return null; }
       hall.Seats.Add(seat);
+      await _context.SaveChangesAsync();
       return seat;
     }
 

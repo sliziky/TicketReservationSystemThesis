@@ -1,0 +1,16 @@
+<div class="movie-details__shows">
+  @if (Shows.Count != 0)
+    {
+    @foreach (var show in Shows)
+    {
+      <Button Color="Color.Primary" Type="ButtonType.Submit" Class="show-display__button">
+        @show.Date @show.Start
+      </Button>
+    }
+  }
+</div>
+
+@code {
+    [Parameter]
+    public List<MovieShow> Shows { get; set; }
+}

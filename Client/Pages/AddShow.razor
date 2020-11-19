@@ -1,0 +1,103 @@
+@page "/show/new"
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+@using System.ComponentModel.DataAnnotations;
+@using Blazorise.Components;
+
+<EditForm Model="@ShowDetails" OnValidSubmit="@HandleValidSubmit" Class="hall-form">
+  <DataAnnotationsValidator />
+  <Validations Mode="ValidationMode.Auto" Model="@ShowDetails">
+    <Fields Class="show-adder__form__row">
+      <Validation>
+        <Field Class="hall-form__field" ColumnSize="ColumnSize.Is2.OnDesktop">
+          <FieldLabel>Movie</FieldLabel>
+          <SelectList TItem="@Movie"
+                      TValue="int"
+                      Data="@Movies"
+                      TextField="@((item) => item.Title + "  " + item.Length)"
+                      ValueField="@((item) => item.MovieId)"
+                      SelectedValue="@SelectedMovie.MovieId"
+                      SelectedValueChanged="@MovieValueChangedHandler" />
+        </Field>
+      </Validation>
+      <Validation>
+        <Field Class="hall-form__field" ColumnSize="ColumnSize.Is2.OnDesktop">
+          <FieldLabel>Hall</FieldLabel>
+          <SelectList TItem="@Hall"
+                      TValue="int"
+                      Data="@Halls"
+                      TextField="@((item) => item.Name)"
+                      ValueField="@((item) => item.HallId)"
+                      SelectedValue="@SelectedHall.HallId"
+                      SelectedValueChanged="@HallValueChangedHandler" />
+        </Field>
+      </Validation>
+      <Validation>
+        <Field>
+          <FieldLabel>Show Date</FieldLabel>
+          <DateEdit TValue="DateTime?" Date="@ShowDetails.ShowDate" DateChanged="@OnShowDateChanged" />
+        </Field>
+        <Field>
+          <FieldLabel>Start Time</FieldLabel>
+          <TimeEdit TValue="TimeSpan?" Time="@ShowDetails.StartTime" TimeChanged="@OnStartTimeChanged" />
+        </Field>
+        <Field>
+          <FieldLabel>End Time</FieldLabel>
+          <TimeEdit TValue="TimeSpan?" Time="@ShowDetails.EndTime" TimeChanged="@OnEndTimeChanged" />
+        </Field>
+      </Validation>
+    </Fields>
+  </Validations>
+  <Button Color="Color.Primary" Type="ButtonType.Submit" Class="hall-form__button">Add show</Button>
+</EditForm>
+@code { public DateTime ShowDate = new DateTime();
+    public ShowDetailsModel ShowDetails = new ShowDetailsModel();
+    public List<Movie> Movies { get; set; } = new List<Movie>();
+    public List<Hall> Halls { get; set; } = new List<Hall>();
+    public Movie SelectedMovie { get; set; } = new Movie();
+    public Hall SelectedHall { get; set; } = new Hall();
+    protected override async Task OnInitializedAsync()
+    {
+      await JSRuntime.InvokeVoidAsync("console.log", "ASDASD");
+
+      Movies = await Http.GetFromJsonAsync<List<Movie>>("api/movies");
+      SelectedMovie = Movies[0];
+      Halls = await Http.GetFromJsonAsync<List<Hall>>("api/halls");
+      SelectedHall = Halls[0];
+      await JSRuntime.InvokeVoidAsync("console.log", Movies, Halls);
+    }
+
+    void MyListValueChangedHandler(int newC)
+    {
+      SelectedMovie = Movies.Where(m => m.MovieId == newC).ToList()[0];
+      Console.WriteLine(newC);
+    }
+    void HallValueChangedHandler(int hallId)
+    {
+      SelectedHall = Halls.Where(h => h.HallId == hallId).ToList()[0];
+    }
+    void MovieValueChangedHandler(int movieId)
+    {
+      SelectedMovie = Movies.Where(m => m.MovieId == movieId).ToList()[0];
+    }
+    async void HandleValidSubmit()
+    {
+      await JSRuntime.InvokeVoidAsync("console.log", SelectedHall, SelectedMovie);
+      await JSRuntime.InvokeVoidAsync("console.log", ShowDetails.EndTime);
+      await JSRuntime.InvokeVoidAsync("console.log", ShowDetails.ShowDate);
+      await JSRuntime.InvokeVoidAsync("console.log", ShowDetails.StartTime);
+
+    }
+
+    void OnShowDateChanged(DateTime? date)
+    {
+      ShowDetails.ShowDate = date;
+    }
+    void OnStartTimeChanged(TimeSpan? Time)
+    {
+      ShowDetails.StartTime = Time;
+    }
+    void OnEndTimeChanged(TimeSpan? Time)
+    {
+      ShowDetails.EndTime = Time;
+    } }

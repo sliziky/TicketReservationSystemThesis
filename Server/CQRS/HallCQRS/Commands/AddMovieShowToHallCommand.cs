@@ -7,9 +7,10 @@ using TicketReservationSystem.Shared.Domain;
 
 namespace TicketReservationSystem.Server.CQRS.HallCQRS.Commands
 {
-  public class AddSeatToHallCommand : IRequest<Seat>
+  public class AddMovieShowToHallCommand : IRequest<MovieShow>
   {
     public int Id { get; set; }
-    public Seat Seat { get; set; }
+    public int MovieId { get; set; }
+    public MovieShow Show { get; set; }
   }
 }

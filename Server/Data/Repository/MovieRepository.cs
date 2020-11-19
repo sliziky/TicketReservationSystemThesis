@@ -43,7 +43,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<Movie> GetAsync(int id)
     {
-      return await _context.Movies.FirstOrDefaultAsync(Movie => Movie.MovieId == id);
+      return await _context.Movies.Include(m => m.Shows).FirstOrDefaultAsync(Movie => Movie.MovieId == id);
     }
 
     public IEnumerable<Movie> GetAll()

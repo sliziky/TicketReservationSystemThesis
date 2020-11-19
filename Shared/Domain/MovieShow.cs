@@ -13,7 +13,7 @@ namespace TicketReservationSystem.Shared.Domain
     [Key]
     public int MovieShowId { get; set; }
     public DateTime Start { get; set; }
-    public DateTime End { get; set; }
+    public DateTime Date { get; set; }
     public int MovieId { get; set; }
     public Movie Movie { get; set; }
     public int HallId { get; set; }

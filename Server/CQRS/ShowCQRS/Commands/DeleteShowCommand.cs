@@ -5,11 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using TicketReservationSystem.Shared.Domain;
 
-namespace TicketReservationSystem.Server.CQRS.HallCQRS.Commands
+namespace TicketReservationSystem.Server.CQRS.ShowCQRS.Commands
 {
-  public class AddSeatToHallCommand : IRequest<Seat>
+  public class DeleteShowCommand : IRequest<MovieShow>
   {
     public int Id { get; set; }
-    public Seat Seat { get; set; }
   }
 }
