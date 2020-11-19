@@ -11,11 +11,13 @@ namespace TicketReservationSystem.Shared.Domain
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
-    public int SeatID { get; set; }
+    public int SeatId { get; set; }
         public int Row { get; set; }
         public int Number { get; set; }
         public SeatType Type { get; set; }
+    public int HallId { get; set; }
     public Hall Hall { get; set; } = new Hall();
+    public int SeatReservationId { get; set; }
     public SeatReservation SeatReservation { get; set; } = new SeatReservation();
     }
 }

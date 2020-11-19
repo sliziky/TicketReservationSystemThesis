@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TicketReservationSystem.Server.Context;
 using TicketReservationSystem.Server.Data.Repository.Abstraction;
+using TicketReservationSystem.Server.Extensions;
 using TicketReservationSystem.Shared.Domain;
 
 namespace TicketReservationSystem.Server.Data.Repository
@@ -27,7 +28,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<Hall> DeleteAsync(int entityId)
     {
-      var hall = _context.Halls.FirstOrDefault(hall => hall.HallID == entityId);
+      var hall = _context.Halls.FirstOrDefault(hall => hall.HallId == entityId);
       if (hall != null) {
         _context.Halls.Remove(hall);
         await _context.SaveChangesAsync();
@@ -42,12 +43,12 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<IEnumerable<Hall>> GetAllAsync()
     {
-      return await _context.Halls.ToListAsync();
+      return await _context.Halls.Include(h => h.Cinema).ToListAsync();
     }
 
     public Task<Hall> GetAsync(int id)
     {
-      return _context.Halls.FirstOrDefaultAsync(hall => hall.HallID == id);
+      return _context.Halls.FirstOrDefaultAsync(hall => hall.HallId == id);
     }
 
     public Hall Save(Hall entity)
@@ -57,7 +58,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<Hall> SaveAsync(Hall entity)
     {
-      var hall = _context.Halls.FirstOrDefault(hall => hall.Cinema.CinemaID == entity.Cinema.CinemaID && hall.Name == entity.Name);
+      var hall = _context.Halls.FirstOrDefault(hall => hall.Cinema.CinemaId == entity.Cinema.CinemaId && hall.Name == entity.Name);
       if (hall == null)
       {
         await _context.Halls.AddAsync(entity);
@@ -71,9 +72,18 @@ namespace TicketReservationSystem.Server.Data.Repository
       throw new NotImplementedException();
     }
 
+    public async Task<Seat> AddSeat(int hallId, Seat seat)
+    {
+      var hall = await _context.Halls.FirstOrDefaultAsync(h => h.HallId == hallId);
+      if (hall == null) { return null; }
+      seat.Hall = hall;
+      hall.Seats.Add(seat);
+      return seat;
+    }
+
     public async Task<Hall> UpdateAsync(int id, Hall entity)
     {
-      var hall = _context.Halls.FirstOrDefault(hall => hall.HallID == id);
+      var hall = _context.Halls.FirstOrDefault(hall => hall.HallId == id);
       if (hall != null)
       {
         hall.Name = entity.Name;
@@ -82,6 +92,12 @@ namespace TicketReservationSystem.Server.Data.Repository
         await _context.SaveChangesAsync();
       }
       return hall;
+    }
+
+    public Task<IEnumerable<Hall>> DeleteAllAsync()
+    {
+      _context.DeleteAll<Hall>();
+      return null;
     }
   }
 }

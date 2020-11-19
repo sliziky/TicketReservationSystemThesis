@@ -11,7 +11,7 @@ namespace TicketReservationSystem.Shared.Domain
   {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
-    public int CinemaID { get; set; }
+    public int CinemaId { get; set; }
 
     [JsonPropertyName("name")]
     [Required]

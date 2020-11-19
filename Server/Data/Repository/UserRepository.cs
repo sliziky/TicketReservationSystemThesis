@@ -34,7 +34,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<User> GetAsync(int id)
     {
-      return await _context.Users.FirstOrDefaultAsync(user => user.UserID == id);
+      return await _context.Users.FirstOrDefaultAsync(user => user.UserId == id);
     }
 
     public async Task<User> GetAsync(string email)
@@ -70,7 +70,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<User> DeleteAsync(int entityId)
     {
-      var user = _context.Users.FirstOrDefault(user => user.UserID == entityId);
+      var user = _context.Users.FirstOrDefault(user => user.UserId == entityId);
       if (user != null) {
         _context.Users.Remove(user);
         await _context.SaveChangesAsync();

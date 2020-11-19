@@ -39,13 +39,12 @@ namespace TicketReservationSystem.Server
       IMapper mapper = mapperConfig.CreateMapper();
 
       services.AddSingleton(mapper);
-      services.AddControllersWithViews();
-      services.AddRazorPages().AddNewtonsoftJson(options =>
-    {
-      options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-      options.SerializerSettings.MaxDepth = 10;
-    }
-) ;
+      services.AddControllersWithViews().AddNewtonsoftJson(options =>
+      {
+        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+        options.SerializerSettings.MaxDepth = 10;
+      });
+      services.AddRazorPages();
      
       services.AddTransient<MovieRepository>();
       services.AddTransient<HallRepository>();

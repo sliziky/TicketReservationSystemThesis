@@ -22,7 +22,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public void Delete(int entityId)
     {
-      var movie = _context.Movies.FirstOrDefault(movie => movie.MovieID == entityId);
+      var movie = _context.Movies.FirstOrDefault(movie => movie.MovieId == entityId);
       if (movie != null)
       {
         _context.Movies.Remove(movie);
@@ -32,7 +32,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<Movie> DeleteAsync(int entityId)
     {
-      var movie = _context.Movies.FirstOrDefault(movie => movie.MovieID == entityId);
+      var movie = _context.Movies.FirstOrDefault(movie => movie.MovieId == entityId);
       if (movie != null)
       {
         _context.Movies.Remove(movie);
@@ -43,7 +43,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<Movie> GetAsync(int id)
     {
-      return await _context.Movies.FirstOrDefaultAsync(Movie => Movie.MovieID == id);
+      return await _context.Movies.FirstOrDefaultAsync(Movie => Movie.MovieId == id);
     }
 
     public IEnumerable<Movie> GetAll()
@@ -71,7 +71,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public Movie Update(int id, Movie entity)
     {
-      var movie = _context.Movies.FirstOrDefault(movie => movie.MovieID == id);
+      var movie = _context.Movies.FirstOrDefault(movie => movie.MovieId == id);
       if (movie != null)
       {
         movie = _mapper.Map<Movie>(entity);
@@ -84,7 +84,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<Movie> UpdateAsync(int id, Movie entity)
     {
-      var movie = await _context.Movies.FirstOrDefaultAsync(movie => movie.MovieID == id);
+      var movie = await _context.Movies.FirstOrDefaultAsync(movie => movie.MovieId == id);
       if (movie != null)
       {
         movie = _mapper.Map<Movie>(entity);

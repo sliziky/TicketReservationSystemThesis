@@ -20,10 +20,9 @@ namespace TicketReservationSystem.Server.Context
         public DbSet<Reservation> Reservations { get; set; } 
         public DbSet<SeatReservation> ReservationSeats { get; set; } 
         public DbSet<Seat> Seats { get; set; } 
-        public DbSet<User> Users { get; set; } 
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-    => options.UseSqlite("Data Source=blogging.db");
-
+        public DbSet<User> Users { get; set; }
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+=> options.UseSqlite("Data Source=blogging.db");
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       base.OnModelCreating(modelBuilder);

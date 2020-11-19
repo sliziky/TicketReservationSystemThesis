@@ -11,10 +11,9 @@ namespace TicketReservationSystem.Shared.Domain
     {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int PaymentID { get; set; }
+        public int PaymentId { get; set; }
         public int TotalPrice { get; set; }
         public DateTime Created { get; set; }
         public Reservation Reservation { get; set; }
-        public int ReservationID { get; set; }
     }
 }

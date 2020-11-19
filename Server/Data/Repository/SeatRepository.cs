@@ -24,7 +24,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<Seat> DeleteAsync(int entityId)
     {
-      var seat = _context.Seats.FirstOrDefault(seat => seat.SeatID == entityId);
+      var seat = _context.Seats.FirstOrDefault(seat => seat.SeatId == entityId);
       if (seat != null)
       {
         _context.Seats.Remove(seat);
@@ -45,7 +45,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public Task<Seat> GetAsync(int id)
     {
-      return _context.Seats.FirstOrDefaultAsync(seat => seat.SeatID == id);
+      return _context.Seats.FirstOrDefaultAsync(seat => seat.SeatId == id);
     }
 
     public Seat Save(Seat entity)
@@ -71,7 +71,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<Seat> UpdateAsync(int id, Seat entity)
     {
-      var seat = _context.Seats.FirstOrDefault(seat => seat.SeatID == id);
+      var seat = _context.Seats.FirstOrDefault(seat => seat.SeatId == id);
       if (seat != null)
       {
         seat.Hall = entity.Hall;

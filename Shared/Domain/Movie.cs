@@ -10,7 +10,7 @@ namespace TicketReservationSystem.Shared.Domain
         // PK 
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
-    public int MovieID { get; set; }
+    public int MovieId { get; set; }
         public string Title { get; set; }
         public string Country { get; set; }
         public string Description { get; set; }

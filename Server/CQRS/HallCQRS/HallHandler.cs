@@ -15,7 +15,10 @@ namespace TicketReservationSystem.Server.CQRS.HallCQRS
   public class HallHandler :
     IRequestHandler<AddHallCommand, Hall>,
     IRequestHandler<GetHallQuery, Hall>,
-    IRequestHandler<GetHallsQuery, IEnumerable<Hall>>
+    IRequestHandler<GetHallsQuery, IEnumerable<Hall>>,
+    IRequestHandler<AddSeatToHallCommand, Seat>,
+    IRequestHandler<DeleteHallCommand, Hall>,
+    IRequestHandler<DeleteHallsCommand, IEnumerable<Hall>>
   {
     private IMapper _mapper;
     private HallRepository _repository;
@@ -43,6 +46,21 @@ namespace TicketReservationSystem.Server.CQRS.HallCQRS
     public async Task<Hall> Handle(GetHallQuery request, CancellationToken cancellationToken)
     {
       return await _repository.GetAsync(request.Id);
+    }
+
+    public async Task<Seat> Handle(AddSeatToHallCommand request, CancellationToken cancellationToken)
+    {
+      return await _repository.AddSeat(request.HallId, request.Seat);
+    }
+
+    public async Task<Hall> Handle(DeleteHallCommand request, CancellationToken cancellationToken)
+    {
+      return await _repository.DeleteAsync(request.Id);
+    }
+
+    public async Task<IEnumerable<Hall>> Handle(DeleteHallsCommand request, CancellationToken cancellationToken)
+    {
+      return await _repository.DeleteAllAsync();
     }
   }
 }

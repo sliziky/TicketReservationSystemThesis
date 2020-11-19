@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketReservationSystem.Server.Context;
 
 namespace TicketReservationSystem.Server.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20201119121236_AddedFK2")]
+    partial class AddedFK2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -127,10 +129,10 @@ namespace TicketReservationSystem.Server.Migrations
                     b.Property<DateTime>("End")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("HallId")
+                    b.Property<int?>("HallId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("MovieId")
+                    b.Property<int?>("MovieId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("Start")
@@ -154,10 +156,16 @@ namespace TicketReservationSystem.Server.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("ReservationID")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("TotalPrice")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("PaymentId");
+
+                    b.HasIndex("ReservationID")
+                        .IsUnique();
 
                     b.ToTable("Payments");
                 });
@@ -171,10 +179,7 @@ namespace TicketReservationSystem.Server.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("MovieShowId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("PaymentId")
+                    b.Property<int?>("MovieShowId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Status")
@@ -183,9 +188,6 @@ namespace TicketReservationSystem.Server.Migrations
                     b.HasKey("ReservationId");
 
                     b.HasIndex("MovieShowId");
-
-                    b.HasIndex("PaymentId")
-                        .IsUnique();
 
                     b.ToTable("Reservations");
                 });
@@ -196,7 +198,7 @@ namespace TicketReservationSystem.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("HallId")
+                    b.Property<int?>("HallId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Number")
@@ -205,7 +207,7 @@ namespace TicketReservationSystem.Server.Migrations
                     b.Property<int>("Row")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("SeatReservationId")
+                    b.Property<int?>("SeatReservationId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Type")
@@ -226,13 +228,13 @@ namespace TicketReservationSystem.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("MovieShowId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("Price")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ReservationId")
+                    b.Property<int?>("ReservationId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("ShowMovieShowId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Status")
@@ -240,9 +242,9 @@ namespace TicketReservationSystem.Server.Migrations
 
                     b.HasKey("SeatReservationId");
 
-                    b.HasIndex("MovieShowId");
-
                     b.HasIndex("ReservationId");
+
+                    b.HasIndex("ShowMovieShowId");
 
                     b.ToTable("ReservationSeats");
                 });
@@ -299,53 +301,46 @@ namespace TicketReservationSystem.Server.Migrations
                 {
                     b.HasOne("TicketReservationSystem.Shared.Domain.Hall", "Hall")
                         .WithMany("Shows")
-                        .HasForeignKey("HallId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HallId");
 
                     b.HasOne("TicketReservationSystem.Shared.Domain.Movie", "Movie")
                         .WithMany("Shows")
-                        .HasForeignKey("MovieId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MovieId");
 
                     b.Navigation("Hall");
 
                     b.Navigation("Movie");
                 });
 
+            modelBuilder.Entity("TicketReservationSystem.Shared.Domain.Payment", b =>
+                {
+                    b.HasOne("TicketReservationSystem.Shared.Domain.Reservation", "Reservation")
+                        .WithOne("Payment")
+                        .HasForeignKey("TicketReservationSystem.Shared.Domain.Payment", "ReservationID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Reservation");
+                });
+
             modelBuilder.Entity("TicketReservationSystem.Shared.Domain.Reservation", b =>
                 {
                     b.HasOne("TicketReservationSystem.Shared.Domain.MovieShow", "MovieShow")
                         .WithMany("Reservations")
-                        .HasForeignKey("MovieShowId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("TicketReservationSystem.Shared.Domain.Payment", "Payment")
-                        .WithOne("Reservation")
-                        .HasForeignKey("TicketReservationSystem.Shared.Domain.Reservation", "PaymentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MovieShowId");
 
                     b.Navigation("MovieShow");
-
-                    b.Navigation("Payment");
                 });
 
             modelBuilder.Entity("TicketReservationSystem.Shared.Domain.Seat", b =>
                 {
                     b.HasOne("TicketReservationSystem.Shared.Domain.Hall", "Hall")
                         .WithMany("Seats")
-                        .HasForeignKey("HallId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HallId");
 
                     b.HasOne("TicketReservationSystem.Shared.Domain.SeatReservation", "SeatReservation")
                         .WithMany("Seats")
-                        .HasForeignKey("SeatReservationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SeatReservationId");
 
                     b.Navigation("Hall");
 
@@ -354,17 +349,13 @@ namespace TicketReservationSystem.Server.Migrations
 
             modelBuilder.Entity("TicketReservationSystem.Shared.Domain.SeatReservation", b =>
                 {
-                    b.HasOne("TicketReservationSystem.Shared.Domain.MovieShow", "Show")
-                        .WithMany("ReservationSeats")
-                        .HasForeignKey("MovieShowId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("TicketReservationSystem.Shared.Domain.Reservation", "Reservation")
                         .WithMany("ReservationSeats")
-                        .HasForeignKey("ReservationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ReservationId");
+
+                    b.HasOne("TicketReservationSystem.Shared.Domain.MovieShow", "Show")
+                        .WithMany("ReservationSeats")
+                        .HasForeignKey("ShowMovieShowId");
 
                     b.Navigation("Reservation");
 
@@ -395,13 +386,10 @@ namespace TicketReservationSystem.Server.Migrations
                     b.Navigation("ReservationSeats");
                 });
 
-            modelBuilder.Entity("TicketReservationSystem.Shared.Domain.Payment", b =>
-                {
-                    b.Navigation("Reservation");
-                });
-
             modelBuilder.Entity("TicketReservationSystem.Shared.Domain.Reservation", b =>
                 {
+                    b.Navigation("Payment");
+
                     b.Navigation("ReservationSeats");
                 });
 

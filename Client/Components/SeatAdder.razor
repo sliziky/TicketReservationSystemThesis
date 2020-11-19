@@ -13,8 +13,8 @@
                       TValue="int"
                       Data="@Cinemas"
                       TextField="@((item)=>item.Name)"
-                      ValueField="@((item)=>item.CinemaID)"
-                      SelectedValue="@SelectedCinema.CinemaID"
+                      ValueField="@((item)=>item.CinemaId)"
+                      SelectedValue="@SelectedCinema.CinemaId"
                       SelectedValueChanged="@MyListValueChangedHandler" />
         </Field>
       </Validation>
@@ -84,13 +84,13 @@
     protected override async Task OnInitializedAsync()
     {
       Cinemas = await Http.GetFromJsonAsync<List<Cinema>>("api/cinemas");
-      SelectedCinema.CinemaID = Cinemas[0].CinemaID;
+      SelectedCinema.CinemaId = Cinemas[0].CinemaId;
       await JSRuntime.InvokeVoidAsync("console.log", Cinemas);
     }
 
     void MyListValueChangedHandler(int newC)
     {
-      SelectedCinema = Cinemas.Where(c => c.CinemaID == newC).ToList()[0];
+      SelectedCinema = Cinemas.Where(c => c.CinemaId == newC).ToList()[0];
       Console.WriteLine(newC);
     }
 
@@ -147,12 +147,12 @@
     }
     private async void OnAddHall()
     {
-      Console.WriteLine(SelectedCinema.CinemaID);
+      Console.WriteLine(SelectedCinema.CinemaId);
       HallDTO hall = new HallDTO();
       hall.Name = HallDetails.Name;
       hall.Shows = new List<MovieShow>();
       hall.Capacity = (uint)GetHallCapacity();
-      hall.Cinema = Cinemas.Where(c => c.CinemaID == SelectedCinema.CinemaID).FirstOrDefault();
+      hall.Cinema = Cinemas.Where(c => c.CinemaId == SelectedCinema.CinemaId).FirstOrDefault();
       hall.Seats = FlattenSeatArray();
       await Http.PostAsJsonAsync<HallDTO>("api/halls", hall);
 
