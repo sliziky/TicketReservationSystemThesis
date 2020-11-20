@@ -1,41 +1,119 @@
 @page "/shows/{Id:int}"
 @inject HttpClient Http
-@using TicketReservationSystem.Client.Components 
+@using Newtonsoft.Json
+@using TicketReservationSystem.Client.Components
+<EditForm Model="@SeatPickerModel" OnValidSubmit="@HandleValidSubmit" Class="hall-form">
+  <DataAnnotationsValidator />
+  <Fields Class="seat-adder__form__row">
+    <Field>
+      <FieldLabel>Adults</FieldLabel>
+      <Incrementor Value="SeatPickerModel.Adults" />
+    </Field>
+    <Field>
+      <FieldLabel>Kids</FieldLabel>
+      <Incrementor Value="SeatPickerModel.Adults" />
+
+    </Field>
+    <Field>
+      <FieldLabel>Senior</FieldLabel>
+      <Incrementor Value="SeatPickerModel.Adults" />
+
+    </Field>
+    <Field>
+      <FieldLabel>Students</FieldLabel>
+      <Incrementor Value="SeatPickerModel.Adults" OnChange="OnIncrementorChange" />
+
+    </Field>
+  </Fields>
+</EditForm>
 <h3 class="screen__text">SCREEN</h3>
 
 <div class="hall">
   @if (Hall.Seats.Count > 0)
   {
     var seatCount = Hall.Seats.Count;
-    var numberOfRows = Hall.Seats.Last().Row;
+    var numberOfRows = Hall.Rows;
     var numberOfSeatsInRow = Hall.Seats.Last().Number;
     int rowIndex = 1;
-    for (int i = 0; i < numberOfRows; i++)
+    for (int i = 0; i < Hall.Rows; i++)
     {
-  <div class="hall-seats">
-    <p class="row-index">@rowIndex</p>
-    @for (int j = 0; j < numberOfSeatsInRow; j++)
-    {
-      var seat = Hall.Seats[i * numberOfRows + j];
-      <SeatComponent Number="@(j.ToString())" Row="@((seat.Row + 1).ToString())" CallBack="@OnSeatClicked" Type="@(seat.Type)" DefaultNumber="@((j + 1).ToString())" />
-    }
-    @{
-        rowIndex++;
-    }
-  </div>
-    }
-  }
-  </div>
-@code {
-    [Parameter]
-    public int Id { get; set; }
+<div class="hall-seats">
+  <p class="row-index">@rowIndex</p>
+  @for (int j = 0; j <= numberOfSeatsInRow; j++)
+  {
+    var seat = Hall.Seats[i * numberOfRows + j];
+    Console.WriteLine(seat.HallId);
+<SeatComponent CallBack="@OnSeatClicked" Mode="show" Seat="seat" />}
+  @{ rowIndex++; }
+</div>}
+}
+  <Button Color="Color.Primary" Type="ButtonType.Submit" Clicked="OnBuyTickets">Buy tickets</Button>
 
+</div>
+@code { [Parameter]
+    public int Id { get; set; }
+    public SeatPickerModel SeatPickerModel { get; set; } = new SeatPickerModel();
     public MovieShow Show { get; set; } = new MovieShow();
+    public List<Seat> Seats { get; set; } = new List<Seat>();
+    public List<Seat> PickedSeats { get; set; } = new List<Seat>();
     public Hall Hall { get; set; } = new Hall();
-    protected async override Task OnInitializedAsync() {
+    public int CurrentNumberOfTickets { get; set; } = 0;
+    protected async override Task OnInitializedAsync()
+    {
       Show = await Http.GetFromJsonAsync<MovieShow>("api/shows/" + Id);
       Hall = await Http.GetFromJsonAsync<Hall>("api/halls/" + Show.HallId);
-    }
-    void OnSeatClicked(string row, string number) { }
+      Seats = Hall.Seats;
 
-}
+    }
+    void OnIncrementorChange()
+    {
+    }
+    void OnSeatClicked(string row, string number)
+    {
+      var numberOfRows = Hall.Rows;
+      var numberOfSeatsInRow = Hall.Seats.Last().Number;
+      var rowInt = Int32.Parse(row);
+      var numberInt = Int32.Parse(number);
+      // Seats[rowInt * numberOfRows + numberInt].
+      var seat = Seats[numberInt * numberOfRows + rowInt];
+      if (seat.Status == SeatStatus.Free)
+      {
+        seat.Status = SeatStatus.Chosen;
+      }
+      else if (seat.Status == SeatStatus.Chosen)
+      {
+        seat.Status = SeatStatus.Free;
+      }
+      PickedSeats.Add(seat);
+      StateHasChanged();
+    }
+
+    void HandleValidSubmit()
+    {
+
+    }
+    async Task OnBuyTickets()
+    {
+      var reservation = new Reservation() { Created = DateTime.Now, Status = Reservation.ReservationStatus.NotPaid };
+      var resp = await Http.PostAsJsonAsync<Reservation>("api/shows/" + Id + "/reservations", reservation);
+      var body = await resp.Content.ReadAsStringAsync();
+      var desBody = JsonConvert.DeserializeObject<DeserializedReservationResponse>(body);
+
+      var sr = new SeatReservation() { Price = 20 };
+      var r = await Http.PostAsJsonAsync<SeatReservation>("api/reservations/" + desBody.ReservationId + "/seatreservation", sr);
+      var body2 = await r.Content.ReadAsStringAsync();
+      var desBody2 = JsonConvert.DeserializeObject<DeserializedSeatReservationResponse>(body2);
+
+      foreach (var s in PickedSeats) {
+        s.Status = SeatStatus.Reserved;
+        var x = await Http.PostAsJsonAsync<Seat>("api/seatreservations/" + desBody2.SeatReservationId + "/seats", s);
+      }
+    }
+    public class DeserializedReservationResponse
+    {
+      public int ReservationId { get; set; }
+    }
+    public class DeserializedSeatReservationResponse
+    {
+      public int SeatReservationId { get; set; }
+    } }

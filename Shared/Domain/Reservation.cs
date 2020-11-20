@@ -7,23 +7,22 @@ using System.Threading.Tasks;
 
 namespace TicketReservationSystem.Shared.Domain
 {
-    public class Reservation
-    {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+  public class Reservation
+  {
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
     public int ReservationId { get; set; }
-        public ReservationStatus Status { get; set; }
-        public DateTime Created { get; set; }
+    public ReservationStatus Status { get; set; }
+    public DateTime Created { get; set; }
     public List<SeatReservation> ReservationSeats { get; set; } = new List<SeatReservation>();
     public int MovieShowId { get; set; }
-    public MovieShow MovieShow { get; set; } = new MovieShow();
-    public int PaymentId { get; set; }
-    public Payment Payment { get; set; } = new Payment();
-
-
+    public MovieShow MovieShow { get; set; }
+    public int? PaymentId { get; set; }
+    public Payment Payment { get; set; }
+    public enum ReservationStatus
+    {
+      Paid,
+      NotPaid
     }
-    public enum ReservationStatus { 
-        Paid,
-        NotPaid
-    }
+  }
 }

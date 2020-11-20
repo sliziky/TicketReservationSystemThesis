@@ -1,40 +1,66 @@
-<p class="seat" @onclick="@OnSeatClick">@GetSeatTypeInString()</p>
+<p class=@("seat " + SeatClassName) @onclick="@OnSeatClick">@GetSeatTypeInString()</p>
 
 @code {
-    [Parameter]
-    public string Number { get; set; }
 
     [Parameter]
-    public string DefaultNumber { get; set; }
+    public Seat Seat { get; set; }
 
     [Parameter]
-    public string Row { get; set; }
+    public string Mode { get; set; }
 
     [Parameter]
     public Action<string, string> CallBack { get; set; }
 
-    [Parameter]
-    public SeatType Type { get; set; }
+    public string SeatClassName { get; set; } = "";
 
-    private string GetSeatTypeInString() {
-      switch (Type) {
-        case SeatType.Classic:
-          return Number;
-        case SeatType.Disabled:
-          return "";
-        case SeatType.Handicapped:
-          return "D";
+
+    private string GetSeatTypeInString()
+    {
+      if (Mode == "hall")
+      {
+        switch (Seat.Type)
+        {
+          case SeatType.Classic:
+            return Seat.Number.ToString();
+          case SeatType.Disabled:
+            return "";
+          case SeatType.Handicapped:
+            return "D";
+        }
       }
-      return "";
+      return Seat.Number.ToString();
     }
 
     public string NumberCopy { get; set; }
     protected override void OnInitialized()
     {
-      NumberCopy = Number;
+      NumberCopy = Seat.Number.ToString();
+      if (Seat.Status == SeatStatus.Reserved)
+      {
+        SeatClassName = "seat__reserved";
+      }
+      if (Seat.Status == SeatStatus.Bought)
+      {
+        SeatClassName = "seat__bought";
+      }
     }
     public void OnSeatClick()
     {
-      CallBack.Invoke(DefaultNumber, Row);
+      if (Mode == "show")
+      {
+        if (Seat.Status == SeatStatus.Free || Seat.Status == SeatStatus.Chosen)
+        {
+          switch (Seat.Status)
+          {
+            case SeatStatus.Free:
+              SeatClassName = "seat__chosen";
+              break;
+            case SeatStatus.Chosen:
+              SeatClassName = "";
+              break;
+          }
+        }
+      }
+      CallBack.Invoke(NumberCopy.ToString(), Seat.Row.ToString());
     }
 }

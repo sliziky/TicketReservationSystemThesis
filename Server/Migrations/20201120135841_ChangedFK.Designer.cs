@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketReservationSystem.Server.Context;
 
 namespace TicketReservationSystem.Server.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20201120135841_ChangedFK")]
+    partial class ChangedFK
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -174,7 +176,7 @@ namespace TicketReservationSystem.Server.Migrations
                     b.Property<int>("MovieShowId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int?>("PaymentId")
+                    b.Property<int>("PaymentId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Status")
@@ -208,9 +210,6 @@ namespace TicketReservationSystem.Server.Migrations
                     b.Property<int?>("SeatReservationId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("Type")
                         .HasColumnType("INTEGER");
 
@@ -236,6 +235,9 @@ namespace TicketReservationSystem.Server.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("ReservationId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Status")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("SeatReservationId");
@@ -324,7 +326,9 @@ namespace TicketReservationSystem.Server.Migrations
 
                     b.HasOne("TicketReservationSystem.Shared.Domain.Payment", "Payment")
                         .WithOne("Reservation")
-                        .HasForeignKey("TicketReservationSystem.Shared.Domain.Reservation", "PaymentId");
+                        .HasForeignKey("TicketReservationSystem.Shared.Domain.Reservation", "PaymentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("MovieShow");
 

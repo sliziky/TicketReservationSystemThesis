@@ -1,0 +1,25 @@
+<div class="incrementor">
+  <Button Color="Color.Primary" Type="ButtonType.Submit" Clicked="DecrementValue">-</Button>
+  <p>@Value</p>
+  <Button Color="Color.Primary" Type="ButtonType.Submit" Clicked="IncrementValue">+</Button>
+</div>
+
+@code {
+    [Parameter]
+    public int Value { get; set; }
+
+    [Parameter]
+    public Action OnChange { get; set; }
+
+    void DecrementValue() {
+      if (--Value < 0) {
+        Value = 0;
+      }
+      OnChange.Invoke();
+
+    }
+
+    void IncrementValue() {
+      Value++;
+    }
+}

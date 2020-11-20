@@ -10,6 +10,6 @@ namespace TicketReservationSystem.Shared.DTO
     {
         public int TotalPrice { get; set; }
         public Reservation Reservation { get; set; }
-        public int ReservationID { get; set; }
-    }
+
+  }
 }

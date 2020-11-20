@@ -22,10 +22,6 @@ namespace TicketReservationSystem.Server.Data.Repository
       throw new NotImplementedException();
     }
 
-    public IEnumerable<User> GetAll()
-    {
-      throw new NotImplementedException();
-    }
 
     public async Task<IEnumerable<User>> GetAllAsync()
     {

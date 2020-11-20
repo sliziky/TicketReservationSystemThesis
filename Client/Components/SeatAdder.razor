@@ -63,8 +63,11 @@
   <p class="row-index">@rowIndex</p>
   @for (int i = 0; i < row.Count; i++)
   {
-      <SeatComponent Number="@(row[i].Number.ToString())" Row="@(row[i].Row.ToString())" CallBack="@OnSeatClicked" Type="@(row[i].Type)" DefaultNumber="@(row[i].Index.ToString())" />}
-</div>rowIndex++;
+      <SeatComponent
+       CallBack="@OnSeatClicked"
+       Mode="hall"
+       Seat="@row[i]"/>}
+  </div>rowIndex++;
 }
 }
     </div>
@@ -77,7 +80,7 @@
 
     public bool DisplaySeats { get; set; } = false;
     public HallDetailsModel HallDetails { get; set; } = new HallDetailsModel();
-    public List<List<SeatDTO>> AllSeats { get; set; } = new List<List<SeatDTO>>();
+    public List<List<Seat>> AllSeats { get; set; } = new List<List<Seat>>();
     public List<Cinema> Cinemas { get; set; } = new List<Cinema>();
     public Cinema SelectedCinema { get; set; } = new Cinema();
     public bool CanGenerateLayout { get; set; } = false;
@@ -104,13 +107,13 @@
 
     private void GenerateSeatLayout()
     {
-      AllSeats = new List<List<SeatDTO>>();
+      AllSeats = new List<List<Seat>>();
       for (int i = 0; i < Int32.Parse(HallDetails.Rows); i++)
       {
-        List<SeatDTO> Row = new List<SeatDTO>();
+        List<Seat> Row = new List<Seat>();
         for (int j = 0; j < Int32.Parse(HallDetails.NumberOfSeatsInRow); j++)
         {
-          Row.Add(new SeatDTO() { Number = j, Row = i, Type = SeatType.Classic, Index = j, ReservationSeats = null});
+          Row.Add(new Seat() { Number = j, Row = i, Type = SeatType.Classic});
         }
         AllSeats.Add(Row);
       }
@@ -126,7 +129,8 @@
         // Gotta secure that all seat numbers will be recalculated
         seat.Type = SeatType.Disabled;
         var row = AllSeats[rowInt];
-        for (int index = seat.Index; index < row.Count; index++)
+        var startIndex = row.IndexOf(seat);
+        for (int index = startIndex; index < row.Count; index++)
         {
           row[index].Number -= 1;
         }
@@ -135,7 +139,9 @@
       {
         seat.Type = SeatType.Handicapped;
         var row = AllSeats[rowInt];
-        for (int index = seat.Index; index < row.Count; index++)
+        var startIndex = row.IndexOf(seat);
+
+        for (int index = startIndex; index < row.Count; index++)
         {
           row[index].Number += 1;
         }
@@ -149,22 +155,23 @@
     private async void OnAddHall()
     {
       Console.WriteLine(SelectedCinema.CinemaId);
-      HallDTO hall = new HallDTO();
+      Hall hall = new Hall();
       hall.Name = HallDetails.Name;
       hall.Shows = new List<MovieShow>();
       hall.Capacity = (uint)GetHallCapacity();
       hall.CinemaId = SelectedCinema.CinemaId;
       hall.Cinema = Cinemas.Where(c => c.CinemaId == SelectedCinema.CinemaId).FirstOrDefault();
-      hall.Seats = new List<SeatDTO>();
-      //hall.Seats = FlattenSeatArray();
+      hall.Seats = new List<Seat>();
       hall.Rows = Int32.Parse(HallDetails.Rows);
-      var respo = await Http.PostAsJsonAsync<HallDTO>("api/halls", hall);
+      var respo = await Http.PostAsJsonAsync<Hall>("api/halls", hall);
       var body = await respo.Content.ReadAsStringAsync();
       var desBody = JsonConvert.DeserializeObject<DeserializedObject>(body);
-
-      var seatArray = FlattenSeatArray();
-      foreach (var seat in seatArray) {
-        await Http.PostAsJsonAsync<SeatDTO>("api/halls/" + desBody.HallId + "/seat", seat);
+      foreach (var row in AllSeats)
+      {
+        foreach (var seat in row)
+        {
+            await Http.PostAsJsonAsync<Seat>("api/halls/" + desBody.HallId + "/seat", seat);
+        }
       }
       Console.WriteLine(desBody.HallId);
     }
@@ -182,9 +189,10 @@
       }
       return capacity;
     }
-    private List<SeatDTO> FlattenSeatArray() {
-      var result = new List<SeatDTO>();
-      foreach (var row in AllSeats) {
+    private List<Seat> FlattenSeatArray(List<List<Seat>> arr) {
+
+      var result = new List<Seat>();
+      foreach (var row in arr) {
         foreach (var seat in row) {
           result.Add(seat);
         }

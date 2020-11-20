@@ -32,11 +32,6 @@ namespace TicketReservationSystem.Server.Data.Repository
       return foundShow;
     }
 
-    public IEnumerable<MovieShow> GetAll()
-    {
-      throw new NotImplementedException();
-    }
-
     public async Task<IEnumerable<MovieShow>> GetAllAsync()
     {
       return await _context.MovieShows.Include(s => s.Hall).Include(s => s.Movie).ToListAsync();
@@ -82,6 +77,13 @@ namespace TicketReservationSystem.Server.Data.Repository
     {
       throw new NotImplementedException();
     }
+
+    //public async Task<SeatReservation> AddSeatToReservation(SeatReservation sr) {
+    //  var seat = await _context.ReservationSeats.Include(s => s.Reservation).Include(s => s.Seats).Include(s => s.Show).FirstOrDefaultAsync(s => s.SeatReservationId == sr.SeatReservationId);
+    //  if (seat != null) { return null; }
+    //  seat.
+    //  return seat;
+    //}
 
     Task<MovieShow> IRepository<MovieShow>.GetAsync(int id)
     {

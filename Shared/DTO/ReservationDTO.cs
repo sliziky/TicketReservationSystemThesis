@@ -13,6 +13,7 @@ namespace TicketReservationSystem.Shared.DTO
         public DateTime Created { get; set; }
         public List<SeatReservation> ReservationSeats { get; set; }
         public MovieShow MovieShow { get; set; }
+        public int PaymentId { get; set; }
         public Payment Payment { get; set; }
 
     }

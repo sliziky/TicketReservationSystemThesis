@@ -40,6 +40,28 @@ body {
   margin-right: 20%;
   margin-left: 20%;
 }
+
+.incrementor {
+  display: flex;
+  flex-direction: row;
+}
+  .incrementor > p {
+      margin-left: 10px;
+      margin-right: 10px;
+  }
+
+.seat__chosen {
+  background-color: #7d98c9;
+}
+.seat__bought {
+  cursor: default !important;
+  background-color: #900303;
+}
+
+.seat__reserved {
+  cursor: default !important;
+  background-color: #FF8049 !important;
+}
 .movie-details__fields {
   margin-left: 20px !important;
   display: flex;
@@ -83,7 +105,7 @@ body {
 .seat-adder__form__row {
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-between;
 }
 .hall {
   display: flex;
@@ -109,6 +131,7 @@ body {
 }
 
 .seat {
+  cursor:pointer;
   color: #F1C6A3;
   width: 40px;
   line-height: 40px;

@@ -33,10 +33,6 @@ namespace TicketReservationSystem.Server.Data.Repository
       return seat;
     }
 
-    public IEnumerable<Seat> GetAll()
-    {
-      throw new NotImplementedException();
-    }
 
     public async Task<IEnumerable<Seat>> GetAllAsync()
     {

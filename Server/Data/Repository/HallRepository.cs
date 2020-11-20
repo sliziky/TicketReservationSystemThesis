@@ -36,10 +36,6 @@ namespace TicketReservationSystem.Server.Data.Repository
       return hall;
     }
 
-    public IEnumerable<Hall> GetAll()
-    {
-      throw new NotImplementedException();
-    }
 
     public async Task<IEnumerable<Hall>> GetAllAsync()
     {

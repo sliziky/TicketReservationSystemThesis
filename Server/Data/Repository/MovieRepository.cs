@@ -46,10 +46,6 @@ namespace TicketReservationSystem.Server.Data.Repository
       return await _context.Movies.Include(m => m.Shows).FirstOrDefaultAsync(Movie => Movie.MovieId == id);
     }
 
-    public IEnumerable<Movie> GetAll()
-    {
-      return _context.Movies.ToList();
-    }
 
     public Movie Save(Movie entity)
     {

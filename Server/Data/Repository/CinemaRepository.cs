@@ -35,10 +35,6 @@ namespace TicketReservationSystem.Server.Data.Repository
       return null;
     }
 
-    public IEnumerable<Cinema> GetAll()
-    {
-      throw new NotImplementedException();
-    }
 
     public async Task<IEnumerable<Cinema>> GetAllAsync()
     {

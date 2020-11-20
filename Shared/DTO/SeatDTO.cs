@@ -11,6 +11,7 @@ namespace TicketReservationSystem.Shared.DTO
         public int Number { get; set; }
         public int Index { get; set; }
         public int Row { get; set; }
+        public SeatStatus Status { get; set; }
 
         public SeatType Type { get; set; }
         public Hall Hall { get; set; }

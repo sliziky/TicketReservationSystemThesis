@@ -8,7 +8,6 @@ namespace TicketReservationSystem.Server.Data.Repository.Abstraction
 {
   public interface IRepository<TEntity> where TEntity : class, new()
   {
-    IEnumerable<TEntity> GetAll();
     Task<IEnumerable<TEntity>> GetAllAsync();
 
     Task<TEntity> GetAsync(int id);
