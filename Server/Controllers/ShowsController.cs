@@ -32,6 +32,16 @@ namespace TicketReservationSystem.Server.Controllers
       return Ok(shows);
     }
 
+    [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<IEnumerable<MovieShow>>> Get(int id)
+    {
+      var show = await _mediator.Send(new GetShowQuery() { Id = id});
+      if (show == null) { return NotFound(); }
+      return Ok(show);
+    }
+
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

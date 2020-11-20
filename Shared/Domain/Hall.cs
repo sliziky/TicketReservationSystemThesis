@@ -15,11 +15,9 @@ namespace TicketReservationSystem.Shared.Domain
         public string Name { get; set; }
         public uint Capacity { get; set; }
         public int CinemaId { get; set; }
-        public Cinema Cinema { get; set; }
+    public Cinema Cinema { get; set; } = new Cinema();
         public int Rows { get; set; }
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public List<Seat> Seats { get; set; } = new List<Seat>();
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
     public List<MovieShow> Shows { get; set; } = new List<MovieShow>();
     }
 }

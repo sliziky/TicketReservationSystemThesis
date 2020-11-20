@@ -13,7 +13,5 @@ namespace TicketReservationSystem.Client.FormModels
 
     [Required]
     public TimeSpan? StartTime;
-    [Required]
-    public TimeSpan? EndTime;
   }
 }

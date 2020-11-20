@@ -18,7 +18,7 @@ namespace TicketReservationSystem.Shared.Domain
     [ForeignKey("HallId")]
     public int HallId { get; set; }
     public Hall Hall { get; set; }
-    public int SeatReservationId { get; set; }
-    public SeatReservation SeatReservation { get; set; } = new SeatReservation();
+    public int? SeatReservationId { get; set; }
+    public SeatReservation SeatReservation { get; set; }
     }
 }

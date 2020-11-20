@@ -3,7 +3,7 @@
     {
     @foreach (var show in Shows)
     {
-      <Button Color="Color.Primary" Type="ButtonType.Submit" Class="show-display__button">
+      <Button Color="Color.Primary" Type="ButtonType.Submit" Class="show-display__button" Clicked="@(() => ShowClicked(show.MovieShowId))">
         @show.Date @show.Start
       </Button>
     }
@@ -13,4 +13,11 @@
 @code {
     [Parameter]
     public List<MovieShow> Shows { get; set; }
+
+    [Parameter]
+    public Action<int> OnShowClick { get; set; }
+
+    void ShowClicked(int showId) {
+      OnShowClick.Invoke(showId);
+    }
 }

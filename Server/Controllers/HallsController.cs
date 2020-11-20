@@ -65,7 +65,7 @@ namespace TicketReservationSystem.Server.Controllers
     public async Task<ActionResult<Hall>> PostSeat(int id, [FromBody] Seat seat)
     {
       var foundSeat = await _mediator.Send(new AddSeatToHallCommand() { Id = id, Seat = seat });
-      if (foundSeat != null) { return Conflict(); }
+      if (foundSeat == null) { return Conflict(); }
       return Ok(foundSeat);
     }
 
@@ -75,9 +75,10 @@ namespace TicketReservationSystem.Server.Controllers
     public async Task<ActionResult<Hall>> PostMovie(int id, int movieId, [FromBody] MovieShow show)
     {
       var foundSeat = await _mediator.Send(new AddMovieShowToHallCommand() { Id = id, MovieId = movieId, Show = show});
-      if (foundSeat != null) { return Conflict(); }
+      if (foundSeat == null) { return Conflict(); }
       return Ok(foundSeat);
     }
+
 
     // PUT api/<HallsController>/5
     [HttpPut("{id}")]

@@ -65,8 +65,13 @@ namespace TicketReservationSystem.Server.Controllers
 
     // DELETE api/<HallsController>/5
     [HttpDelete("{id}")]
-    public void Delete(int id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<Seat>> Delete(int id)
     {
+      var seat = await _mediator.Send(new DeleteSeatCommand() { Id = id });
+      if (seat == null) { return NotFound(); }
+      return Ok();
     }
   }
 }

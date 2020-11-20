@@ -1,6 +1,7 @@
 @inject HttpClient Http
 @using TicketReservationSystem.Shared
 @using Blazorise.Components
+@using Newtonsoft.Json 
 @inject IJSRuntime JSRuntime
 <EditForm Model="@HallDetails" OnValidSubmit="@HandleValidSubmit" Class="hall-form">
   <DataAnnotationsValidator />
@@ -62,7 +63,7 @@
   <p class="row-index">@rowIndex</p>
   @for (int i = 0; i < row.Count; i++)
   {
-<SeatComponent Number="@(row[i].Number.ToString())" Row="@(row[i].Row.ToString())" CallBack="@OnSeatClicked" Type="@(row[i].Type)" DefaultNumber="@(row[i].Index.ToString())" />}
+      <SeatComponent Number="@(row[i].Number.ToString())" Row="@(row[i].Row.ToString())" CallBack="@OnSeatClicked" Type="@(row[i].Type)" DefaultNumber="@(row[i].Index.ToString())" />}
 </div>rowIndex++;
 }
 }
@@ -109,7 +110,7 @@
         List<SeatDTO> Row = new List<SeatDTO>();
         for (int j = 0; j < Int32.Parse(HallDetails.NumberOfSeatsInRow); j++)
         {
-          Row.Add(new SeatDTO() { Number = j, Row = i, Type = SeatType.Classic, Index = j });
+          Row.Add(new SeatDTO() { Number = j, Row = i, Type = SeatType.Classic, Index = j, ReservationSeats = null});
         }
         AllSeats.Add(Row);
       }
@@ -152,10 +153,23 @@
       hall.Name = HallDetails.Name;
       hall.Shows = new List<MovieShow>();
       hall.Capacity = (uint)GetHallCapacity();
+      hall.CinemaId = SelectedCinema.CinemaId;
       hall.Cinema = Cinemas.Where(c => c.CinemaId == SelectedCinema.CinemaId).FirstOrDefault();
-      hall.Seats = FlattenSeatArray();
-      await Http.PostAsJsonAsync<HallDTO>("api/halls", hall);
+      hall.Seats = new List<SeatDTO>();
+      //hall.Seats = FlattenSeatArray();
+      hall.Rows = Int32.Parse(HallDetails.Rows);
+      var respo = await Http.PostAsJsonAsync<HallDTO>("api/halls", hall);
+      var body = await respo.Content.ReadAsStringAsync();
+      var desBody = JsonConvert.DeserializeObject<DeserializedObject>(body);
 
+      var seatArray = FlattenSeatArray();
+      foreach (var seat in seatArray) {
+        await Http.PostAsJsonAsync<SeatDTO>("api/halls/" + desBody.HallId + "/seat", seat);
+      }
+      Console.WriteLine(desBody.HallId);
+    }
+    public class DeserializedObject {
+      public int HallId { get; set; }
     }
     private int GetHallCapacity() {
       int capacity = 0;

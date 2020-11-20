@@ -33,6 +33,13 @@ body {
   display: flex;
   flex-direction: column;
 }
+.screen__text {
+  border-style:solid;
+  text-align: center;
+  margin-top: 20px;
+  margin-right: 20%;
+  margin-left: 20%;
+}
 .movie-details__fields {
   margin-left: 20px !important;
   display: flex;

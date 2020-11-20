@@ -1,6 +1,7 @@
 @page "/movie/{Id:int}"
 
 @inject HttpClient Http
+@inject NavigationManager NavigationManager
 
 <div class="movie-details">
   <img src="@("https://image.tmdb.org/t/p/w400" + Movie.ImageUrl)" alt="Picture" />
@@ -32,7 +33,7 @@
     </Field>
     <Field Class="movie-details__field">
       <p>Shows:</p>
-      <DisplayShows Shows="@Movie.Shows"/>
+      <DisplayShows Shows="@Movie.Shows" OnShowClick="@OnShowClick"/>
     </Field>
 
   </Fields>
@@ -47,5 +48,8 @@
     protected async override Task OnInitializedAsync()
     {
       Movie = await Http.GetFromJsonAsync<Movie>("api/movies/" + Id);
+    }
+    void OnShowClick(int id) {
+      NavigationManager.NavigateTo("/shows/" + id.ToString());
     }
 }

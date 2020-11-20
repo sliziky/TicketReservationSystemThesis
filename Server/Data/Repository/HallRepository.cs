@@ -48,7 +48,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public Task<Hall> GetAsync(int id)
     {
-      return _context.Halls.FirstOrDefaultAsync(hall => hall.HallId == id);
+      return _context.Halls.Include(h => h.Cinema).Include(h => h.Shows).Include(h => h.Seats).FirstOrDefaultAsync(hall => hall.HallId == id);
     }
 
     public Hall Save(Hall entity)
@@ -58,9 +58,10 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<Hall> SaveAsync(Hall entity)
     {
-      var hall = _context.Halls.FirstOrDefault(hall => hall.Cinema.CinemaId == entity.Cinema.CinemaId && hall.Name == entity.Name);
+      var hall = _context.Halls.Include(h => h.Cinema).Include(h => h.Shows).FirstOrDefault(hall => hall.Cinema.CinemaId == entity.Cinema.CinemaId && hall.Name == entity.Name);
       if (hall == null)
       {
+        entity.Cinema = _context.Cinemas.Find(entity.CinemaId);
         await _context.Halls.AddAsync(entity);
         await _context.SaveChangesAsync();
       }
@@ -74,11 +75,12 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<Seat> AddSeat(int hallId, Seat seat)
     {
-      var hall = await _context.Halls.Include(c => c.Seats).Include(c => c.Shows).FirstOrDefaultAsync(h => h.HallId == hallId);
+      var hall = await _context.Halls.Include(c => c.Seats).Include(c => c.Shows).Include(c => c.Cinema).FirstOrDefaultAsync(h => h.HallId == hallId);
       if (hall == null) { return null; }
       var seatFound = hall.Seats.FirstOrDefault(s => s.Row == seat.Row && s.Number == seat.Number);
       if (seatFound != null) { return null; }
-      hall.Seats.Add(seat);
+      seat.HallId = hallId;
+      _context.Seats.Add(seat);
       await _context.SaveChangesAsync();
       return seat;
     }

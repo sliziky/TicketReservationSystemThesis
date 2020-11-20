@@ -1,0 +1,41 @@
+@page "/shows/{Id:int}"
+@inject HttpClient Http
+@using TicketReservationSystem.Client.Components 
+<h3 class="screen__text">SCREEN</h3>
+
+<div class="hall">
+  @if (Hall.Seats.Count > 0)
+  {
+    var seatCount = Hall.Seats.Count;
+    var numberOfRows = Hall.Seats.Last().Row;
+    var numberOfSeatsInRow = Hall.Seats.Last().Number;
+    int rowIndex = 1;
+    for (int i = 0; i < numberOfRows; i++)
+    {
+  <div class="hall-seats">
+    <p class="row-index">@rowIndex</p>
+    @for (int j = 0; j < numberOfSeatsInRow; j++)
+    {
+      var seat = Hall.Seats[i * numberOfRows + j];
+      <SeatComponent Number="@(j.ToString())" Row="@((seat.Row + 1).ToString())" CallBack="@OnSeatClicked" Type="@(seat.Type)" DefaultNumber="@((j + 1).ToString())" />
+    }
+    @{
+        rowIndex++;
+    }
+  </div>
+    }
+  }
+  </div>
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    public MovieShow Show { get; set; } = new MovieShow();
+    public Hall Hall { get; set; } = new Hall();
+    protected async override Task OnInitializedAsync() {
+      Show = await Http.GetFromJsonAsync<MovieShow>("api/shows/" + Id);
+      Hall = await Http.GetFromJsonAsync<Hall>("api/halls/" + Show.HallId);
+    }
+    void OnSeatClicked(string row, string number) { }
+
+}

@@ -44,7 +44,8 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<MovieShow> GetAsync(int id)
     {
-      return await _context.MovieShows.FirstOrDefaultAsync(s => s.MovieShowId == id);
+      return await _context.MovieShows.Include(m => m.Hall).Include(m => m.Movie).FirstOrDefaultAsync(s => s.MovieShowId == id);
+
     }
 
     public async Task<MovieShow> AddMovieShow(int hallId, int movieId, MovieShow show) {

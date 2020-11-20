@@ -41,10 +41,6 @@
           <FieldLabel>Start Time</FieldLabel>
           <TimeEdit TValue="TimeSpan?" Time="@ShowDetails.StartTime" TimeChanged="@OnStartTimeChanged" />
         </Field>
-        <Field>
-          <FieldLabel>End Time</FieldLabel>
-          <TimeEdit TValue="TimeSpan?" Time="@ShowDetails.EndTime" TimeChanged="@OnEndTimeChanged" />
-        </Field>
       </Validation>
     </Fields>
   </Validations>
@@ -64,13 +60,11 @@
       SelectedMovie = Movies[0];
       Halls = await Http.GetFromJsonAsync<List<Hall>>("api/halls");
       SelectedHall = Halls[0];
-      await JSRuntime.InvokeVoidAsync("console.log", Movies, Halls);
     }
 
     void MyListValueChangedHandler(int newC)
     {
-      SelectedMovie = Movies.Where(m => m.MovieId == newC).ToList()[0];
-      Console.WriteLine(newC);
+      SelectedMovie.MovieId = newC;
     }
     void HallValueChangedHandler(int hallId)
     {
@@ -82,11 +76,8 @@
     }
     async void HandleValidSubmit()
     {
-      await JSRuntime.InvokeVoidAsync("console.log", SelectedHall, SelectedMovie);
-      await JSRuntime.InvokeVoidAsync("console.log", ShowDetails.EndTime);
-      await JSRuntime.InvokeVoidAsync("console.log", ShowDetails.ShowDate);
-      await JSRuntime.InvokeVoidAsync("console.log", ShowDetails.StartTime);
-
+      var showData = new { Start = ShowDetails.StartTime.ToString(), Date = ShowDetails.ShowDate };
+      await Http.PostAsJsonAsync("api/halls/" + SelectedHall.HallId + "/movies/" + SelectedMovie.MovieId + "/show", showData);
     }
 
     void OnShowDateChanged(DateTime? date)
@@ -96,8 +87,4 @@
     void OnStartTimeChanged(TimeSpan? Time)
     {
       ShowDetails.StartTime = Time;
-    }
-    void OnEndTimeChanged(TimeSpan? Time)
-    {
-      ShowDetails.EndTime = Time;
     } }
