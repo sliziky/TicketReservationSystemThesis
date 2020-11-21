@@ -33,15 +33,24 @@ namespace TicketReservationSystem.Server.Controllers
       return Ok(users);
     }
 
-    // GET api/<UsersController>/5
-    //[HttpGet("{id}")]
-    //public async Task<User> Get(int id)
-    //{
-    //  return await _mediator.Send(new GetUserQueryId() { Id = id });
-    //}
+        [HttpPost("authenticateUser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<bool>> AuthenticateUser([FromBody] User user)
+        {
+            var userAuthenticated = await _mediator.Send(new AuthenticateUserCommand() {  User = user});
+            return Ok(userAuthenticated);
+        }
 
-    // GET api/<UsersController>/5
-    [HttpGet("{email}")]
+        // GET api/<UsersController>/5
+        //[HttpGet("{id}")]
+        //public async Task<User> Get(int id)
+        //{
+        //  return await _mediator.Send(new GetUserQueryId() { Id = id });
+        //}
+
+        // GET api/<UsersController>/5
+        [HttpGet("{email}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<User>> Get(string email)
@@ -53,9 +62,11 @@ namespace TicketReservationSystem.Server.Controllers
 
     // POST api/<UsersController>
     [HttpPost]
-    public async Task<User> PostAsync([FromBody] User user)
+    public async Task<ActionResult<User>> PostAsync([FromBody] User user)
     {
-      return await _mediator.Send(new AddUserCommand { User = user });
+      var userFound = await _mediator.Send(new AddUserCommand { User = user });
+      if (userFound == null) { return Conflict(); }
+      return Ok();
     }
 
     // PUT api/<UsersController>/5

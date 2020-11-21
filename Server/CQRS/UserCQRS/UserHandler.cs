@@ -15,7 +15,8 @@ namespace TicketReservationSystem.Server.CQRS.UserCQRS
     IRequestHandler<AddUserCommand, User>,
     IRequestHandler<GetUserQueryId, User>,
     IRequestHandler<GetUserQueryEmail, User>,
-    IRequestHandler<GetUsersQuery, IEnumerable<User>>
+    IRequestHandler<GetUsersQuery, IEnumerable<User>>,
+    IRequestHandler<AuthenticateUserCommand, bool>
   {
     private readonly UserRepository _repository;
 
@@ -43,5 +44,10 @@ namespace TicketReservationSystem.Server.CQRS.UserCQRS
     {
       return await _repository.GetAsync(request.Email);
     }
-  }
+
+        public async Task<bool> Handle(AuthenticateUserCommand request, CancellationToken cancellationToken)
+        {
+            return await _repository.AuthenticateUser(request.User);
+        }
+    }
 }

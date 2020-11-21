@@ -43,8 +43,18 @@ namespace TicketReservationSystem.Server.Data.Repository
       throw new NotImplementedException();
     }
 
+    public async Task<bool> AuthenticateUser(User entity) 
+    {
+        var user = _context.Users.FirstOrDefault(user => user.Email == entity.Email);
+        if (user == null) { return false; }
+        var hashedPw = BCrypt.Net.BCrypt.HashPassword(entity.Password + user.Salt);
+            return BCrypt.Net.BCrypt.Verify(entity.Password + user.Salt, user.Password);
+    }
+
     public async Task<User> SaveAsync(User entity)
     {
+            var user = _context.Users.FirstOrDefaultAsync(u => u.Email == entity.Email);
+            if (user != null) { return null; }
       var salt = BCrypt.Net.BCrypt.GenerateSalt(6);
       var password = entity.Password + salt;
       entity.Salt = salt;
