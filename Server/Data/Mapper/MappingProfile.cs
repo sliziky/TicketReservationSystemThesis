@@ -15,6 +15,8 @@ namespace TicketReservationSystem.Server.Data.Mapper
       // Add as many of these lines as you need to map your objects
       CreateMap<MovieDTO, Movie>();
       CreateMap<Movie, MovieDTO>();
+      CreateMap<User, UserDTO>();
+      CreateMap<UserDTO, User>();
     }
   }
 }

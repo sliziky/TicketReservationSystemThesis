@@ -53,8 +53,8 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<User> SaveAsync(User entity)
     {
-            var user = _context.Users.FirstOrDefaultAsync(u => u.Email == entity.Email);
-            if (user != null) { return null; }
+      var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == entity.Email);
+      if (user != null) { return null; }
       var salt = BCrypt.Net.BCrypt.GenerateSalt(6);
       var password = entity.Password + salt;
       entity.Salt = salt;

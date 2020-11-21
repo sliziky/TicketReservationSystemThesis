@@ -12,6 +12,9 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using TicketReservationSystem.Client.Services;
+using TicketReservationSystem.Client.Services.Abstraction;
+
 namespace TicketReservationSystem.Client
 {
   public class Program
@@ -27,7 +30,12 @@ namespace TicketReservationSystem.Client
       })
       .AddBootstrapProviders()
       .AddFontAwesomeIcons();
-      builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+      HttpClient httpClient = new HttpClient()
+      {
+        BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+      };
+      builder.Services.AddSingleton<HttpClient>(httpClient);
+      builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
       await builder.Build().RunAsync();
     }
   }

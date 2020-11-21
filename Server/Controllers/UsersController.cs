@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using TicketReservationSystem.Server.CQRS.Queries;
 using TicketReservationSystem.Server.CQRS.UserCQRS;
 using TicketReservationSystem.Shared.Domain;
+using TicketReservationSystem.Shared.DTO;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace TicketReservationSystem.Server.Controllers
@@ -57,7 +58,7 @@ namespace TicketReservationSystem.Server.Controllers
     {
       var user = await _mediator.Send(new GetUserQueryEmail() { Email = email });
       if (user == null) { return NotFound(); }
-      return Ok(user);
+      return Ok(_mapper.Map<UserDTO>(user));
     }
 
     // POST api/<UsersController>
