@@ -17,6 +17,7 @@ namespace TicketReservationSystem.Client.Services
   {
     public AuthenticationService(HttpClient http)
     {
+      User = null;
       Http = http;
     }
 
@@ -31,7 +32,10 @@ namespace TicketReservationSystem.Client.Services
       }
       return User != null;
     }
-    public void Logout() {
+    public bool IsLoggedIn() {
+      return User != null;
+    }
+    public void LogOut() {
       User = null;
     }
   }

@@ -55,18 +55,24 @@
     }
     async void HandleValidSubmit(EditContext editContext)
     {
-      if (_userLoggedIn) { return; }
+      if (AuthenticationService.IsLoggedIn()) { return; }
       UserLogin model = (UserLogin)editContext.Model;
       var authenticated = await AuthenticationService.AuthenticateUser(model.Email, model.Password);
       if (authenticated)
       {
-            _userLoggedIn = true;
-            _showErrorMsg = false;
-            _showLoggedIn = true;
-            StateHasChanged();
-            await Task.Delay(1000);
-            NavigationManager.NavigateTo("/");
+        _userLoggedIn = true;
+        _showErrorMsg = false;
+        _showLoggedIn = true;
+        StateHasChanged();
+        await Task.Delay(1000);
+        NavigationManager.NavigateTo("/");
       }
-        await jsRuntime.InvokeAsync<string>("console.log", authenticated);
+      else {
+        _userLoggedIn = false;
+        _showErrorMsg = true;
+        _showLoggedIn = false;
+        StateHasChanged();
+      }
+      await jsRuntime.InvokeAsync<string>("console.log", authenticated);
     }
 }

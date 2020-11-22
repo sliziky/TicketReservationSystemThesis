@@ -1,0 +1,23 @@
+@typeparam TItem
+@using Blazorise.Icons.FontAwesome
+@foreach (var item in ItemList)
+{
+<div class="delete-action__row">
+  <p>
+  @ChildContent(item)
+  </p>
+  <Blazorise.Icons.FontAwesome.Icon Name="@("fas fa-trash-alt")" @onclick="(e => Callback.Invoke(item))" />
+</div>
+}
+
+@code {
+    [Parameter]
+    public List<TItem> ItemList { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> ChildContent { get; set; }
+
+    [Parameter]
+    public Action<TItem> Callback { get; set; }
+
+}

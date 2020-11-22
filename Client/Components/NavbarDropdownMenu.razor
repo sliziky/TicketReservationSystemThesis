@@ -1,0 +1,27 @@
+<BarDropdown>
+  <BarDropdownToggle Class="navbar__link">@Title</BarDropdownToggle>
+  <BarDropdownMenu Class="navbar__dropdown__menu">
+    <BarDropdownItem Class="navbar__dropdown__menu__item">
+      <BarLink To=@(Url+"/new") Style="" Class="navbar__link">@("Add " + FirstCharToUpper(Url))</BarLink>
+    </BarDropdownItem>
+    <BarDropdownItem Class="navbar__dropdown__menu__item">
+      <BarLink To=@(Url+"/edit") Style="" Class="navbar__link">@("Edit " + FirstCharToUpper(Url))</BarLink>
+    </BarDropdownItem>
+    <BarDropdownItem Class="navbar__dropdown__menu__item">
+      <BarLink To=@(Url+"/delete") Style="" Class="navbar__link">@("Delete " + FirstCharToUpper(Url))</BarLink>
+    </BarDropdownItem>
+  </BarDropdownMenu>
+</BarDropdown>
+@code {
+    [Parameter]
+    public string Title { get; set; }
+    [Parameter]
+    public string Url { get; set; }
+
+    public string FirstCharToUpper(string str)
+    {
+      // Remove the '/'
+      str = str.Substring(1);
+      return char.ToUpper(str[0]) + str.Substring(1);
+    }
+}

@@ -1,0 +1,22 @@
+@page "/cinema/delete"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+
+@if (Cinemas != null)
+{
+  <ListWithDeleteAction ItemList="@Cinemas" Callback="CallBack">
+    @context.Name @context.City
+   </ListWithDeleteAction>
+}
+
+@code {
+    public List<Cinema> Cinemas { get; set; } = null;
+    protected async override Task OnInitializedAsync()
+    {
+      Cinemas = await Http.GetFromJsonAsync<List<Cinema>>("api/cinemas");
+    }
+    void CallBack(Cinema cinema) {
+      Console.WriteLine(cinema.CinemaId);
+    }
+}

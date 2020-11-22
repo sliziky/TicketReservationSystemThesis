@@ -1,4 +1,6 @@
 @inject NavigationManager NavigationManager
+@inject IAuthenticationService AuthenticationService
+
 <Bar Breakpoint="Breakpoint.Desktop"
      Background="Background.Primary"
      ThemeContrast="ThemeContrast.Dark">
@@ -6,46 +8,50 @@
   <BarMenu>
     <BarStart Class="navbar-menu-center">
       <BarItem>
-        <img src="./imgs/cinema_logo.png" class="cinema_logo" />
+        <img src="./imgs/cinema_logo.png" class="cinema_logo" @onclick="@(e => NavigateTo("/"))" />
       </BarItem>
       <BarItem>
-        <BarLink To="#home" Style="" Class="navbar__link">PROGRAM</BarLink>
+        <NavbarDropdownMenu Title="CINEMAS" Url="/cinema" />
       </BarItem>
       <BarItem>
-        <BarLink To="#docs" Class="navbar__link">FILMY</BarLink>
+        <NavbarDropdownMenu Title="MOVIES" Url="/movie"/>
       </BarItem>
       <BarItem>
-        <BarLink To="/cinema/new" Style="" Class="navbar__link">PRIDAŤ KINO</BarLink>
+        <NavbarDropdownMenu Title="HALLS" Url="/halls" />
       </BarItem>
       <BarItem>
-        <BarLink To="/movie/new" Style="" Class="navbar__link">PRIDAŤ FILM</BarLink>
-      </BarItem>
-      <BarItem>
-        <BarLink To="/seats/new" Style="" Class="navbar__link">PRIDAŤ SÁLU</BarLink>
-      </BarItem>
-      <BarItem>
-        <BarLink To="/show/new" Style="" Class="navbar__link">PRIDAŤ PREMIETANIE</BarLink>
-      </BarItem>
-      <BarItem>
-        <BarDropdown>
-          <BarDropdownToggle Class="navbar__link">AKCIE</BarDropdownToggle>
-          <BarDropdownMenu>
-            <BarDropdownItem>Action</BarDropdownItem>
-            <BarDropdownItem>Another action</BarDropdownItem>
-          </BarDropdownMenu>
-        </BarDropdown>
+        <NavbarDropdownMenu Title="SHOWS" Url="/show" />
       </BarItem>
     </BarStart>
     <BarEnd>
       <BarItem>
         <Button Color="Color.Primary" @onclick="@(e => NavigateTo("/signup"))">Sign up</Button>
-        <Button Color="Color.Secondary" @onclick="@(e => NavigateTo("/login"))">Log in</Button>
+        @if (AuthenticationService.IsLoggedIn())
+        {
+<Button Color="Color.Secondary" @onclick="@(OnLogOutClick)">Log Out</Button> }
+              else
+              {
+<Button Color="Color.Secondary" @onclick="@(e => NavigateTo("/login"))">Log in</Button>}
       </BarItem>
     </BarEnd>
   </BarMenu>
 </Bar>
-@code {
-    private void NavigateTo(string url) {
+@code { public bool UserLoggedIn { get; set; }
+    protected override void OnParametersSet()
+    {
+      Console.WriteLine(AuthenticationService.IsLoggedIn());
+      Console.WriteLine("12");
+      UserLoggedIn = AuthenticationService.IsLoggedIn();
+      StateHasChanged();
+    }
+    private void NavigateTo(string url)
+    {
       NavigationManager.NavigateTo(url);
     }
-}
+    private void OnLogOutClick()
+    {
+      AuthenticationService.LogOut();
+      UserLoggedIn = false;
+      StateHasChanged();
+      NavigateTo("/");
+    } }
