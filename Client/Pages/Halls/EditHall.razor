@@ -1,0 +1,22 @@
+@page "/hall/edit"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+
+@if (Halls != null)
+{
+<ListWithAction ItemList="@Halls" Callback="CallBack" IconName="fas fa-edit">
+  @context.Cinema.Name @context.Name @context.Capacity
+</ListWithAction>}
+
+@code {
+      public List<Hall> Halls { get; set; } = null;
+      protected async override Task OnInitializedAsync()
+      {
+        Halls = await Http.GetFromJsonAsync<List<Hall>>("api/halls");
+      }
+      void CallBack(Hall hall)
+      {
+        NavigationManager.NavigateTo("/hall/edit/" + hall.HallId);
+      }
+}

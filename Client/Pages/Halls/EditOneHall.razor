@@ -1,0 +1,75 @@
+@page "/hall/edit/{Id}"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+
+@inject HttpClient Http
+@using Newtonsoft.Json
+@if(HallDetails != null)
+{
+  <HallForm FormMode="FormMode.Edit" CallbackValidSubmit="HandleValidSubmit" HallDetails="HallDetails" SelectedCinema="SelectedCinema"/>
+}
+@if (AllSeats != null)
+{
+<SeatAdder AllSeats="AllSeats" HallDetails="HallDetails" CallbackAddHall="OnAddHall" />
+}
+@code
+{   [Parameter]
+    public string Id { get; set; }
+
+    public HallDetailsModel HallDetails;
+    public List<List<Seat>> AllSeats;
+    public Hall Hall { get; set; }
+    public Cinema SelectedCinema { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+      Hall hall = await Http.GetFromJsonAsync<Hall>("api/halls/" + Id);
+      SelectedCinema = await Http.GetFromJsonAsync<Cinema>("api/cinemas/" + hall.CinemaId);
+      HallDetails = new HallDetailsModel() { Name = hall.Name, NumberOfSeatsInRow = (hall.Seats.Count / hall.Rows).ToString(), Rows = hall.Rows.ToString() };
+      AllSeats = TransformSeats(hall);
+      StateHasChanged();
+    }
+    public async void OnAddHall(List<List<Seat>> seats)
+    {
+      var respo = await Http.PutAsJsonAsync<Hall>("api/halls/" + Hall.HallId, Hall);
+      var body = await respo.Content.ReadAsStringAsync();
+      var desBody = JsonConvert.DeserializeObject<DeserializedObject>(body);
+      foreach (var row in seats)
+      {
+        foreach (var seat in row)
+        {
+          await Http.PutAsJsonAsync<Seat>("api/seats/" + seat.SeatId, seat);
+        }
+      }
+      AllSeats = seats;
+      StateHasChanged();
+    }
+    public void HandleValidSubmit(List<List<Seat>> seats, HallDetailsModel model, Hall hall)
+    {
+      Hall = hall;
+      HallDetails = model;
+      AllSeats = seats;
+      StateHasChanged();
+    }
+    public async Task EditCinema(EditContext editContext) { }
+
+    public List<List<Seat>> TransformSeats(Hall hall)
+    {
+      List<List<Seat>> allSeats = new List<List<Seat>>();
+      for (int i = 0; i < hall.Rows; i++)
+      {
+        List<Seat> row = new List<Seat>();
+        for (int j = 0; j < hall.Seats.Count / hall.Rows; j++)
+        {
+          row.Add(hall.Seats[i * hall.Rows + j]);
+        }
+        allSeats.Add(row);
+      }
+      return allSeats;
+    }
+    public class DeserializedObject
+    {
+      public int HallId { get; set; }
+    }
+}

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TicketReservationSystem.Server.CQRS.HallCQRS.Commands;
 using TicketReservationSystem.Server.CQRS.HallCQRS.Queries;
 using TicketReservationSystem.Server.CQRS.SeatsCQRS.Commands;
 using TicketReservationSystem.Server.CQRS.SeatsCQRS.Queries;
@@ -57,10 +58,14 @@ namespace TicketReservationSystem.Server.Controllers
       return Ok(seat);
     }
 
-    // PUT api/<HallsController>/5
-    [HttpPut("{id}")]
-    public void Put(int id, [FromBody] string value)
+    [HttpPut("{seatId}")]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<Seat>> UpdateSeat(int seatId, [FromBody] Seat seat)
     {
+      var foundSeat = await _mediator.Send(new EditSeatInHallCommand { SeatId = seatId, Seat = seat });
+      if (foundSeat == null) { return Conflict(); }
+      return Ok(foundSeat);
     }
 
     // DELETE api/<HallsController>/5

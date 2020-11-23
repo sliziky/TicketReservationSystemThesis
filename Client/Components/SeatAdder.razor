@@ -1,109 +1,53 @@
 @inject HttpClient Http
 @using TicketReservationSystem.Shared
 @using Blazorise.Components
-@using Newtonsoft.Json 
+@using Newtonsoft.Json
 @inject IJSRuntime JSRuntime
-<EditForm Model="@HallDetails" OnValidSubmit="@HandleValidSubmit" Class="hall-form">
-  <DataAnnotationsValidator />
-  <Validations Mode="ValidationMode.Auto" Model="@HallDetails">
-    <Fields Class="seat-adder__form__row">
-      <Validation>
-        <Field Class="hall-form__field" ColumnSize="ColumnSize.Is2.OnDesktop">
-          <FieldLabel>Cinema</FieldLabel>
-          <SelectList TItem="@Cinema"
-                      TValue="int"
-                      Data="@Cinemas"
-                      TextField="@((item)=>item.Name)"
-                      ValueField="@((item)=>item.CinemaId)"
-                      SelectedValue="@SelectedCinema.CinemaId"
-                      SelectedValueChanged="@MyListValueChangedHandler" />
-        </Field>
-      </Validation>
-      <Validation>
-        <Field ColumnSize="ColumnSize.Is2.OnDesktop" Class="hall-form__field">
-          <FieldLabel>Name</FieldLabel>
-          <TextEdit @bind-Text="@HallDetails.Name">
-            <Feedback>
-              <ValidationError />
-            </Feedback>
-          </TextEdit>
-        </Field>
-      </Validation>
-      <Validation>
-        <Field ColumnSize="ColumnSize.Is2.OnDesktop" Class="hall-form__field">
-          <FieldLabel>Rows</FieldLabel>
-          <TextEdit @bind-Text="@HallDetails.Rows">
-            <Feedback>
-              <ValidationError />
-            </Feedback>
-          </TextEdit>
-        </Field>
-      </Validation>
-      <Validation>
-        <Field ColumnSize="ColumnSize.Is2.OnDesktop" Class="hall-form__field">
-          <FieldLabel>Number of seats in 1 row</FieldLabel>
-          <TextEdit @bind-Text="@HallDetails.NumberOfSeatsInRow">
-            <Feedback>
-              <ValidationError />
-            </Feedback>
-          </TextEdit>
-        </Field>
-        </Validation>
-    </Fields>
-  </Validations>
-    <Button Color="Color.Primary" Type="ButtonType.Submit" Class="hall-form__button">Generate layout</Button>
-
-    <div class="hall">
-      @if (DisplaySeats)
-      {
-        int rowIndex = 1;
-        foreach (var row in AllSeats)
-        {
+<div class="hall">
+  @if (AllSeats != null)
+  {
+    int rowIndex = 1;
+    foreach (var row in AllSeats)
+    {
 <div class="hall-seats">
   <p class="row-index">@rowIndex</p>
   @for (int i = 0; i < row.Count; i++)
   {
-      <SeatComponent
-       CallBack="@OnSeatClicked"
-       Mode="hall"
-       Seat="@row[i]"/>}
-  </div>rowIndex++;
+<SeatComponent CallBack="@OnSeatClicked"
+               Mode="hall"
+               Seat="@row[i]" />}
+</div>rowIndex++;
 }
 }
-    </div>
-
-    <Button Color="Color.Primary" Type="ButtonType.Submit" Disabled="!DisplaySeats" Clicked="OnAddHall" Class="hall-form__button">Add hall with layout</Button>
-</EditForm>
-
+  <Button Color="Color.Primary" Type="ButtonType.Submit" Disabled="@(AllSeats == null)" Clicked="OnAddHallClicked" Class="hall-form__button">Add hall with layout</Button>
+</div>
 
 @code {
-
     public bool DisplaySeats { get; set; } = false;
-    public HallDetailsModel HallDetails { get; set; } = new HallDetailsModel();
-    public List<List<Seat>> AllSeats { get; set; } = new List<List<Seat>>();
-    public List<Cinema> Cinemas { get; set; } = new List<Cinema>();
-    public Cinema SelectedCinema { get; set; } = new Cinema();
+
+    [Parameter]
+    public HallDetailsModel HallDetails { get; set; }
+
+    [Parameter]
+    public List<List<Seat>> AllSeats { get; set; }
+
+    [Parameter]
+    public Action<List<List<Seat>>> CallbackAddHall { get; set; }
+
+    void OnAddHallClicked()
+    {
+      CallbackAddHall.Invoke(AllSeats);
+    }
+
+    protected override void OnInitialized()
+    {
+      if (AllSeats != null)
+      {
+        GenerateSeatLayout();
+      }
+    }
+
     public bool CanGenerateLayout { get; set; } = false;
-
-    protected override async Task OnInitializedAsync()
-    {
-      Cinemas = await Http.GetFromJsonAsync<List<Cinema>>("api/cinemas");
-      SelectedCinema.CinemaId = Cinemas[0].CinemaId;
-      await JSRuntime.InvokeVoidAsync("console.log", Cinemas);
-    }
-
-    void MyListValueChangedHandler(int newC)
-    {
-      SelectedCinema = Cinemas.Where(c => c.CinemaId == newC).ToList()[0];
-      Console.WriteLine(newC);
-    }
-
-    public void HandleValidSubmit()
-    {
-      GenerateSeatLayout();
-      DisplaySeats = true;
-      StateHasChanged();
-    }
 
     private void GenerateSeatLayout()
     {
@@ -113,7 +57,7 @@
         List<Seat> Row = new List<Seat>();
         for (int j = 0; j < Int32.Parse(HallDetails.NumberOfSeatsInRow); j++)
         {
-          Row.Add(new Seat() { Number = j, Row = i, Type = SeatType.Classic, Index = j});
+          Row.Add(new Seat() { Number = j, Row = i, Type = SeatType.Classic, Index = j });
         }
         AllSeats.Add(Row);
       }
@@ -151,43 +95,5 @@
         seat.Type = SeatType.Classic;
       }
       StateHasChanged();
-    }
-    private async void OnAddHall()
-    {
-      Console.WriteLine(SelectedCinema.CinemaId);
-      Hall hall = new Hall() {
-        Name = HallDetails.Name,
-        Capacity = (uint)GetHallCapacity(),
-        Cinema = Cinemas.Where(c => c.CinemaId == SelectedCinema.CinemaId).FirstOrDefault(),
-        CinemaId = SelectedCinema.CinemaId,
-        Rows = Int32.Parse(HallDetails.Rows)
-      };
-      var seats = AllSeats;
-      var respo = await Http.PostAsJsonAsync<Hall>("api/halls", hall);
-      AllSeats = seats;
-      var body = await respo.Content.ReadAsStringAsync();
-      var desBody = JsonConvert.DeserializeObject<DeserializedObject>(body);
-      foreach (var row in seats)
-      {
-        foreach (var seat in row)
-        {
-          await Http.PostAsJsonAsync<Seat>("api/halls/" + desBody.HallId + "/seat", seat);
-        }
-      }
-      StateHasChanged();
-    }
-    public class DeserializedObject {
-      public int HallId { get; set; }
-    }
-    private int GetHallCapacity() {
-      int capacity = 0;
-      foreach (var row in AllSeats) {
-        foreach (var seat in row) {
-          if (seat.Type == SeatType.Classic || seat.Type == SeatType.Disabled) {
-            capacity++;
-          }
-        }
-      }
-      return capacity;
     }
 }

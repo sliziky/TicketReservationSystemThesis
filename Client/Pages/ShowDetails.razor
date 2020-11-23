@@ -2,6 +2,7 @@
 @inject HttpClient Http
 @using Newtonsoft.Json
 @using TicketReservationSystem.Client.Components
+
 <EditForm Model="@SeatPickerModel" OnValidSubmit="@HandleValidSubmit" Class="hall-form">
   <DataAnnotationsValidator />
   <Fields Class="seat-adder__form__row">

@@ -15,6 +15,7 @@ namespace TicketReservationSystem.Shared.Domain
         public string Name { get; set; }
         public uint Capacity { get; set; }
         public int CinemaId { get; set; }
+    public bool IsObsolete { get; set; } = false;
     public Cinema Cinema { get; set; } = new Cinema();
         public int Rows { get; set; }
     public List<Seat> Seats { get; set; } = new List<Seat>();

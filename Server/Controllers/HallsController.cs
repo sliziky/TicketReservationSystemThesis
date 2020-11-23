@@ -37,6 +37,14 @@ namespace TicketReservationSystem.Server.Controllers
       return Ok(halls);
     }
 
+    [HttpGet("nonobsolete")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<Hall>>> GetNonObsolete()
+    {
+      var halls = await _mediator.Send(new GetNonObsoleteHallsQuery());
+      return Ok(halls);
+    }
+
     // GET api/<HallsController>/5
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -69,6 +77,16 @@ namespace TicketReservationSystem.Server.Controllers
       return Ok(foundSeat);
     }
 
+    //[HttpPut("{id}/seats/{seatId}")]
+    //[ProducesResponseType(StatusCodes.Status201Created)]
+    //[ProducesResponseType(StatusCodes.Status409Conflict)]
+    //public async Task<ActionResult<Seat>> UpdateSeat(int id, int seatId,[FromBody] Seat seat)
+    //{
+    //  var foundSeat = await _mediator.Send(new EditSeatInHallCommand { HallId = id, SeatId = seatId, Seat = seat });
+    //  if (foundSeat == null) { return Conflict(); }
+    //  return Ok(foundSeat);
+    //}
+
     [HttpPost("{id}/movies/{movieId}/show")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -79,11 +97,26 @@ namespace TicketReservationSystem.Server.Controllers
       return Ok(foundSeat);
     }
 
+    [HttpPost("{id}/obsolete")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<Hall>> MarkObsolete(int id)
+    {
+      var hall = await _mediator.Send(new MarkHallObsoleteCommand { Id = id });
+      if (hall == null) { return Conflict(); }
+      return Ok(hall);
+    }
+
 
     // PUT api/<HallsController>/5
     [HttpPut("{id}")]
-    public void Put(int id, [FromBody] string value)
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<Hall>> UpdateHall(int id, [FromBody] Hall hall)
     {
+      var foundHall = await _mediator.Send(new EditHallCommand() { Id = id, Hall = hall });
+      if (foundHall == null) { return Conflict(); }
+      return Ok();
     }
 
     // DELETE api/<HallsController>/5

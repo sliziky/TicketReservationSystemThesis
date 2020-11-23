@@ -59,9 +59,12 @@ body {
   border-style: solid;
   border-radius: 9px;
 }
-  .delete-action__row > p {
-    color: #F1C6A3;
-  } 
+.seat-adder__form__row__alert {
+  width: 100%;
+}
+.delete-action__row > p {
+  color: #F1C6A3;
+} 
 .seat__chosen {
   background-color: #7d98c9;
 }

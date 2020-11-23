@@ -58,7 +58,7 @@
 
       Movies = await Http.GetFromJsonAsync<List<Movie>>("api/movies");
       SelectedMovie = Movies[0];
-      Halls = await Http.GetFromJsonAsync<List<Hall>>("api/halls");
+      Halls = await Http.GetFromJsonAsync<List<Hall>>("api/halls/nonobsolete");
       SelectedHall = Halls[0];
     }
 

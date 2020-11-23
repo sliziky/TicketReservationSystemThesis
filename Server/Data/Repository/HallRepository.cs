@@ -52,6 +52,15 @@ namespace TicketReservationSystem.Server.Data.Repository
       throw new NotImplementedException();
     }
 
+    public async Task<Hall> MarkHallObsolete(int hallId)
+    {
+      var hall = _context.Halls.Include(h => h.Cinema).Include(h => h.Seats).Include(h => h.Shows).FirstOrDefault(hall => hall.HallId == hallId);
+      if (hall == null) { return null; }
+      hall.IsObsolete = true;
+      await _context.SaveChangesAsync();
+      return hall;
+    }
+
     public async Task<Hall> SaveAsync(Hall entity)
     {
       var hall = _context.Halls.Include(h => h.Cinema).Include(h => h.Shows).FirstOrDefault(hall => hall.Cinema.CinemaId == entity.Cinema.CinemaId && hall.Name == entity.Name);
@@ -62,6 +71,11 @@ namespace TicketReservationSystem.Server.Data.Repository
         await _context.SaveChangesAsync();
       }
       return hall;
+    }
+
+    public async Task<IEnumerable<Hall>> GetNonObsolete()
+    {
+      return await _context.Halls.Where(h => !h.IsObsolete).ToListAsync();
     }
 
     public Hall Update(int id, Hall entity)
@@ -83,15 +97,32 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<Hall> UpdateAsync(int id, Hall entity)
     {
-      var hall = _context.Halls.FirstOrDefault(hall => hall.HallId == id);
+      var hall = _context.Halls.Include(h => h.Seats).Include(h => h.Shows).Include(h => h.Cinema).FirstOrDefault(hall => hall.HallId == id);
       if (hall != null)
       {
+        hall.Cinema = _context.Cinemas.Find(hall.CinemaId);
         hall.Name = entity.Name;
         hall.Seats = entity.Seats;
+        hall.Rows = entity.Rows;
+        hall.Capacity = entity.Capacity;
         hall.Shows = entity.Shows;
+        hall.Seats = entity.Seats;
         await _context.SaveChangesAsync();
       }
       return hall;
+    }
+
+    public async Task<Seat> UpdateSeat (int seatId, Seat seat)
+    {
+      var seatFound = _context.Seats.Include(s => s.Hall).Include(s => s.SeatReservation).FirstOrDefault(s => s.SeatId == seatId);
+      if (seatFound == null) { return null; }
+      seatFound.Index = seat.Index;
+      seatFound.Number = seat.Number;
+      seatFound.Row = seat.Row;
+      seatFound.Status = seat.Status;
+      seatFound.Type = seat.Type;
+      await _context.SaveChangesAsync();
+      return seat;
     }
 
     public Task<IEnumerable<Hall>> DeleteAllAsync()

@@ -16,10 +16,14 @@ namespace TicketReservationSystem.Server.CQRS.HallCQRS
     IRequestHandler<AddHallCommand, Hall>,
     IRequestHandler<GetHallQuery, Hall>,
     IRequestHandler<GetHallsQuery, IEnumerable<Hall>>,
+    IRequestHandler<GetNonObsoleteHallsQuery, IEnumerable<Hall>>,
     IRequestHandler<AddSeatToHallCommand, Seat>,
     IRequestHandler<DeleteHallCommand, Hall>,
     IRequestHandler<DeleteHallsCommand, IEnumerable<Hall>>,
-    IRequestHandler<AddMovieShowToHallCommand, MovieShow>
+    IRequestHandler<AddMovieShowToHallCommand, MovieShow>,
+    IRequestHandler<EditHallCommand, Hall>,
+    IRequestHandler<EditSeatInHallCommand, Seat>,
+    IRequestHandler<MarkHallObsoleteCommand, Hall>
   {
     private IMapper _mapper;
     private HallRepository _repository;
@@ -66,6 +70,26 @@ namespace TicketReservationSystem.Server.CQRS.HallCQRS
     public async Task<MovieShow> Handle(AddMovieShowToHallCommand request, CancellationToken cancellationToken)
     {
       return await _showRepository.AddMovieShow(request.Id, request.MovieId, request.Show);
+    }
+
+    public async Task<Hall> Handle(EditHallCommand request, CancellationToken cancellationToken)
+    {
+      return await _repository.UpdateAsync(request.Id, request.Hall);
+    }
+
+    public async Task<Seat> Handle(EditSeatInHallCommand request, CancellationToken cancellationToken)
+    {
+      return await _repository.UpdateSeat(request.SeatId, request.Seat);
+    }
+
+    public async Task<Hall> Handle(MarkHallObsoleteCommand request, CancellationToken cancellationToken)
+    {
+      return await _repository.MarkHallObsolete(request.Id);
+    }
+
+    public async Task<IEnumerable<Hall>> Handle(GetNonObsoleteHallsQuery request, CancellationToken cancellationToken)
+    {
+      return await _repository.GetNonObsolete();
     }
   }
 }
