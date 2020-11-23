@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -93,8 +94,15 @@ namespace TicketReservationSystem.Server.Controllers
 
     // DELETE api/<CinemaController>/5
     [HttpDelete("{id}")]
-    public void Delete(int id)
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<Cinema>> Delete(int id)
     {
+      var cinemaFound = await _mediator.Send(new DeleteCinemaCommand() { Id = id });
+      if (cinemaFound == null) {
+        return NotFound();
+      }
+      return Ok();
     }
   }
 }

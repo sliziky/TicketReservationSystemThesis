@@ -37,6 +37,19 @@
   </BarMenu>
 </Bar>
 @code { public bool UserLoggedIn { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+      AuthenticationService.OnChange += OnNotify;
+    }
+
+
+    public async void OnNotify()
+    {
+      await InvokeAsync(() =>
+      {
+        StateHasChanged();
+      });
+    }
     protected override void OnParametersSet()
     {
       Console.WriteLine(AuthenticationService.IsLoggedIn());

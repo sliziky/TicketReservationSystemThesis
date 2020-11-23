@@ -32,4 +32,8 @@
     <ProjectReference Include="..\Shared\TicketReservationSystem.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Components\Modals\" />
+  </ItemGroup>
+
 </Project>

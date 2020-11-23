@@ -13,6 +13,9 @@ namespace TicketReservationSystem.Shared.Domain
     [Key]
     public int CinemaId { get; set; }
 
+    [Required]
+    public string GatewayApiKey { get; set; }
+
     [JsonPropertyName("name")]
     [Required]
     public string Name { get; set; }

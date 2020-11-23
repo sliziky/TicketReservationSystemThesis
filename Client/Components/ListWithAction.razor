@@ -3,10 +3,10 @@
 @foreach (var item in ItemList)
 {
 <div class="delete-action__row">
-  <p>
+  <p @onclick="(e => Callback.Invoke(item))">
   @ChildContent(item)
   </p>
-  <Blazorise.Icons.FontAwesome.Icon Name="@("fas fa-trash-alt")" @onclick="(e => Callback.Invoke(item))" />
+  <Blazorise.Icons.FontAwesome.Icon Name="@IconName" @onclick="(e => Callback.Invoke(item))" />
 </div>
 }
 
@@ -19,5 +19,8 @@
 
     [Parameter]
     public Action<TItem> Callback { get; set; }
+
+    [Parameter]
+    public string IconName { get; set; }
 
 }

@@ -1,0 +1,19 @@
+@page "/cinema/edit/{Id}"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+<CinemaForm ButtonText="Edit cinema" Model="Cinema" CallBack="EditCinema"/>
+@code
+{
+    [Parameter]
+    public string Id { get; set; }
+
+    public Cinema Cinema { get; set; } = null;
+
+    protected async override Task OnInitializedAsync()
+    {
+      Cinema = await Http.GetFromJsonAsync<Cinema>("api/cinemas/" + Id);
+    }
+
+    public async Task EditCinema(EditContext editContext) { }
+}

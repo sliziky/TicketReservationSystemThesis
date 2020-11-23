@@ -4,36 +4,23 @@
 @inject IJSRuntime jsRuntime
 @using System.ComponentModel.DataAnnotations;
 
-<EditForm Model="@CinemaModel" OnValidSubmit="@HandleValidSubmit" Class="login-form">
-  <DataAnnotationsValidator />
-  <Field>
-    <FieldLabel>Názov kina</FieldLabel>
-    <TextEdit Placeholder="Názov.." Role="TextRole.Text" @bind-Text="@CinemaModel.Name" />
-  </Field>
-  <Field>
-    <FieldLabel>Mesto</FieldLabel>
-    <TextEdit Placeholder="Mesto.." Role="TextRole.Text" @bind-Text="@CinemaModel.City" />
-  </Field>
-
-  <Button Color="Color.Primary" Type="ButtonType.Submit">Add new cinema</Button>
-  <Alert Color="Color.Success" Visible="@(submitted && (int)_response.StatusCode == 200)" Style="margin-top: 10px;">
-    <AlertMessage>Kino bolo pridané do databázy</AlertMessage>
-  </Alert>
-  <Alert Color="Color.Danger" Visible="@(submitted && (int)_response.StatusCode != 200)" Style="margin-top: 10px;">
-    <AlertMessage>Kino sa nepodarilo vytvoriť</AlertMessage>
-  </Alert>
-</EditForm>
+<CinemaForm Model="CinemaModel" CallBack="HandleValidSubmit" ButtonText="Add new cinema"/>
+<Alert Color="Color.Success" Visible="@(submitted && (int)_response.StatusCode == 200)" Style="margin-top: 10px;">
+      <AlertMessage>Kino bolo pridané do databázy</AlertMessage>
+    </Alert>
+    <Alert Color="Color.Danger" Visible="@(submitted && (int)_response.StatusCode != 200)" Style="margin-top: 10px;">
+      <AlertMessage>Kino sa nepodarilo vytvoriť</AlertMessage>
+    </Alert>
 
 @code {
     private HttpResponseMessage _response = new HttpResponseMessage();
     private bool submitted = false;
-    public NewCinemaModel CinemaModel = new NewCinemaModel();
+    public Cinema CinemaModel = new Cinema();
 
-    public async void HandleValidSubmit(EditContext editContext)
+    public async Task HandleValidSubmit(EditContext context)
     {
-      var serialized = System.Text.Json.JsonSerializer.Serialize(CinemaModel);
-      _response = await Http.PostAsJsonAsync("/api/cinemas", CinemaModel);
+      _response = await Http.PostAsJsonAsync<Cinema>("/api/cinemas", CinemaModel);
       submitted = true;
       StateHasChanged();
-      await jsRuntime.InvokeAsync<string>("console.log", CinemaModel, _response);
-    } }
+    }
+}

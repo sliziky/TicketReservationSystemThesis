@@ -1,0 +1,23 @@
+@page "/cinema/edit"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+
+@if (Cinemas != null)
+{
+<ListWithAction ItemList="@Cinemas" Callback="CallBack" IconName="fas fa-edit">
+  @context.Name @context.City
+</ListWithAction>}
+
+@code {
+
+    public List<Cinema> Cinemas { get; set; } = null;
+    protected async override Task OnInitializedAsync()
+    {
+      Cinemas = await Http.GetFromJsonAsync<List<Cinema>>("api/cinemas");
+    }
+    void CallBack(Cinema cinema)
+    {
+      NavigationManager.NavigateTo("/cinema/edit/" + cinema.CinemaId);
+    }
+}

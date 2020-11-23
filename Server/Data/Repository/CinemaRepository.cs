@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -85,10 +86,10 @@ namespace TicketReservationSystem.Server.Data.Repository
       var cinema = await _context.Cinemas.FirstOrDefaultAsync(cinema => cinema.CinemaId == id);
       if (cinema != null) {
         cinema.City = entity.City;
-        cinema.Halls = entity.Halls;
+        cinema.GatewayApiKey = entity.GatewayApiKey;
         cinema.Name = entity.Name;
         await _context.SaveChangesAsync();
-        return entity;
+        return cinema;
       }
       return null;
     }
