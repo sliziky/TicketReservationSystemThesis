@@ -28,11 +28,10 @@
 
     <Button Color="Color.Primary" Type="ButtonType.Submit">Log In</Button>
     <Alert Color="Color.Danger" Visible="@_showErrorMsg" Style="margin-top: 10px;">
-        <AlertMessage>User does not exist</AlertMessage>
-        <AlertDescription>User with such email does not exist or password is wrong</AlertDescription>
+        <AlertMessage>User does not exist or password is wrong</AlertMessage>
     </Alert>
     <Alert Color="Color.Success" Visible="@_showLoggedIn" Style="margin-top: 10px;">
-        <AlertMessage>Successfully logged in</AlertMessage>
+        <AlertMessage>Successfully logged in. Redirecting to Home page</AlertMessage>
     </Alert>
 </EditForm>
 

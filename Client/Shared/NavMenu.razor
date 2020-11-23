@@ -17,7 +17,7 @@
         <NavbarDropdownMenu Title="MOVIES" Url="/movie"/>
       </BarItem>
       <BarItem>
-        <NavbarDropdownMenu Title="HALLS" Url="/halls" />
+        <NavbarDropdownMenu Title="HALLS" Url="/hall" />
       </BarItem>
       <BarItem>
         <NavbarDropdownMenu Title="SHOWS" Url="/show" />
@@ -52,8 +52,6 @@
     }
     protected override void OnParametersSet()
     {
-      Console.WriteLine(AuthenticationService.IsLoggedIn());
-      Console.WriteLine("12");
       UserLoggedIn = AuthenticationService.IsLoggedIn();
       StateHasChanged();
     }

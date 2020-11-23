@@ -73,7 +73,7 @@ namespace TicketReservationSystem.Server.Data.Repository
     {
       var hall = await _context.Halls.Include(c => c.Seats).Include(c => c.Shows).Include(c => c.Cinema).FirstOrDefaultAsync(h => h.HallId == hallId);
       if (hall == null) { return null; }
-      var seatFound = hall.Seats.FirstOrDefault(s => s.Row == seat.Row && s.Number == seat.Number);
+      var seatFound = hall.Seats.FirstOrDefault(s => s.Index == seat.Index && s.Row == seat.Row);
       if (seatFound != null) { return null; }
       seat.HallId = hallId;
       _context.Seats.Add(seat);

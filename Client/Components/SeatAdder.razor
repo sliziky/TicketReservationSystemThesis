@@ -113,7 +113,7 @@
         List<Seat> Row = new List<Seat>();
         for (int j = 0; j < Int32.Parse(HallDetails.NumberOfSeatsInRow); j++)
         {
-          Row.Add(new Seat() { Number = j, Row = i, Type = SeatType.Classic});
+          Row.Add(new Seat() { Number = j, Row = i, Type = SeatType.Classic, Index = j});
         }
         AllSeats.Add(Row);
       }
@@ -130,7 +130,7 @@
         seat.Type = SeatType.Disabled;
         var row = AllSeats[rowInt];
         var startIndex = row.IndexOf(seat);
-        for (int index = startIndex; index < row.Count; index++)
+        for (int index = startIndex + 1; index < row.Count; index++)
         {
           row[index].Number -= 1;
         }
@@ -141,7 +141,7 @@
         var row = AllSeats[rowInt];
         var startIndex = row.IndexOf(seat);
 
-        for (int index = startIndex; index < row.Count; index++)
+        for (int index = startIndex + 1; index < row.Count; index++)
         {
           row[index].Number += 1;
         }
@@ -155,25 +155,26 @@
     private async void OnAddHall()
     {
       Console.WriteLine(SelectedCinema.CinemaId);
-      Hall hall = new Hall();
-      hall.Name = HallDetails.Name;
-      hall.Shows = new List<MovieShow>();
-      hall.Capacity = (uint)GetHallCapacity();
-      hall.CinemaId = SelectedCinema.CinemaId;
-      hall.Cinema = Cinemas.Where(c => c.CinemaId == SelectedCinema.CinemaId).FirstOrDefault();
-      hall.Seats = new List<Seat>();
-      hall.Rows = Int32.Parse(HallDetails.Rows);
+      Hall hall = new Hall() {
+        Name = HallDetails.Name,
+        Capacity = (uint)GetHallCapacity(),
+        Cinema = Cinemas.Where(c => c.CinemaId == SelectedCinema.CinemaId).FirstOrDefault(),
+        CinemaId = SelectedCinema.CinemaId,
+        Rows = Int32.Parse(HallDetails.Rows)
+      };
+      var seats = AllSeats;
       var respo = await Http.PostAsJsonAsync<Hall>("api/halls", hall);
+      AllSeats = seats;
       var body = await respo.Content.ReadAsStringAsync();
       var desBody = JsonConvert.DeserializeObject<DeserializedObject>(body);
-      foreach (var row in AllSeats)
+      foreach (var row in seats)
       {
         foreach (var seat in row)
         {
-            await Http.PostAsJsonAsync<Seat>("api/halls/" + desBody.HallId + "/seat", seat);
+          await Http.PostAsJsonAsync<Seat>("api/halls/" + desBody.HallId + "/seat", seat);
         }
       }
-      Console.WriteLine(desBody.HallId);
+      StateHasChanged();
     }
     public class DeserializedObject {
       public int HallId { get; set; }
@@ -189,14 +190,4 @@
       }
       return capacity;
     }
-    private List<Seat> FlattenSeatArray(List<List<Seat>> arr) {
-
-      var result = new List<Seat>();
-      foreach (var row in arr) {
-        foreach (var seat in row) {
-          result.Add(seat);
-        }
-      }
-      return result;
-    }
- }
+}

@@ -51,7 +51,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<Seat> SaveAsync(Seat entity)
     {
-      var seat = _context.Seats.FirstOrDefault(seat => seat.Hall == entity.Hall && seat.Number == entity.Number && seat.Row == entity.Row);
+      var seat = _context.Seats.Include(s => s.Hall).Include(s => s.SeatReservation).FirstOrDefault(seat => seat.Hall.HallId == entity.Hall.HallId && seat.Index == entity.Index && seat.Row == entity.Row);
       if (seat == null)
       {
         await _context.Seats.AddAsync(seat);
