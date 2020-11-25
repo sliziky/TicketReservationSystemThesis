@@ -24,7 +24,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<MovieShow> DeleteAsync(int entityId)
     {
-      var foundShow = await _context.MovieShows.Include(s => s.ReservationSeats).Include(s => s.Hall).Include(s => s.Movie).FirstOrDefaultAsync(s => s.MovieShowId == entityId);
+      var foundShow = await _context.MovieShows.Include(s => s.ReservationSeats).Include(s => s.Reservations).Include(s => s.Hall).Include(s => s.Movie).FirstOrDefaultAsync(s => s.MovieShowId == entityId);
       if (foundShow != null) {
         _context.MovieShows.Remove(foundShow);
         await _context.SaveChangesAsync();
@@ -34,17 +34,17 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<IEnumerable<MovieShow>> GetAllAsync()
     {
-      return await _context.MovieShows.Include(s => s.Hall).Include(s => s.Movie).ToListAsync();
+      return await _context.MovieShows.Include(s => s.Hall).Include(s => s.Movie).Include(s => s.ReservationSeats).ThenInclude(rs => rs.Seats).Include(s => s.Reservations).ToListAsync();
     }
 
     public async Task<MovieShow> GetAsync(int id)
     {
-      return await _context.MovieShows.Include(m => m.Hall).Include(m => m.Movie).FirstOrDefaultAsync(s => s.MovieShowId == id);
+      return await _context.MovieShows.Include(m => m.Hall).Include(m => m.Movie).Include(s => s.ReservationSeats).Include(s => s.Reservations).FirstOrDefaultAsync(s => s.MovieShowId == id);
 
     }
 
     public async Task<MovieShow> AddMovieShow(int hallId, int movieId, MovieShow show) {
-      var foundShow = await _context.MovieShows.Include(s => s.ReservationSeats).Include(s => s.Hall).Include(s => s.Movie).FirstOrDefaultAsync(s => s.HallId == show.HallId && s.MovieId == show.MovieId && s.Start == show.Start);
+      var foundShow = await _context.MovieShows.Include(m => m.Hall).Include(m => m.Movie).Include(s => s.ReservationSeats).Include(s => s.Reservations).FirstOrDefaultAsync(s => s.HallId == show.HallId && s.MovieId == show.MovieId && s.Start == show.Start);
       if (foundShow != null) { return null; }
       show.HallId = hallId;
       show.MovieId = movieId;
@@ -88,6 +88,18 @@ namespace TicketReservationSystem.Server.Data.Repository
     Task<MovieShow> IRepository<MovieShow>.GetAsync(int id)
     {
       throw new NotImplementedException();
+    }
+
+    public async Task<IEnumerable<Seat>> GetReservedSeatsForShow(int showId)
+    {
+      var show = await _context.MovieShows.Include(s => s.ReservationSeats).ThenInclude(rs => rs.Seats).FirstOrDefaultAsync(s => s.MovieShowId == showId);
+      if (show == null) { return null; }
+      var result = new List<Seat>();
+      foreach (var rs in show.ReservationSeats)
+      {
+        result.AddRange(rs.Seats);
+      }
+      return result;
     }
   }
 }

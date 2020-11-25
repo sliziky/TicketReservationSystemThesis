@@ -37,11 +37,11 @@
 
     <Button Color="Color.Primary" Type="ButtonType.Submit">Sign Up</Button>
     <Alert Color="Color.Danger" Visible="@_showErrorMsg" Style="margin-top: 10px;">
-        <AlertMessage>User does not exist</AlertMessage>
-        <AlertDescription>User with such email does not exist or password is wrong</AlertDescription>
+        <AlertMessage>User already exists</AlertMessage>
+        <AlertDescription>User with such email already exists</AlertDescription>
     </Alert>
-    <Alert Color="Color.Success" Visible="@_showLoggedIn" Style="margin-top: 10px;">
-        <AlertMessage>Successfully logged in</AlertMessage>
+    <Alert Color="Color.Success" Visible="@_showSignedIn" Style="margin-top: 10px;">
+        <AlertMessage>Successfully signed up. Redirecting to Home page</AlertMessage>
     </Alert>
 </EditForm>
 
@@ -50,7 +50,7 @@
 
     private UserLogin userData = new UserLogin();
     private bool _showErrorMsg = false;
-    private bool _showLoggedIn = false;
+    private bool _showSignedIn = false;
     private bool _userLoggedIn = false;
     //private System.Net.HttpStatusCode statusCode = System.Net.HttpStatusCode.;
     public class UserLogin
@@ -81,8 +81,17 @@
 
       if (response.StatusCode == System.Net.HttpStatusCode.OK)
       {
+        _showSignedIn = true;
+        StateHasChanged();
+        await Task.Delay(1000);
+        NavigationManager.NavigateTo("/");
 
       }
+      else if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
+      {
+        _showErrorMsg = true;
+      }
+      StateHasChanged();
       Console.WriteLine(response.StatusCode);
     }
 

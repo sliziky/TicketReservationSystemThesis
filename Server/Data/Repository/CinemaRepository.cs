@@ -27,9 +27,12 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<Cinema> DeleteAsync(int entityId)
     {
-      var movie = await _context.Cinemas.FirstOrDefaultAsync(cinema => cinema.CinemaId == entityId);
+      var movie = await _context.Cinemas.Include(h => h.Halls).FirstOrDefaultAsync(cinema => cinema.CinemaId == entityId);
       if (movie != null) {
-        _context.Cinemas.Remove(movie);
+        movie.IsObsolete = true;
+        foreach (var hall in movie.Halls) {
+          hall.IsObsolete = true;
+        }
         await _context.SaveChangesAsync();
         return movie;
       }

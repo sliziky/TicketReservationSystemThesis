@@ -1,0 +1,64 @@
+@inject HttpClient Http
+@using TicketReservationSystem.Shared
+@using Blazorise.Components
+@using Newtonsoft.Json
+@inject IJSRuntime JSRuntime
+<div class="hall">
+  @if (AllSeats != null)
+  {
+    int rowIndex = 1;
+    foreach (var row in AllSeats)
+      { 
+        <div class="hall-seats">
+          <p class="row-index">@rowIndex</p>
+          @for (int i = 0; i < row.Count; i++)
+          {
+            <SeatComponent CallBack="@OnSeatClicked" Mode="show" Seat="@row[i]" />
+          }
+        </div>
+        rowIndex++;
+      }
+  }
+  <h3>@ReservedSeats.Count / @MaxNumberOfTickets</h3>
+  <Button Color="Color.Primary" Type="ButtonType.Submit" Disabled="@(ReservedSeats.Count == 0)" Clicked="@(() => BuyTicketsCallBack(ReservedSeats))" Class="hall-form__button">Buy tickets</Button>
+</div>
+@code {
+
+    [Parameter]
+    public HallDetailsModel HallDetails { get; set; }
+
+    [Parameter]
+    public List<List<Seat>> AllSeats { get; set; }
+
+    [Parameter]
+    public Action<List<Seat>> BuyTicketsCallBack { get; set; }
+
+    [Parameter]
+    public int MaxNumberOfTickets { get; set; }
+
+    public List<Seat> ReservedSeats { get; set; } = new List<Seat>();
+
+    public void OnSeatClicked(string number, string rowIndex)
+    {
+      int numberInt = Int32.Parse(number);
+      int rowInt = Int32.Parse(rowIndex);
+      var seat = AllSeats[rowInt][numberInt];
+      if (seat.Type == SeatType.Disabled) { return; }
+      switch (seat.Status)
+      {
+        case SeatStatus.Free:
+          if (ReservedSeats.Count == MaxNumberOfTickets)
+          {
+            return;
+          }
+          seat.Status = SeatStatus.Chosen;
+          ReservedSeats.Add(seat);
+          break;
+        case SeatStatus.Chosen:
+          seat.Status = SeatStatus.Free;
+          ReservedSeats.Remove(seat);
+          break;
+      }
+      StateHasChanged();
+    }
+}

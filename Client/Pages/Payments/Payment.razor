@@ -1,0 +1,35 @@
+@page "/payment"
+@inject IJSRuntime JSRuntime
+@inject HttpClient Http
+@using Newtonsoft.Json 
+
+<h3>StartPayment</h3>
+
+<button @onclick="StartPaymentClick">Start payment!</button>
+
+@code {
+    private string tokenId { get; set; }
+    private async Task StartPaymentClick()
+    {
+      var response = await Http.PostAsync("api/payments/create-checkout-session", null);
+      var body = await response.Content.ReadAsStringAsync();
+      var token = JsonConvert.DeserializeObject<DesObject>(body);
+      tokenId = token.Id;
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+      if (!firstRender)
+      {
+        if (tokenId != null)
+        {
+          await JSRuntime.InvokeAsync<string>("stripeCheckout", null, 1, tokenId);
+        }
+      }
+    }
+    public class DesObject
+    {
+      public string Id { get; set; }
+    }
+}

@@ -66,7 +66,8 @@ namespace TicketReservationSystem.Server.Data.Repository
       var hall = _context.Halls.Include(h => h.Cinema).Include(h => h.Shows).FirstOrDefault(hall => hall.Cinema.CinemaId == entity.Cinema.CinemaId && hall.Name == entity.Name);
       if (hall == null)
       {
-        entity.Cinema = _context.Cinemas.Find(entity.CinemaId);
+        var cinema = _context.Cinemas.Find(entity.CinemaId);
+        entity.Cinema = cinema;
         await _context.Halls.AddAsync(entity);
         await _context.SaveChangesAsync();
       }

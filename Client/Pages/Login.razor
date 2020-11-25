@@ -62,8 +62,8 @@
         _userLoggedIn = true;
         _showErrorMsg = false;
         _showLoggedIn = true;
-        await Task.Delay(1000);
         StateHasChanged();
+        await Task.Delay(1000);
         NavigationManager.NavigateTo("/");
       }
       else {

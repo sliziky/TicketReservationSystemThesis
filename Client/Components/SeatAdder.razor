@@ -14,17 +14,19 @@
   @for (int i = 0; i < row.Count; i++)
   {
 <SeatComponent CallBack="@OnSeatClicked"
-               Mode="hall"
+               Mode="@Mode"
                Seat="@row[i]" />}
 </div>rowIndex++;
 }
 }
-  <Button Color="Color.Primary" Type="ButtonType.Submit" Disabled="@(AllSeats == null)" Clicked="OnAddHallClicked" Class="hall-form__button">Add hall with layout</Button>
+  <Button Color="Color.Primary" Type="ButtonType.Submit" Disabled="@(AllSeats == null)" Class="hall-form__button">Add hall with layout</Button>
 </div>
 
 @code {
     public bool DisplaySeats { get; set; } = false;
 
+    [Parameter]
+    public string Mode { get; set; } = "hall";
     [Parameter]
     public HallDetailsModel HallDetails { get; set; }
 
@@ -34,14 +36,14 @@
     [Parameter]
     public Action<List<List<Seat>>> CallbackAddHall { get; set; }
 
-    void OnAddHallClicked()
-    {
-      CallbackAddHall.Invoke(AllSeats);
-    }
+
+    [Parameter]
+    public Action<Seat> SeatModeCallBack{ get; set; }
+
 
     protected override void OnInitialized()
     {
-      if (AllSeats != null)
+      if (AllSeats.Count == 0)
       {
         GenerateSeatLayout();
       }
@@ -68,31 +70,47 @@
       int numberInt = Int32.Parse(number);
       int rowInt = Int32.Parse(rowIndex);
       var seat = AllSeats[rowInt][numberInt];
-      if (seat.Type == SeatType.Classic)
+      if (Mode == "hall")
       {
-        // Gotta secure that all seat numbers will be recalculated
-        seat.Type = SeatType.Disabled;
-        var row = AllSeats[rowInt];
-        var startIndex = row.IndexOf(seat);
-        for (int index = startIndex + 1; index < row.Count; index++)
+        if (seat.Type == SeatType.Classic)
         {
-          row[index].Number -= 1;
+          // Gotta secure that all seat numbers will be recalculated
+          seat.Type = SeatType.Disabled;
+          var row = AllSeats[rowInt];
+          var startIndex = row.IndexOf(seat);
+          for (int index = startIndex + 1; index < row.Count; index++)
+          {
+            row[index].Number -= 1;
+          }
         }
-      }
-      else if (seat.Type == SeatType.Disabled)
-      {
-        seat.Type = SeatType.Handicapped;
-        var row = AllSeats[rowInt];
-        var startIndex = row.IndexOf(seat);
+        else if (seat.Type == SeatType.Disabled)
+        {
+          seat.Type = SeatType.Handicapped;
+          var row = AllSeats[rowInt];
+          var startIndex = row.IndexOf(seat);
 
-        for (int index = startIndex + 1; index < row.Count; index++)
+          for (int index = startIndex + 1; index < row.Count; index++)
+          {
+            row[index].Number += 1;
+          }
+        }
+        else
         {
-          row[index].Number += 1;
+          seat.Type = SeatType.Classic;
         }
       }
-      else
+      if (Mode == "show")
       {
-        seat.Type = SeatType.Classic;
+        switch (seat.Status)
+        {
+          case SeatStatus.Free:
+            seat.Status = SeatStatus.Chosen;
+            break;
+          case SeatStatus.Chosen:
+            seat.Status = SeatStatus.Free;
+            break;
+        }
+        SeatModeCallBack.Invoke(seat);
       }
       StateHasChanged();
     }

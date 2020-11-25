@@ -15,7 +15,8 @@ namespace TicketReservationSystem.Server.CQRS.SeatReservationCQRS
     IRequestHandler<AddSeatReservationCommand, SeatReservation>,
     IRequestHandler<DeleteSeatReservationCommand, SeatReservation>,
     IRequestHandler<GetSeatReservationsQuery, IEnumerable<SeatReservation>>,
-    IRequestHandler<AddSeatToSeatReservationCommand, SeatReservation>
+    IRequestHandler<AddSeatToSeatReservationCommand, SeatReservation>,
+    IRequestHandler<GetSeatReservationQuery, SeatReservation>
   {
     private readonly SeatReservationRepository _repository;
 
@@ -42,6 +43,11 @@ namespace TicketReservationSystem.Server.CQRS.SeatReservationCQRS
     public async Task<SeatReservation> Handle(AddSeatToSeatReservationCommand request, CancellationToken cancellationToken)
     {
       return await _repository.AddSeat(request.Id, request.Seat);
+    }
+
+    public async Task<SeatReservation> Handle(GetSeatReservationQuery request, CancellationToken cancellationToken)
+    {
+      return await _repository.GetAsync(request.Id);
     }
   }
 }

@@ -23,6 +23,18 @@ namespace TicketReservationSystem.Server.Controllers
       _mapper = mapper;
       _mediator = mediator;
     }
+
+    // DELETE api/<UsersController>/5
+    [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<SeatReservation>> Get(int id)
+    {
+      var r = await _mediator.Send(new GetSeatReservationQuery() { Id = id });
+      if (r == null) { return NotFound(); }
+      return Ok(r);
+    }
+
     // GET: api/<UsersController>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]

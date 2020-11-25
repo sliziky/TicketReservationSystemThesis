@@ -1,27 +1,29 @@
-<EditForm Model="@Model" OnValidSubmit="OnValidSubmit" Class="login-form">
-  <DataAnnotationsValidator />
-  <Validations Mode="ValidationMode.Auto" Model="@Model">
-    <Validation>
-      <Field>
-        <FieldLabel>Názov kina</FieldLabel>
-        <TextEdit Placeholder="Názov.." Role="TextRole.Text" @bind-Text="@Model.Name" />
-      </Field>
-    </Validation>
-    <Validation>
-      <Field>
-        <FieldLabel>Mesto</FieldLabel>
-        <TextEdit Placeholder="Mesto.." Role="TextRole.Text" @bind-Text="@Model.City" />
-      </Field>
-    </Validation>
-    <Validation>
-      <Field>
-        <FieldLabel>Payment Gateway Key</FieldLabel>
-        <TextEdit Placeholder="Key" Role="TextRole.Text" @bind-Text="@Model.GatewayApiKey" />
-      </Field>
-    </Validation>
-  </Validations>
-  <Button Color="Color.Primary" Type="ButtonType.Submit">@ButtonText</Button>
-</EditForm>
+@if(Model != null) {
+  <EditForm Model="@Model" OnValidSubmit="OnValidSubmit" Class="login-form">
+    <DataAnnotationsValidator />
+    <Validations Mode="ValidationMode.Auto" Model="@Model">
+      <Validation>
+        <Field>
+          <FieldLabel>Názov kina</FieldLabel>
+          <TextEdit Placeholder="Názov.." Role="TextRole.Text" @bind-Text="@Model.Name" />
+        </Field>
+      </Validation>
+      <Validation>
+        <Field>
+          <FieldLabel>Mesto</FieldLabel>
+          <TextEdit Placeholder="Mesto.." Role="TextRole.Text" @bind-Text="@Model.City" />
+        </Field>
+      </Validation>
+      <Validation>
+        <Field>
+          <FieldLabel>Payment Gateway Key</FieldLabel>
+          <TextEdit Placeholder="Key" Role="TextRole.Text" @bind-Text="@Model.GatewayApiKey" />
+        </Field>
+      </Validation>
+    </Validations>
+    <Button Color="Color.Primary" Type="ButtonType.Submit">@ButtonText</Button>
+  </EditForm>
+}
 @code {
     [Parameter]
     public Cinema Model { get; set; }

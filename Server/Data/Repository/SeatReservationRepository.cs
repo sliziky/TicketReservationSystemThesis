@@ -43,9 +43,12 @@ namespace TicketReservationSystem.Server.Data.Repository
         .Include(r => r.Show).ToListAsync();
     }
 
-    public Task<SeatReservation> GetAsync(int id)
+    public async Task<SeatReservation> GetAsync(int id)
     {
-      throw new NotImplementedException();
+      var sr = await _context.ReservationSeats.Include(r => r.Reservation)
+       .Include(r => r.Seats)
+       .Include(r => r.Show).FirstOrDefaultAsync(s => s.SeatReservationId == id);
+      return sr;
     }
 
     public SeatReservation Save(SeatReservation entity)

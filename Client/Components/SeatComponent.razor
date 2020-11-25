@@ -16,51 +16,30 @@
 
     private string GetSeatTypeInString()
     {
-      if (Mode == "hall")
+      return Seat.Type switch
       {
-        switch (Seat.Type)
-        {
-          case SeatType.Classic:
-            return Seat.Number.ToString();
-          case SeatType.Disabled:
-            return "";
-          case SeatType.Handicapped:
-            return "D";
-        }
-      }
-      return Seat.Number.ToString();
+        SeatType.Disabled => "",
+        SeatType.Handicapped => "D",
+        _ => Seat.Number.ToString()
+      };
     }
 
     public string NumberCopy { get; set; }
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
       NumberCopy = Seat.Number.ToString();
-      if (Seat.Status == SeatStatus.Reserved)
+      SeatClassName = Seat.Status switch
       {
-        SeatClassName = "seat__reserved";
-      }
-      if (Seat.Status == SeatStatus.Bought)
-      {
-        SeatClassName = "seat__bought";
-      }
+        SeatStatus.Free => "",
+        SeatStatus.Reserved => "seat__reserved",
+        SeatStatus.Bought => "seat__bought",
+        SeatStatus.Chosen => "seat__chosen",
+        _ => ""
+      };
+      base.OnParametersSet();
     }
     public void OnSeatClick()
     {
-      if (Mode == "show")
-      {
-        if (Seat.Status == SeatStatus.Free || Seat.Status == SeatStatus.Chosen)
-        {
-          switch (Seat.Status)
-          {
-            case SeatStatus.Free:
-              SeatClassName = "seat__chosen";
-              break;
-            case SeatStatus.Chosen:
-              SeatClassName = "";
-              break;
-          }
-        }
-      }
       CallBack.Invoke(NumberCopy.ToString(), Seat.Row.ToString());
     }
 }

@@ -16,15 +16,14 @@ namespace TicketReservationSystem.Shared.Domain
     [Required]
     public string GatewayApiKey { get; set; }
 
-    [JsonPropertyName("name")]
     [Required]
     public string Name { get; set; }
 
-    [JsonPropertyName("city")]
+    public bool IsObsolete { get; set; } = false;
+
     [Required]
     public string City { get; set; }
 
-    [JsonPropertyName("halls")]
     [Required]
     public List<Hall> Halls { get; set; } = new List<Hall>();
   }
