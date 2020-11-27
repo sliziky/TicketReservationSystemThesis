@@ -89,7 +89,12 @@ namespace TicketReservationSystem.Server.Data.Repository
     {
       throw new NotImplementedException();
     }
-
+    public async Task<IEnumerable<Reservation>> GetReservationsForShow(int showId)
+    {
+      var show = await _context.MovieShows.Include(s => s.Reservations).Include(s => s.ReservationSeats).ThenInclude(rs => rs.Seats).FirstOrDefaultAsync(s => s.MovieShowId == showId);
+      if (show == null) { return null; }
+      return show.Reservations;
+    }
     public async Task<IEnumerable<Seat>> GetReservedSeatsForShow(int showId)
     {
       var show = await _context.MovieShows.Include(s => s.ReservationSeats).ThenInclude(rs => rs.Seats).FirstOrDefaultAsync(s => s.MovieShowId == showId);

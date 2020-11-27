@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using TicketReservationSystem.Shared.Domain;
 
-namespace TicketReservationSystem.Server.CQRS.ShowCQRS.Queries
+namespace TicketReservationSystem.Server.CQRS.ReservationsCQRS.Queries
 {
-  public class GetShowReservationsQuery : IRequest<IEnumerable<Reservation>>
+  public class GetReservationQuery : IRequest<Reservation>
   {
     public int Id { get; set; }
   }

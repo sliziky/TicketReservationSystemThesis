@@ -47,21 +47,31 @@
     {
       Show = await Http.GetFromJsonAsync<MovieShow>("api/shows/" + Id);
       Hall = await Http.GetFromJsonAsync<Hall>("api/halls/" + Show.HallId);
-      Seats = TransformSeats(Hall);
-      var seats = await Http.GetFromJsonAsync<List<Seat>>("api/shows/ " + Show.MovieShowId + "/seatreservations");
-      foreach (var seat in seats)
+
+      var seats1D = Hall.Seats;
+      var reservations = await Http.GetFromJsonAsync<List<Reservation>>("api/shows/" + Id + "/reservations");
+      foreach (var reservation in reservations)
       {
-        //seat.Status = SeatStatus.
-        //Seats[seat.Row][seat.Index] = seat;
+        foreach (var rs in reservation.ReservationSeats)
+        {
+          foreach (var seat in rs.Seats)
+          {
+            var ss = seats1D.FirstOrDefault(i => i.SeatId == seat.SeatId);
+            if (ss != null) { ss.Status = reservation.Payment != null ? SeatStatus.Bought : SeatStatus.Reserved; }
+          }
+        }
       }
+      //var reservedSeats = await Http.GetFromJsonAsync<List<Seat>>("api/shows/ " + Show.MovieShowId + "/seatreservations");
+      //foreach (var seat in reservedSeats)
+      //{
+      //  var ss = seats1D.FirstOrDefault(i => i.SeatId == seat.SeatId);
+      //  if (ss != null) { ss.Status = SeatStatus.Bought; }
+      //}
+      Seats = TransformSeats(seats1D, Hall.Rows, Hall.Seats.Count);
       HallDetails = new HallDetailsModel() { Name = Hall.Name, NumberOfSeatsInRow = (Hall.Seats.Count / Hall.Rows).ToString(), Rows = Hall.Rows.ToString() };
     }
     void OnIncrementorChange(int value)
     {
-      //if (type == "adults") { SeatPickerModel.Adults++; }
-      //if (type == "kids") { SeatPickerModel.Kids++; }
-      //if (type == "seniors") { SeatPickerModel.Seniors++; }
-      //if (type == "students") { SeatPickerModel.Students++; }
       CurrentNumberOfTickets += value;
       StateHasChanged();
     }
@@ -69,8 +79,6 @@
     {
       PickedSeats = seats;
       await OnBuyTickets();
-
-
     }
     void HandleValidSubmit() { }
 
@@ -103,15 +111,15 @@
     {
       public int SeatReservationId { get; set; }
     }
-    public List<List<Seat>> TransformSeats(Hall hall)
+    public List<List<Seat>> TransformSeats(List<Seat> seats, int rows, int seatsInRow)
     {
       List<List<Seat>> allSeats = new List<List<Seat>>();
-      for (int i = 0; i < hall.Rows; i++)
+      for (int i = 0; i < rows; i++)
       {
         List<Seat> row = new List<Seat>();
-        for (int j = 0; j < hall.Seats.Count / hall.Rows; j++)
+        for (int j = 0; j < seatsInRow / rows; j++)
         {
-          row.Add(hall.Seats[i * hall.Rows + j]);
+          row.Add(seats[i * rows + j]);
         }
         allSeats.Add(row);
       }

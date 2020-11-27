@@ -46,12 +46,12 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<IEnumerable<Reservation>> GetAllAsync()
     {
-      return await _context.Reservations.Include(res => res.MovieShow).Include(res => res.Payment).ToListAsync();
+      return await _context.Reservations.Include(res => res.MovieShow).Include(res => res.Payment).Include(res => res.ReservationSeats).ToListAsync();
     }
 
-    public Task<Reservation> GetAsync(int id)
+    public async Task<Reservation> GetAsync(int id)
     {
-      throw new NotImplementedException();
+      return await _context.Reservations.Include(res => res.MovieShow).Include(res => res.Payment).Include(res => res.ReservationSeats).FirstOrDefaultAsync(i => i.ReservationId == id);
     }
 
     public Reservation Save(Reservation entity)

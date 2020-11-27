@@ -13,6 +13,7 @@ namespace TicketReservationSystem.Server.CQRS.ReservationsCQRS
 {
   public class ReservationsHandler :
     IRequestHandler<AddReservationCommand, Reservation>,
+    IRequestHandler<GetReservationQuery, Reservation>,
     IRequestHandler<GetReservationsQuery, IEnumerable<Reservation>>,
     IRequestHandler<DeleteReservationCommand, Reservation>
 
@@ -37,6 +38,11 @@ namespace TicketReservationSystem.Server.CQRS.ReservationsCQRS
     public async Task<Reservation> Handle(DeleteReservationCommand request, CancellationToken cancellationToken)
     {
       return await _repository.DeleteAsync(request.Id);
+    }
+
+    public async Task<Reservation> Handle(GetReservationQuery request, CancellationToken cancellationToken)
+    {
+      return await _repository.GetAsync(request.Id);
     }
   }
 }

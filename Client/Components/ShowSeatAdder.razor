@@ -20,7 +20,7 @@
       }
   }
   <h3>@ReservedSeats.Count / @MaxNumberOfTickets</h3>
-  <Button Color="Color.Primary" Type="ButtonType.Submit" Disabled="@(ReservedSeats.Count == 0)" Clicked="@(() => BuyTicketsCallBack(ReservedSeats))" Class="hall-form__button">Buy tickets</Button>
+  <Button Color="Color.Primary" Type="ButtonType.Submit" Disabled="@(ReservedSeats.Count == 0)" Clicked="@(() => BuyTicketsCallBack(ReservedSeats))" Class="hall-form__button">Go to payment</Button>
 </div>
 @code {
 

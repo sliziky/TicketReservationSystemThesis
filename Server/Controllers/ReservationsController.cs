@@ -33,6 +33,16 @@ namespace TicketReservationSystem.Server.Controllers
       return Ok(users);
     }
 
+    [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<Reservation>> Get(int id)
+    {
+      var reservation = await _mediator.Send(new GetReservationQuery() { Id = id});
+      if (reservation == null) { return NotFound(); }
+      return Ok(reservation);
+    }
+
     [HttpPost("{id}/seatreservation")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]

@@ -1,21 +1,49 @@
-@page "/payment"
+@page "/payment/{Id:int}"
 @inject IJSRuntime JSRuntime
 @inject HttpClient Http
-@using Newtonsoft.Json 
+@inject NavigationManager NavigationManager
+@using Newtonsoft.Json
 
-<h3>StartPayment</h3>
+<EditForm Model="@Model" OnValidSubmit="@HandleValidSubmit" Class="login-form">
+  <DataAnnotationsValidator />
+  <Validations Mode="ValidationMode.Auto" Model="@Model">
+    <Validation>
+      <Field>
+        <FieldLabel>Email to send tickets</FieldLabel>
+        <TextEdit @bind-Text="Model.EmailToSendTickets" />
+      </Field>
+    </Validation>
+  </Validations>
+    <Button Color="Color.Primary" Type="ButtonType.Submit">Proceed to payment</Button>
+</EditForm>
 
-<button @onclick="StartPaymentClick">Start payment!</button>
 
-@code {
+@code
+{
+    [Parameter]
+    public int Id { get; set; }
+
+    public bool CanProceed { get; set; } = false;
+
+    public BuyTicketsModel Model { get; set; } = new BuyTicketsModel();
+
+    public Reservation Reservation { get; set; }
+
     private string tokenId { get; set; }
+    async void HandleValidSubmit()
+    {
+      await StartPaymentClick();
+    }
+    protected async override Task OnInitializedAsync()
+    {
+      Reservation = await Http.GetFromJsonAsync<Reservation>("api/reservations/" + Id);
+    }
     private async Task StartPaymentClick()
     {
       var response = await Http.PostAsync("api/payments/create-checkout-session", null);
       var body = await response.Content.ReadAsStringAsync();
       var token = JsonConvert.DeserializeObject<DesObject>(body);
       tokenId = token.Id;
-
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -24,7 +52,8 @@
       {
         if (tokenId != null)
         {
-          await JSRuntime.InvokeAsync<string>("stripeCheckout", null, 1, tokenId);
+          var paymentToken = "pk_test_51Hq6mILLnywEZaChdOLjvKjG8xt2CONqxPhc00RBCcKTJmCt7d0Rdr7KRqDV7ucAHYCVrHAxAk1rLF3zv98NudAt00jGum4A5a";
+          await JSRuntime.InvokeAsync<string>("stripeCheckout", null, tokenId, paymentToken);
         }
       }
     }

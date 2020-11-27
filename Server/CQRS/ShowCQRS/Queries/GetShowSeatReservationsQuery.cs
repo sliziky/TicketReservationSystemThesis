@@ -7,7 +7,7 @@ using TicketReservationSystem.Shared.Domain;
 
 namespace TicketReservationSystem.Server.CQRS.ShowCQRS.Queries
 {
-  public class GetShowReservationsQuery : IRequest<IEnumerable<Reservation>>
+  public class GetShowSeatReservationsQuery : IRequest<IEnumerable<Seat>>
   {
     public int Id { get; set; }
   }

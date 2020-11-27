@@ -59,8 +59,16 @@ namespace TicketReservationSystem.Server.Controllers
 
     [HttpGet("{showId}/seatreservations")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<Reservation>> GetSeatReservations(int showId)
+    public async Task<ActionResult<IEnumerable<Seat>>> GetSeatReservations(int showId)
     { 
+      var show = await _mediator.Send(new GetShowSeatReservationsQuery { Id = showId });
+      return Ok(show);
+    }
+
+    [HttpGet("{showId}/reservations")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<Seat>>> GetReservations(int showId)
+    {
       var show = await _mediator.Send(new GetShowReservationsQuery { Id = showId });
       return Ok(show);
     }

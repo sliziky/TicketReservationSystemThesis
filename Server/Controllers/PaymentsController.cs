@@ -55,7 +55,6 @@ namespace TicketReservationSystem.Server.Controllers
 
       var service = new SessionService();
       Session session = service.Create(options);
-
       return Ok(JsonConvert.SerializeObject(new { id = session.Id }));
     }
   }
