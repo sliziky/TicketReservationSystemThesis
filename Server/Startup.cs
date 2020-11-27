@@ -48,6 +48,7 @@ namespace TicketReservationSystem.Server
      
       services.AddTransient<MovieRepository>();
       services.AddTransient<HallRepository>();
+      services.AddTransient<PaymentRepository>();
       services.AddTransient<ReservationRepository>();
       services.AddTransient<SeatReservationRepository>();
       services.AddTransient<SeatRepository>();

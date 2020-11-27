@@ -1,5 +1,19 @@
-﻿<h3>PaymentSuccess</h3>
+@page "/payment/{Id:int}/success"
+@inject IJSRuntime JSRuntime
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@using Newtonsoft.Json
+<h3>Payment Successful. Check your email for tickets</h3>
 
 @code {
+    [Parameter]
+    public int Id { get; set; }
 
+    public Reservation Reservation { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+      Reservation = await Http.GetFromJsonAsync<Reservation>("api/reservations/" + Id);
+
+    }
 }

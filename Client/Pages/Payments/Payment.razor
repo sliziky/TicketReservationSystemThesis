@@ -32,15 +32,22 @@
     private string tokenId { get; set; }
     async void HandleValidSubmit()
     {
-      await StartPaymentClick();
+      var reservationJson = JsonConvert.SerializeObject(Reservation);
+      var response = await Http.PostAsJsonAsync<Reservation>("api/payments/create-checkout-session", Reservation);
+      var body = await response.Content.ReadAsStringAsync();
+      var token = JsonConvert.DeserializeObject<DesObject>(body);
+      tokenId = token.Id;
+      StateHasChanged();
     }
+
     protected async override Task OnInitializedAsync()
     {
       Reservation = await Http.GetFromJsonAsync<Reservation>("api/reservations/" + Id);
     }
     private async Task StartPaymentClick()
     {
-      var response = await Http.PostAsync("api/payments/create-checkout-session", null);
+      var reservationJson = JsonConvert.SerializeObject(Reservation);
+      var response = await Http.PostAsJsonAsync<Reservation>("api/payments/create-checkout-session", Reservation);
       var body = await response.Content.ReadAsStringAsync();
       var token = JsonConvert.DeserializeObject<DesObject>(body);
       tokenId = token.Id;

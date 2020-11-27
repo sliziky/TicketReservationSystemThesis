@@ -43,6 +43,16 @@ namespace TicketReservationSystem.Server.Controllers
       return Ok(reservation);
     }
 
+    [HttpPost("{id}/addPayment")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<Reservation>> PostSeatReservation(int id, [FromBody] Payment payment)
+    {
+      var res = await _mediator.Send(new AddPaymentToReservationCommand() { Id = id, Payment = payment});
+      if (res == null) { return NotFound(); }
+      return Ok(res);
+    }
+
     [HttpPost("{id}/seatreservation")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]

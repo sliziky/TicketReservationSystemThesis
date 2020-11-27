@@ -45,6 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="CQRS\PaymentsCQRS\Commands\" />
     <Folder Include="Models\" />
   </ItemGroup>
 

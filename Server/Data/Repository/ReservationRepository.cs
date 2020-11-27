@@ -51,7 +51,19 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<Reservation> GetAsync(int id)
     {
-      return await _context.Reservations.Include(res => res.MovieShow).Include(res => res.Payment).Include(res => res.ReservationSeats).FirstOrDefaultAsync(i => i.ReservationId == id);
+      return await _context.Reservations.Include(res => res.MovieShow).ThenInclude(ms => ms.Movie).Include(res => res.Payment).Include(res => res.ReservationSeats).FirstOrDefaultAsync(i => i.ReservationId == id);
+    }
+
+    public async Task<Reservation> AddPayment(int id, Payment entity)
+    {
+      var res = await _context.Reservations.Include(res => res.MovieShow).Include(res => res.Payment).Include(res => res.ReservationSeats).FirstOrDefaultAsync(i => i.ReservationId == id);
+      if (res == null) { return null; }
+      if (res.Payment != null) { return null; }
+      entity.Created = new DateTime();
+      entity.Reservation = res;
+      _context.Payments.Add(entity);
+      await _context.SaveChangesAsync();
+      return res;
     }
 
     public Reservation Save(Reservation entity)
