@@ -13,13 +13,13 @@
   <p class="row-index">@rowIndex</p>
   @for (int i = 0; i < row.Count; i++)
   {
-<SeatComponent CallBack="@OnSeatClicked"
+<SeatComponent CallBack="OnSeatClicked"
                Mode="@Mode"
                Seat="@row[i]" />}
 </div>rowIndex++;
 }
 }
-  <Button Color="Color.Primary" Type="ButtonType.Submit" Disabled="@(AllSeats == null)" Class="hall-form__button">Add hall with layout</Button>
+  <Button Color="Color.Primary" Type="ButtonType.Submit" Disabled="@(AllSeats == null)" Clicked="OnAddHallClicked" Class="hall-form__button">Add hall with layout</Button>
 </div>
 
 @code {
@@ -47,6 +47,10 @@
       {
         GenerateSeatLayout();
       }
+    }
+    void OnAddHallClicked()
+    {
+      CallbackAddHall.Invoke(AllSeats);
     }
 
     public bool CanGenerateLayout { get; set; } = false;

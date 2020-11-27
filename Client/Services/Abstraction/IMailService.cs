@@ -1,0 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace TicketReservationSystem.Client.Services.Abstraction
+{
+    public interface IMailService
+    {
+      Task SendEmailAsync(string ToEmail, string Subject, string HTMLBody);
+    }
+}

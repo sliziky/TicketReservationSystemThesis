@@ -50,7 +50,7 @@ namespace TicketReservationSystem.Server.Controllers
           {
             PriceData = new SessionLineItemPriceDataOptions
             {
-              UnitAmount = reservation.Payment.TotalPrice * 100,
+              UnitAmount = reservation.Payment.TotalPrice,
               Currency = "eur",
               ProductData = new SessionLineItemPriceDataProductDataOptions
               {

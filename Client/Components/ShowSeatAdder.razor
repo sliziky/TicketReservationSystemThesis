@@ -13,7 +13,7 @@
           <p class="row-index">@rowIndex</p>
           @for (int i = 0; i < row.Count; i++)
           {
-            <SeatComponent CallBack="@OnSeatClicked" Mode="show" Seat="@row[i]" />
+            <SeatComponent CallBack="OnSeatClicked" Mode="show" Seat="@row[i]" />
           }
         </div>
         rowIndex++;

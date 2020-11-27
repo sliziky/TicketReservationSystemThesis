@@ -9,9 +9,11 @@ using MudBlazor;
 using MudBlazor.Services;
 using System;
 using System.Collections.Generic;
+
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using TicketReservationSystem.Client.Data.NewFolder;
 using TicketReservationSystem.Client.Services;
 using TicketReservationSystem.Client.Services.Abstraction;
 
@@ -36,6 +38,7 @@ namespace TicketReservationSystem.Client
       };
       builder.Services.AddSingleton<HttpClient>(httpClient);
       builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
+      builder.Services.AddScoped<IMailService, MailService>();
       await builder.Build().RunAsync();
     }
   }

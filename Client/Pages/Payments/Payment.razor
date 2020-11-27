@@ -61,6 +61,7 @@
         {
           var paymentToken = "pk_test_51Hq6mILLnywEZaChdOLjvKjG8xt2CONqxPhc00RBCcKTJmCt7d0Rdr7KRqDV7ucAHYCVrHAxAk1rLF3zv98NudAt00jGum4A5a";
           await JSRuntime.InvokeAsync<string>("stripeCheckout", null, tokenId, paymentToken);
+          Console.WriteLine("HERE");
         }
       }
     }

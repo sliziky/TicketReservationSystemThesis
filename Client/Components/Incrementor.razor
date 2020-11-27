@@ -8,20 +8,28 @@
     public int Value { get; set; } = 0;
 
     [Parameter]
-    public Action<int> OnChange { get; set; }
+    public Action<int, string> OnChange { get; set; }
+
+    [Parameter]
+    public string Type { get; set; }
 
     void DecrementValue() {
       Value -= 1;
-      if (Value < 0) {
+      if (Value < 0)
+      {
         Value = 0;
+        OnChange.Invoke(0, Type);
+      }
+      else
+      {
+        OnChange.Invoke(-1, Type);
       }
       StateHasChanged();
-      OnChange.Invoke(-1);
     }
 
     void IncrementValue() {
       Value += 1;
       StateHasChanged();
-      OnChange.Invoke(1);
+      OnChange.Invoke(1, Type);
     }
 }

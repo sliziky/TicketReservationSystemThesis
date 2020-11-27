@@ -1,5 +1,6 @@
 @page "/shows/{Id:int}"
 @inject HttpClient Http
+@inject NavigationManager NavigationManager 
 @using Newtonsoft.Json
 @using TicketReservationSystem.Client.Components
 
@@ -8,21 +9,21 @@
   <Fields Class="seat-adder__form__row">
     <Field>
       <FieldLabel>Adults</FieldLabel>
-      <Incrementor OnChange="OnIncrementorChange" />
+      <Incrementor OnChange="OnIncrementorChange" Type="adults" />
     </Field>
     <Field>
       <FieldLabel>Kids</FieldLabel>
-      <Incrementor OnChange="OnIncrementorChange" />
+      <Incrementor OnChange="OnIncrementorChange" Type="kids"/>
 
     </Field>
     <Field>
       <FieldLabel>Senior</FieldLabel>
-      <Incrementor OnChange="OnIncrementorChange" />
+      <Incrementor OnChange="OnIncrementorChange" Type="seniors"/>
 
     </Field>
     <Field>
       <FieldLabel>Students</FieldLabel>
-      <Incrementor OnChange="OnIncrementorChange" />
+      <Incrementor OnChange="OnIncrementorChange" Type="students"/>
 
     </Field>
   </Fields>
@@ -61,19 +62,32 @@
           }
         }
       }
-      //var reservedSeats = await Http.GetFromJsonAsync<List<Seat>>("api/shows/ " + Show.MovieShowId + "/seatreservations");
-      //foreach (var seat in reservedSeats)
-      //{
-      //  var ss = seats1D.FirstOrDefault(i => i.SeatId == seat.SeatId);
-      //  if (ss != null) { ss.Status = SeatStatus.Bought; }
-      //}
       Seats = TransformSeats(seats1D, Hall.Rows, Hall.Seats.Count);
       HallDetails = new HallDetailsModel() { Name = Hall.Name, NumberOfSeatsInRow = (Hall.Seats.Count / Hall.Rows).ToString(), Rows = Hall.Rows.ToString() };
     }
-    void OnIncrementorChange(int value)
+    void OnIncrementorChange(int value, string type)
     {
+      switch (type)
+      {
+        case "adults":
+          SeatPickerModel.Adults += value;
+          break;
+        case "kids":
+          SeatPickerModel.Kids += value;
+          break;
+        case "seniors":
+          SeatPickerModel.Seniors += value;
+          break;
+        case "students":
+          SeatPickerModel.Students += value;
+          break;
+      }
       CurrentNumberOfTickets += value;
       StateHasChanged();
+    }
+    int CalculateTotalPrice()
+    {
+      return SeatPickerModel.Adults * 200 + SeatPickerModel.Kids * 150 + SeatPickerModel.Seniors * 150 + SeatPickerModel.Students * 180;
     }
     async void BuyTickets(List<Seat> seats)
     {
@@ -84,13 +98,16 @@
 
     async Task OnBuyTickets()
     {
+
       var reservation = new Reservation() { Created = DateTime.Now, Status = Reservation.ReservationStatus.NotPaid };
+      var newPayment = new Payment() { TotalPrice = CalculateTotalPrice(), Reservation = reservation, Created = new DateTime() };
       var resp = await Http.PostAsJsonAsync<Reservation>("api/shows/" + Id + "/reservations", reservation);
       if (resp.StatusCode == System.Net.HttpStatusCode.OK)
       {
         var body = await resp.Content.ReadAsStringAsync();
         var desBody = JsonConvert.DeserializeObject<DeserializedReservationResponse>(body);
-        var sr = new SeatReservation() { Price = 20 };
+        var sr = new SeatReservation() { Price = CalculateTotalPrice() };
+        await Http.PostAsJsonAsync<Payment>("api/reservations/" + desBody.ReservationId + "/addpayment", newPayment);
         var r = await Http.PostAsJsonAsync<SeatReservation>("api/reservations/" + desBody.ReservationId + "/seatreservation", sr);
         var body2 = await r.Content.ReadAsStringAsync();
         var desBody2 = JsonConvert.DeserializeObject<DeserializedSeatReservationResponse>(body2);
@@ -100,6 +117,7 @@
           s.Status = SeatStatus.Reserved;
           var x = await Http.PostAsJsonAsync<Seat>("api/seatreservations/" + desBody2.SeatReservationId + "/seats", s);
         }
+        NavigationManager.NavigateTo("/payment/" + desBody.ReservationId);
       }
 
     }
