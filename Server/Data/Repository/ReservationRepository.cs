@@ -92,12 +92,13 @@ namespace TicketReservationSystem.Server.Data.Repository
         var res = await _context.Reservations.Include(res => res.MovieShow).Include(res => res.Payment).Include(res => res.ReservationSeats).FirstOrDefaultAsync(i => i.ReservationId == id);
         if (res == null) { return null; }
         res.Status = Reservation.ReservationStatus.Paid;
-       return res;
+        await _context.SaveChangesAsync();
+        return res;
     }
 
-        public Task<Reservation> UpdateAsync(int id, Reservation entity)
-        {
-            throw new NotImplementedException();
-        }
+    public Task<Reservation> UpdateAsync(int id, Reservation entity)
+    {
+        throw new NotImplementedException();
+    }
     }
 }

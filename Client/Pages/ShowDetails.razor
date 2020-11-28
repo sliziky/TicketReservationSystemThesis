@@ -69,7 +69,20 @@
                 foreach (var seat in rs.Seats)
                 {
                     var ss = seats1D.FirstOrDefault(i => i.SeatId == seat.SeatId);
-                    if (ss != null) { ss.Status = reservation.Payment != null ? SeatStatus.Bought : SeatStatus.Reserved; }
+
+                    if (ss != null)
+                    {
+                        Console.WriteLine(reservation.Status.ToString(), reservation.ReservationId, ss.SeatId);
+                        if (reservation.Status == Reservation.ReservationStatus.Paid)
+                        {
+                            ss.Status = SeatStatus.Bought;
+                            continue;
+                        }
+                        else
+                        {
+                            ss.Status = SeatStatus.Reserved;
+                        }
+                    }
                 }
             }
         }

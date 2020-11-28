@@ -91,7 +91,7 @@ namespace TicketReservationSystem.Server.Data.Repository
     }
     public async Task<IEnumerable<Reservation>> GetReservationsForShow(int showId)
     {
-      var show = await _context.MovieShows.Include(s => s.Reservations).Include(s => s.ReservationSeats).ThenInclude(rs => rs.Seats).FirstOrDefaultAsync(s => s.MovieShowId == showId);
+      var show = await _context.MovieShows.Include(s => s.Reservations).ThenInclude(s => s.Payment).Include(s => s.ReservationSeats).ThenInclude(rs => rs.Seats).FirstOrDefaultAsync(s => s.MovieShowId == showId);
       show.Reservations = show.Reservations.Where(r => !r.SoftDeleted).ToList();
       if (show == null) { return null; }
       return show.Reservations;

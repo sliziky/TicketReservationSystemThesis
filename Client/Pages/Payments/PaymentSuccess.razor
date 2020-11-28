@@ -15,6 +15,6 @@
     {
         Reservation = await Http.GetFromJsonAsync<Reservation>("api/reservations/" + Id);
         await Http.PostAsync("api/reservations/" + Id + "/paid", null);
-        await Http.PostAsJsonAsync<int>("api/mail/send", Id);
+        //await Http.PostAsJsonAsync<int>("api/mail/send", Id);
     }
   }
