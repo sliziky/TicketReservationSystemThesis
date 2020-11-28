@@ -13,7 +13,7 @@
 
     protected async override Task OnInitializedAsync()
     {
-      Reservation = await Http.GetFromJsonAsync<Reservation>("api/reservations/" + Id);
-      await MailService.SendEmailAsync("peterbolfa4@gmail.com", "Subject", "");
+        Reservation = await Http.GetFromJsonAsync<Reservation>("api/reservations/" + Id);
+        await Http.PostAsJsonAsync<int>("api/mail/send", Id);
     }
   }

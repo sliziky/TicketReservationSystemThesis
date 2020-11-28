@@ -4,7 +4,7 @@
 @inject IJSRuntime jsRuntime
 @using System.ComponentModel.DataAnnotations;
 
-<CinemaForm Model="CinemaModel" CallBack="HandleValidSubmit" ButtonText="Add new cinema"/>
+<CinemaForm Model="CinemaModel" ModelAccount="CinemaAccount" CallBack="HandleValidSubmit" ButtonText="Add new cinema"/>
 <Alert Color="Color.Success" Visible="@(submitted && (int)_response.StatusCode == 200)" Style="margin-top: 10px;">
       <AlertMessage>Kino bolo pridané do databázy</AlertMessage>
     </Alert>
@@ -16,9 +16,11 @@
     private HttpResponseMessage _response = new HttpResponseMessage();
     private bool submitted = false;
     public Cinema CinemaModel = new Cinema();
+    public CinemaEmailAccount CinemaAccount = new CinemaEmailAccount();
 
     public async Task HandleValidSubmit(EditContext context)
     {
+      CinemaModel.Account = CinemaAccount;
       _response = await Http.PostAsJsonAsync<Cinema>("/api/cinemas", CinemaModel);
       submitted = true;
       StateHasChanged();

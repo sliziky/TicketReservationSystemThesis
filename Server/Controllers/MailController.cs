@@ -21,12 +21,12 @@ namespace TicketReservationSystem.Server.Controllers
     }
 
     [HttpPost("send")]
-    public async Task<IActionResult> SendWelcomeMail([FromForm] Reservation reservation)
+    public async Task<IActionResult> SendWelcomeMail([FromBody] int reservationId)
     {
       try
       {
         var request = new MailRequest() { ToEmail = "peterbolfa4@gmail.com", Subject = "Subject", Body = "" };
-        await mailService.SendEmailAsync(request);
+        await mailService.SendEmailAsync(request, reservationId);
         return Ok();
       }
       catch (Exception ex)

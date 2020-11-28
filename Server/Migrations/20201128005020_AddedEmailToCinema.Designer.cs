@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketReservationSystem.Server.Context;
 
 namespace TicketReservationSystem.Server.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20201128005020_AddedEmailToCinema")]
+    partial class AddedEmailToCinema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,6 +45,10 @@ namespace TicketReservationSystem.Server.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("GatewayApiKey")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -57,34 +63,6 @@ namespace TicketReservationSystem.Server.Migrations
                     b.HasKey("CinemaId");
 
                     b.ToTable("Cinemas");
-                });
-
-            modelBuilder.Entity("TicketReservationSystem.Shared.Domain.CinemaEmailAccount", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("CinemaId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Salt")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CinemaId")
-                        .IsUnique();
-
-                    b.ToTable("CinemaEmailAccount");
                 });
 
             modelBuilder.Entity("TicketReservationSystem.Shared.Domain.Hall", b =>
@@ -209,9 +187,6 @@ namespace TicketReservationSystem.Server.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("EmailForTickets")
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("MovieShowId")
                         .HasColumnType("INTEGER");
 
@@ -328,15 +303,6 @@ namespace TicketReservationSystem.Server.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("TicketReservationSystem.Shared.Domain.CinemaEmailAccount", b =>
-                {
-                    b.HasOne("TicketReservationSystem.Shared.Domain.Cinema", null)
-                        .WithOne("Account")
-                        .HasForeignKey("TicketReservationSystem.Shared.Domain.CinemaEmailAccount", "CinemaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("TicketReservationSystem.Shared.Domain.Hall", b =>
                 {
                     b.HasOne("TicketReservationSystem.Shared.Domain.Cinema", "Cinema")
@@ -422,8 +388,6 @@ namespace TicketReservationSystem.Server.Migrations
 
             modelBuilder.Entity("TicketReservationSystem.Shared.Domain.Cinema", b =>
                 {
-                    b.Navigation("Account");
-
                     b.Navigation("Halls");
                 });
 

@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketReservationSystem.Server.Context;
 
 namespace TicketReservationSystem.Server.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20201128010154_AddedEmailAccount")]
+    partial class AddedEmailAccount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -77,6 +79,7 @@ namespace TicketReservationSystem.Server.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Salt")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -207,9 +210,6 @@ namespace TicketReservationSystem.Server.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("Created")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("EmailForTickets")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("MovieShowId")

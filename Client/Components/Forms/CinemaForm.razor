@@ -2,24 +2,36 @@
   <EditForm Model="@Model" OnValidSubmit="OnValidSubmit" Class="login-form">
     <DataAnnotationsValidator />
     <Validations Mode="ValidationMode.Auto" Model="@Model">
-      <Validation>
-        <Field>
-          <FieldLabel>Názov kina</FieldLabel>
-          <TextEdit Placeholder="Názov.." Role="TextRole.Text" @bind-Text="@Model.Name" />
-        </Field>
-      </Validation>
-      <Validation>
-        <Field>
-          <FieldLabel>Mesto</FieldLabel>
-          <TextEdit Placeholder="Mesto.." Role="TextRole.Text" @bind-Text="@Model.City" />
-        </Field>
-      </Validation>
-      <Validation>
-        <Field>
-          <FieldLabel>Payment Gateway Key</FieldLabel>
-          <TextEdit Placeholder="Key" Role="TextRole.Text" @bind-Text="@Model.GatewayApiKey" />
-        </Field>
-      </Validation>
+        <Validation>
+            <Field>
+                <FieldLabel>Názov kina</FieldLabel>
+                <TextEdit Placeholder="Názov.." Role="TextRole.Text" @bind-Text="@Model.Name" />
+            </Field>
+        </Validation>
+        <Validation>
+            <Field>
+                <FieldLabel>Mesto</FieldLabel>
+                <TextEdit Placeholder="Mesto.." Role="TextRole.Text" @bind-Text="@Model.City" />
+            </Field>
+        </Validation>
+        <Validation>
+            <Field>
+                <FieldLabel>Email</FieldLabel>
+                <TextEdit Placeholder="Email" Role="TextRole.Email" @bind-Text="@ModelAccount.Email" />
+            </Field>
+        </Validation>
+        <Validation>
+            <Field>
+                <FieldLabel>Password</FieldLabel>
+                <TextEdit Placeholder="Password" Role="TextRole.Password" @bind-Text="@ModelAccount.Password" />
+            </Field>
+        </Validation>
+        <Validation>
+            <Field>
+                <FieldLabel>Payment Gateway Key</FieldLabel>
+                <TextEdit Placeholder="Key" Role="TextRole.Text" @bind-Text="@Model.GatewayApiKey" />
+            </Field>
+        </Validation>
     </Validations>
     <Button Color="Color.Primary" Type="ButtonType.Submit">@ButtonText</Button>
   </EditForm>
@@ -29,13 +41,16 @@
     public Cinema Model { get; set; }
 
     [Parameter]
+    public CinemaEmailAccount ModelAccount { get; set; }
+
+    [Parameter]
     public Func<EditContext, Task> CallBack { get; set; }
 
     [Parameter]
     public string ButtonText { get; set; }
 
     public async Task OnValidSubmit(EditContext editContext) {
-      await CallBack.Invoke(editContext);
+        await CallBack.Invoke(editContext);
     }
 
 }
