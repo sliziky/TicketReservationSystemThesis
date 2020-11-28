@@ -15,6 +15,7 @@ using TicketReservationSystem.Server.Data.Repository;
 using TicketReservationSystem.Server.Data.Mapper;
 using TicketReservationSystem.Shared.DTO;
 using System.Text.Json.Serialization;
+using TicketReservationSystem.Server.Services;
 
 namespace TicketReservationSystem.Server
 {
@@ -45,7 +46,7 @@ namespace TicketReservationSystem.Server
         options.SerializerSettings.MaxDepth = 10;
       });
       services.AddRazorPages();
-     
+      services.AddTransient<IMailService, MailService>();
       services.AddTransient<MovieRepository>();
       services.AddTransient<HallRepository>();
       services.AddTransient<PaymentRepository>();
