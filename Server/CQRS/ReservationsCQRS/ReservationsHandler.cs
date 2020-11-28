@@ -16,7 +16,9 @@ namespace TicketReservationSystem.Server.CQRS.ReservationsCQRS
     IRequestHandler<GetReservationQuery, Reservation>,
     IRequestHandler<GetReservationsQuery, IEnumerable<Reservation>>,
     IRequestHandler<DeleteReservationCommand, Reservation>,
-    IRequestHandler<AddPaymentToReservationCommand, Reservation>
+    IRequestHandler<AddPaymentToReservationCommand, Reservation>,
+        IRequestHandler<GetActiveReservationsQuery, IEnumerable<Reservation>>,
+        IRequestHandler<MarkReservationPaid, Reservation>
 
   {
 
@@ -50,5 +52,15 @@ namespace TicketReservationSystem.Server.CQRS.ReservationsCQRS
     {
       return await _repository.AddPayment(request.Id, request.Payment);
     }
-  }
+
+        public async Task<IEnumerable<Reservation>> Handle(GetActiveReservationsQuery request, CancellationToken cancellationToken)
+        {
+            return await _repository.GetActiveAsync();
+        }
+
+        public async Task<Reservation> Handle(MarkReservationPaid request, CancellationToken cancellationToken)
+        {
+            return await _repository.MarkReservationPaid(request.Id);
+        }
+    }
 }

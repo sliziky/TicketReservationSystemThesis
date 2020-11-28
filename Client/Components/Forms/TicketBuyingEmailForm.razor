@@ -1,0 +1,29 @@
+﻿@inject IJSRuntime JSRuntime
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@using Newtonsoft.Json
+
+<EditForm Model="@Model" OnValidSubmit="@HandleValidSubmit" Class="login-form">
+    <DataAnnotationsValidator />
+    <Validations Mode="ValidationMode.Auto" Model="Model">
+        <Validation>
+            <Field>
+                <FieldLabel>Email to send tickets</FieldLabel>
+                <TextEdit @bind-Text="Model.Email" />
+            </Field>
+        </Validation>
+    </Validations>
+    <Button Color="Color.Primary" Type="ButtonType.Submit">Proceed to payment</Button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public TicketBuyingEmailModel Model { get; set; }
+
+    [Parameter]
+    public Action<TicketBuyingEmailModel> OnProceedToPayment { get; set; }
+    void HandleValidSubmit()
+    {
+        OnProceedToPayment.Invoke(Model);
+    }
+}

@@ -25,7 +25,7 @@ namespace TicketReservationSystem.Server.Services
         public async Task SendEmailAsync(MailRequest mailRequest, int reservationId)
        {
         var cinema = _context.Cinemas.Include(h => h.Account).ToList().FirstOrDefault(c => !c.IsObsolete);
-        var reservation = _context.Reservations.Include(h => h.Payment).Include(h => h.ReservationSeats).ThenInclude(h => h.Seats).FirstOrDefault(r => r.ReservationId == reservationId);
+        var reservation = _context.Reservations.Include(h => h.Payment).Include(h => h.MovieShow).Include(h => h.ReservationSeats).ThenInclude(h => h.Seats).FirstOrDefault(r => r.ReservationId == reservationId);
         var email = new MimeMessage();
         email.Sender = MailboxAddress.Parse(cinema.Account.Email);
         email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));

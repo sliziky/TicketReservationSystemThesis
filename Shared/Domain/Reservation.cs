@@ -19,6 +19,7 @@ namespace TicketReservationSystem.Shared.Domain
     public MovieShow MovieShow { get; set; }
     public int? PaymentId { get; set; }
     public Payment Payment { get; set; }
+    public bool SoftDeleted { get; set; } = false;
     public string EmailForTickets { get; set; }
     public enum ReservationStatus
     {

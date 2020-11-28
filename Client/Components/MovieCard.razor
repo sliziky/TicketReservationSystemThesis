@@ -1,17 +1,16 @@
 @inject NavigationManager NavigationManager
-
 <Card Class="movie-hero__card">
-  <div class="movie-hero__card__reveal">
-    <CardText>
-      @Movie.Description
-    </CardText>
-  </div>
-  <CardImage Source=@("https://image.tmdb.org/t/p/w500" + Movie.ImageUrl) Alt="Placeholder image">
-  </CardImage>
-  <CardBody Class="movie-hero__card__body">
-    <CardTitle Size="5">@Movie.Title</CardTitle>
-    <Button Color="Color.Primary" @onclick="@(e => NavigateTo("/movie/" + Movie.MovieID))">See shows</Button>
-  </CardBody>
+    <div class="movie-hero__card__reveal">
+        <CardText>
+            @Movie.Description
+        </CardText>
+    </div>
+    <CardImage Source=@("https://image.tmdb.org/t/p/w500" + Movie.ImageUrl) Alt="Placeholder image">
+    </CardImage>
+    <CardBody Class="movie-hero__card__body">
+        <CardTitle Size="5">@Movie.Title</CardTitle>
+        <Button Color="Color.Primary" @onclick="@(e => NavigateTo("/movie/" + Movie.MovieID))">See shows</Button>
+    </CardBody>
 </Card>
 @code {
     [Parameter]

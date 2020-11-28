@@ -38,7 +38,7 @@ namespace TicketReservationSystem.Server.Data.Repository
     {
       var reservation = await _context.Reservations.Include(res => res.MovieShow).Include(res => res.Payment).FirstOrDefaultAsync(res => res.ReservationId == entityId);
       if (reservation != null) {
-        _context.Reservations.Remove(reservation);
+        reservation.SoftDeleted = true;
         await _context.SaveChangesAsync();
       }
       return reservation;
@@ -46,10 +46,16 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<IEnumerable<Reservation>> GetAllAsync()
     {
-      return await _context.Reservations.Include(res => res.MovieShow).Include(res => res.Payment).Include(res => res.ReservationSeats).ToListAsync();
+      return await _context.Reservations.Include(res => res.MovieShow).ThenInclude(show => show.Movie).Include(res => res.Payment).ToListAsync();
     }
 
-    public async Task<Reservation> GetAsync(int id)
+        public async Task<IEnumerable<Reservation>> GetActiveAsync()
+        {
+            var allRes = await _context.Reservations.Include(res => res.MovieShow).ThenInclude(show => show.Movie).Include(res => res.Payment).Include(res => res.ReservationSeats).ToListAsync();
+            return allRes.Where(res => !res.SoftDeleted);
+        }
+
+        public async Task<Reservation> GetAsync(int id)
     {
       return await _context.Reservations.Include(res => res.MovieShow).ThenInclude(ms => ms.Movie).Include(res => res.Payment).Include(res => res.ReservationSeats).FirstOrDefaultAsync(i => i.ReservationId == id);
     }
@@ -81,9 +87,17 @@ namespace TicketReservationSystem.Server.Data.Repository
       throw new NotImplementedException();
     }
 
-    public Task<Reservation> UpdateAsync(int id, Reservation entity)
+    public async Task<Reservation> MarkReservationPaid(int id)
     {
-      throw new NotImplementedException();
+        var res = await _context.Reservations.Include(res => res.MovieShow).Include(res => res.Payment).Include(res => res.ReservationSeats).FirstOrDefaultAsync(i => i.ReservationId == id);
+        if (res == null) { return null; }
+        res.Status = Reservation.ReservationStatus.Paid;
+       return res;
     }
-  }
+
+        public Task<Reservation> UpdateAsync(int id, Reservation entity)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

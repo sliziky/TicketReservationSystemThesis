@@ -33,6 +33,14 @@ namespace TicketReservationSystem.Server.Controllers
       return Ok(users);
     }
 
+    [HttpGet("active")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<Reservation>>> GetActive()
+    {
+        var reservations = await _mediator.Send(new GetActiveReservationsQuery());
+        return Ok(reservations);
+    }
+
     [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -53,7 +61,17 @@ namespace TicketReservationSystem.Server.Controllers
       return Ok(res);
     }
 
-    [HttpPost("{id}/seatreservation")]
+        [HttpPost("{id}/paid")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<Reservation>> MarkReservationPaid(int id)
+        {
+            var res = await _mediator.Send(new MarkReservationPaid() { Id = id });
+            if (res == null) { return NotFound(); }
+            return Ok(res);
+        }
+
+        [HttpPost("{id}/seatreservation")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<ActionResult<SeatReservation>> PostSeatReservation(int id,[FromBody] SeatReservation sr)

@@ -1,40 +1,47 @@
 @page "/shows/{Id:int}"
 @inject HttpClient Http
-@inject NavigationManager NavigationManager 
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @using Newtonsoft.Json
 @using TicketReservationSystem.Client.Components
 
 <EditForm Model="@SeatPickerModel" OnValidSubmit="@HandleValidSubmit" Class="hall-form">
-  <DataAnnotationsValidator />
-  <Fields Class="seat-adder__form__row">
-    <Field>
-      <FieldLabel>Adults</FieldLabel>
-      <Incrementor OnChange="OnIncrementorChange" Type="adults" />
-    </Field>
-    <Field>
-      <FieldLabel>Kids</FieldLabel>
-      <Incrementor OnChange="OnIncrementorChange" Type="kids"/>
+    <DataAnnotationsValidator />
+    <Fields Class="seat-adder__form__row">
+        <Field>
+            <FieldLabel>Adults</FieldLabel>
+            <Incrementor OnChange="OnIncrementorChange" Type="adults" />
+        </Field>
+        <Field>
+            <FieldLabel>Kids</FieldLabel>
+            <Incrementor OnChange="OnIncrementorChange" Type="kids" />
 
-    </Field>
-    <Field>
-      <FieldLabel>Senior</FieldLabel>
-      <Incrementor OnChange="OnIncrementorChange" Type="seniors"/>
+        </Field>
+        <Field>
+            <FieldLabel>Senior</FieldLabel>
+            <Incrementor OnChange="OnIncrementorChange" Type="seniors" />
 
-    </Field>
-    <Field>
-      <FieldLabel>Students</FieldLabel>
-      <Incrementor OnChange="OnIncrementorChange" Type="students"/>
+        </Field>
+        <Field>
+            <FieldLabel>Students</FieldLabel>
+            <Incrementor OnChange="OnIncrementorChange" Type="students" />
 
-    </Field>
-  </Fields>
+        </Field>
+    </Fields>
 </EditForm>
 <h3 class="screen__text">SCREEN</h3>
 
 @if (Seats.Count != 0)
 {
-<ShowSeatAdder AllSeats="Seats" HallDetails="HallDetails" MaxNumberOfTickets="@CurrentNumberOfTickets" BuyTicketsCallBack="BuyTickets" />
+    <ShowSeatAdder AllSeats="Seats" HallDetails="HallDetails" MaxNumberOfTickets="@CurrentNumberOfTickets" BuyTicketsCallBack="BuyTickets" />
 }
-@code { [Parameter]
+@if (ShowEmail)
+{
+    <TicketBuyingEmailForm Model="EmailModel" OnProceedToPayment="BuyTicketsCallback" />
+}
+
+@code {
+    [Parameter]
     public int Id { get; set; }
     public SeatPickerModel SeatPickerModel { get; set; } = new SeatPickerModel();
     public MovieShow Show { get; set; } = new MovieShow();
@@ -44,102 +51,134 @@
     public int CurrentNumberOfTickets { get; set; } = 0;
     public int PickedSeatsCount { get; set; } = 0;
     public HallDetailsModel HallDetails { get; set; }
+    public bool ShowEmail { get; set; } = false;
+    public TicketBuyingEmailModel EmailModel { get; set; } = new TicketBuyingEmailModel();
+
+    public Reservation Reservation { get; set; }
     protected async override Task OnInitializedAsync()
     {
-      Show = await Http.GetFromJsonAsync<MovieShow>("api/shows/" + Id);
-      Hall = await Http.GetFromJsonAsync<Hall>("api/halls/" + Show.HallId);
+        Show = await Http.GetFromJsonAsync<MovieShow>("api/shows/" + Id);
+        Hall = await Http.GetFromJsonAsync<Hall>("api/halls/" + Show.HallId);
 
-      var seats1D = Hall.Seats;
-      var reservations = await Http.GetFromJsonAsync<List<Reservation>>("api/shows/" + Id + "/reservations");
-      foreach (var reservation in reservations)
-      {
-        foreach (var rs in reservation.ReservationSeats)
+        var seats1D = Hall.Seats;
+        var reservations = await Http.GetFromJsonAsync<List<Reservation>>("api/shows/" + Id + "/reservations");
+        foreach (var reservation in reservations)
         {
-          foreach (var seat in rs.Seats)
-          {
-            var ss = seats1D.FirstOrDefault(i => i.SeatId == seat.SeatId);
-            if (ss != null) { ss.Status = reservation.Payment != null ? SeatStatus.Bought : SeatStatus.Reserved; }
-          }
+            foreach (var rs in reservation.ReservationSeats)
+            {
+                foreach (var seat in rs.Seats)
+                {
+                    var ss = seats1D.FirstOrDefault(i => i.SeatId == seat.SeatId);
+                    if (ss != null) { ss.Status = reservation.Payment != null ? SeatStatus.Bought : SeatStatus.Reserved; }
+                }
+            }
         }
-      }
-      Seats = TransformSeats(seats1D, Hall.Rows, Hall.Seats.Count);
-      HallDetails = new HallDetailsModel() { Name = Hall.Name, NumberOfSeatsInRow = (Hall.Seats.Count / Hall.Rows).ToString(), Rows = Hall.Rows.ToString() };
+        Seats = TransformSeats(seats1D, Hall.Rows, Hall.Seats.Count);
+        HallDetails = new HallDetailsModel() { Name = Hall.Name, NumberOfSeatsInRow = (Hall.Seats.Count / Hall.Rows).ToString(), Rows = Hall.Rows.ToString() };
     }
     void OnIncrementorChange(int value, string type)
     {
-      switch (type)
-      {
-        case "adults":
-          SeatPickerModel.Adults += value;
-          break;
-        case "kids":
-          SeatPickerModel.Kids += value;
-          break;
-        case "seniors":
-          SeatPickerModel.Seniors += value;
-          break;
-        case "students":
-          SeatPickerModel.Students += value;
-          break;
-      }
-      CurrentNumberOfTickets += value;
-      StateHasChanged();
+        switch (type)
+        {
+            case "adults":
+                SeatPickerModel.Adults += value;
+                break;
+            case "kids":
+                SeatPickerModel.Kids += value;
+                break;
+            case "seniors":
+                SeatPickerModel.Seniors += value;
+                break;
+            case "students":
+                SeatPickerModel.Students += value;
+                break;
+        }
+        CurrentNumberOfTickets += value;
+        StateHasChanged();
     }
     int CalculateTotalPrice()
     {
-      return SeatPickerModel.Adults * 200 + SeatPickerModel.Kids * 150 + SeatPickerModel.Seniors * 150 + SeatPickerModel.Students * 180;
+        return SeatPickerModel.Adults * 200 + SeatPickerModel.Kids * 150 + SeatPickerModel.Seniors * 150 + SeatPickerModel.Students * 180;
     }
-    async void BuyTickets(List<Seat> seats)
+    async void BuyTicketsCallback(TicketBuyingEmailModel model)
     {
-      PickedSeats = seats;
-      await OnBuyTickets();
+        EmailModel = model;
+        await OnBuyTickets();
+        await StartPaymentClick();
+    }
+    void BuyTickets(List<Seat> seats)
+    {
+        PickedSeats = seats;
+        ShowEmail = true;
+        StateHasChanged();
     }
     void HandleValidSubmit() { }
 
     async Task OnBuyTickets()
     {
 
-      var reservation = new Reservation() { Created = DateTime.Now, Status = Reservation.ReservationStatus.NotPaid };
-      var newPayment = new Payment() { TotalPrice = CalculateTotalPrice(), Reservation = reservation, Created = new DateTime() };
-      var resp = await Http.PostAsJsonAsync<Reservation>("api/shows/" + Id + "/reservations", reservation);
-      if (resp.StatusCode == System.Net.HttpStatusCode.OK)
-      {
-        var body = await resp.Content.ReadAsStringAsync();
-        var desBody = JsonConvert.DeserializeObject<DeserializedReservationResponse>(body);
-        var sr = new SeatReservation() { Price = CalculateTotalPrice() };
-        await Http.PostAsJsonAsync<Payment>("api/reservations/" + desBody.ReservationId + "/addpayment", newPayment);
-        var r = await Http.PostAsJsonAsync<SeatReservation>("api/reservations/" + desBody.ReservationId + "/seatreservation", sr);
-        var body2 = await r.Content.ReadAsStringAsync();
-        var desBody2 = JsonConvert.DeserializeObject<DeserializedSeatReservationResponse>(body2);
-
-        foreach (var s in PickedSeats)
+        Reservation = new Reservation() { EmailForTickets = EmailModel.Email, Created = DateTime.Now, Status = Reservation.ReservationStatus.NotPaid };
+        var newPayment = new Payment() { TotalPrice = CalculateTotalPrice(), Created = new DateTime() };
+        Reservation.Payment = newPayment;
+        var resp = await Http.PostAsJsonAsync<Reservation>("api/shows/" + Id + "/reservations", Reservation);
+        if (resp.StatusCode == System.Net.HttpStatusCode.OK)
         {
-          s.Status = SeatStatus.Reserved;
-          var x = await Http.PostAsJsonAsync<Seat>("api/seatreservations/" + desBody2.SeatReservationId + "/seats", s);
+            var body = await resp.Content.ReadAsStringAsync();
+            var desBody = JsonConvert.DeserializeObject<DeserializedReservationResponse>(body);
+            var sr = new SeatReservation() { Price = CalculateTotalPrice() };
+            //await Http.PostAsJsonAsync<Payment>("api/reservations/" + desBody.ReservationId + "/addpayment", newPayment);
+            Reservation.ReservationId = desBody.ReservationId;
+            var r = await Http.PostAsJsonAsync<SeatReservation>("api/reservations/" + desBody.ReservationId + "/seatreservation", sr);
+            var body2 = await r.Content.ReadAsStringAsync();
+            var desBody2 = JsonConvert.DeserializeObject<DeserializedSeatReservationResponse>(body2);
+
+            foreach (var s in PickedSeats)
+            {
+                s.Status = SeatStatus.Reserved;
+                var x = await Http.PostAsJsonAsync<Seat>("api/seatreservations/" + desBody2.SeatReservationId + "/seats", s);
+            }
+            ShowEmail = true;
+            //NavigationManager.NavigateTo("/payment/" + desBody.ReservationId);
         }
-        NavigationManager.NavigateTo("/payment/" + desBody.ReservationId);
-      }
+        StateHasChanged();
 
     }
     public class DeserializedReservationResponse
     {
-      public int ReservationId { get; set; }
+        public int ReservationId { get; set; }
     }
     public class DeserializedSeatReservationResponse
     {
-      public int SeatReservationId { get; set; }
+        public int SeatReservationId { get; set; }
     }
     public List<List<Seat>> TransformSeats(List<Seat> seats, int rows, int seatsInRow)
     {
-      List<List<Seat>> allSeats = new List<List<Seat>>();
-      for (int i = 0; i < rows; i++)
-      {
-        List<Seat> row = new List<Seat>();
-        for (int j = 0; j < seatsInRow / rows; j++)
+        List<List<Seat>> allSeats = new List<List<Seat>>();
+        for (int i = 0; i < rows; i++)
         {
-          row.Add(seats[i * rows + j]);
+            List<Seat> row = new List<Seat>();
+            for (int j = 0; j < seatsInRow / rows; j++)
+            {
+                row.Add(seats[i * rows + j]);
+            }
+            allSeats.Add(row);
         }
-        allSeats.Add(row);
-      }
-      return allSeats;
-    } }
+        return allSeats;
+    }
+    private async Task StartPaymentClick()
+    {
+        var reservationJson = JsonConvert.SerializeObject(Reservation);
+        Reservation = await Http.GetFromJsonAsync<Reservation>("api/reservations/" + Reservation.ReservationId);
+        var response = await Http.PostAsJsonAsync<Reservation>("api/payments/create-checkout-session", Reservation);
+        var body = await response.Content.ReadAsStringAsync();
+        var token = JsonConvert.DeserializeObject<DesObject>(body);
+        var tokenId = token.Id;
+        var paymentToken = "pk_test_51Hq6mILLnywEZaChdOLjvKjG8xt2CONqxPhc00RBCcKTJmCt7d0Rdr7KRqDV7ucAHYCVrHAxAk1rLF3zv98NudAt00jGum4A5a";
+        await JSRuntime.InvokeAsync<string>("stripeCheckout", null, tokenId, paymentToken);
+
+    }
+    public class DesObject
+    {
+        public string Id { get; set; }
+    }
+}

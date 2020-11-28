@@ -1,4 +1,18 @@
-@page "/paymentError"
-@code {
+@page "/payment/{Id:int}/cancel"
+@inject IJSRuntime JSRuntime
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IMailService MailService
+@using Newtonsoft.Json
+<h3>Payment Error. Reservation was deleted</h3>
 
+@code { [Parameter]
+    public int Id { get; set; }
+
+    public Reservation Reservation { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        await Http.DeleteAsync("api/reservations/" + Id);
+    }
 }

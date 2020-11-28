@@ -38,13 +38,13 @@ namespace TicketReservationSystem.Server.Controllers
     [HttpPost("create-checkout-session")]
     public ActionResult CreateCheckoutSession([FromBody]Reservation reservation)
     {
-      var options = new SessionCreateOptions
-      {
-        PaymentMethodTypes = new List<string>
-        {
-          "card",
-        },
-        LineItems = new List<SessionLineItemOptions>
+            var options = new SessionCreateOptions
+            {
+                PaymentMethodTypes = new List<string>
+                {
+                    "card",
+                },
+                LineItems = new List<SessionLineItemOptions>
         {
           new SessionLineItemOptions
           {
@@ -54,7 +54,7 @@ namespace TicketReservationSystem.Server.Controllers
               Currency = "eur",
               ProductData = new SessionLineItemPriceDataProductDataOptions
               {
-                Name = reservation.MovieShow.Movie.Title.ToString(),
+                Name = reservation.MovieShow.Movie.Title.ToString()
               },
 
             },
