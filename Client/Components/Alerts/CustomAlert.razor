@@ -1,0 +1,16 @@
+﻿@using Blazorise.Components 
+<Alert Color="@Color">
+    <AlertMessage>@AlertMessage</AlertMessage>
+    <AlertDescription>@AlertDescr</AlertDescription>
+</Alert>
+@code {
+    [Parameter]
+    public string AlertMessage { get; set; }
+
+    [Parameter]
+    public string AlertDescr { get; set; }
+
+    [Parameter]
+    public Blazorise.Color Color{ get; set; }
+
+}

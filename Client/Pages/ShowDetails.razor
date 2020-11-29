@@ -3,8 +3,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @using Newtonsoft.Json
-@using TicketReservationSystem.Client.Components
-
+@using TicketReservationSystem.Client.Components.Alerts
 <EditForm Model="@SeatPickerModel" OnValidSubmit="@HandleValidSubmit" Class="hall-form">
     <DataAnnotationsValidator />
     <Fields Class="seat-adder__form__row">
@@ -33,7 +32,11 @@
 
 @if (Seats.Count != 0)
 {
-    <ShowSeatAdder AllSeats="Seats" HallDetails="HallDetails" MaxNumberOfTickets="@CurrentNumberOfTickets" BuyTicketsCallBack="BuyTickets" />
+    <ShowSeatAdder AllSeats="Seats" HallDetails="HallDetails" MaxNumberOfTickets="@CurrentNumberOfTickets" BuyTicketsCallBack="BuyTickets" ShowId="Id" FetchReservedSeats="FetchReservedSeats"/>
+}
+@if (ReservationContainsAlreadyReservedSeat)
+{ 
+    <CustomAlert Color="Color.Warning" AlertDescr="Seat is already reserved" AlertMessage="Some seat in your reservation has been reserved" />
 }
 @if (ShowEmail)
 {
@@ -55,6 +58,9 @@
     public TicketBuyingEmailModel EmailModel { get; set; } = new TicketBuyingEmailModel();
 
     public Reservation Reservation { get; set; }
+
+    public bool ReservationContainsAlreadyReservedSeat { get; set; } = false;
+
     protected async override Task OnInitializedAsync()
     {
         Show = await Http.GetFromJsonAsync<MovieShow>("api/shows/" + Id);
@@ -72,16 +78,12 @@
 
                     if (ss != null)
                     {
-                        Console.WriteLine(reservation.Status.ToString(), reservation.ReservationId, ss.SeatId);
                         if (reservation.Status == Reservation.ReservationStatus.Paid)
                         {
                             ss.Status = SeatStatus.Bought;
                             continue;
                         }
-                        else
-                        {
-                            ss.Status = SeatStatus.Reserved;
-                        }
+                        ss.Status = SeatStatus.Reserved;
                     }
                 }
             }
@@ -117,10 +119,19 @@
     {
         EmailModel = model;
         await OnBuyTickets();
-        await StartPaymentClick();
     }
-    void BuyTickets(List<Seat> seats)
+    async void BuyTickets(List<Seat> seats)
     {
+        foreach (var pickedSeat in seats)
+        {
+            var isReserved = await Http.GetFromJsonAsync<bool>("api/shows/" + Id + "/isseatreserved/" + pickedSeat.SeatId);
+            if (isReserved) {
+                ReservationContainsAlreadyReservedSeat = true;
+                await FetchReservedSeats();
+                StateHasChanged();
+                return;
+            }
+        }
         PickedSeats = seats;
         ShowEmail = true;
         StateHasChanged();
@@ -129,7 +140,6 @@
 
     async Task OnBuyTickets()
     {
-
         Reservation = new Reservation() { EmailForTickets = EmailModel.Email, Created = DateTime.Now, Status = Reservation.ReservationStatus.NotPaid };
         var newPayment = new Payment() { TotalPrice = CalculateTotalPrice(), Created = new DateTime() };
         Reservation.Payment = newPayment;
@@ -151,9 +161,9 @@
                 var x = await Http.PostAsJsonAsync<Seat>("api/seatreservations/" + desBody2.SeatReservationId + "/seats", s);
             }
             ShowEmail = true;
-            //NavigationManager.NavigateTo("/payment/" + desBody.ReservationId);
         }
         StateHasChanged();
+        await StartPaymentClick();
 
     }
     public class DeserializedReservationResponse
@@ -189,6 +199,32 @@
         var paymentToken = "pk_test_51Hq6mILLnywEZaChdOLjvKjG8xt2CONqxPhc00RBCcKTJmCt7d0Rdr7KRqDV7ucAHYCVrHAxAk1rLF3zv98NudAt00jGum4A5a";
         await JSRuntime.InvokeAsync<string>("stripeCheckout", null, tokenId, paymentToken);
 
+    }
+    private async Task FetchReservedSeats()
+    {
+        var seats1D = Hall.Seats;
+        var reservations = await Http.GetFromJsonAsync<List<Reservation>>("api/shows/" + Id + "/reservations");
+        foreach (var reservation in reservations)
+        {
+            foreach (var rs in reservation.ReservationSeats)
+            {
+                foreach (var seat in rs.Seats)
+                {
+                    var ss = seats1D.FirstOrDefault(i => i.SeatId == seat.SeatId);
+
+                    if (ss != null)
+                    {
+                        if (reservation.Status == Reservation.ReservationStatus.Paid)
+                        {
+                            ss.Status = SeatStatus.Bought;
+                            continue;
+                        }
+                        ss.Status = SeatStatus.Reserved;
+                    }
+                }
+            }
+        }
+        Seats = TransformSeats(seats1D, Hall.Rows, Hall.Seats.Count);
     }
     public class DesObject
     {

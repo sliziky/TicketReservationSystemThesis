@@ -75,12 +75,13 @@ body {
   background-color: #323f4b !important;
 }
   .seat__bought {
-    cursor: default !important;
+    cursor: not-allowed !important;
+
     background-color: #900303;
   }
 
 .seat__reserved {
-  cursor: default !important;
+  cursor: not-allowed !important;
   background-color: #FF8049 !important;
 }
 .movie-details__fields {

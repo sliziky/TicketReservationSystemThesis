@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TicketReservationSystem.Server.CQRS.ReservationsCQRS.Commands;
+using TicketReservationSystem.Server.CQRS.SeatsCQRS.Queries;
 using TicketReservationSystem.Server.CQRS.ShowCQRS.Commands;
 using TicketReservationSystem.Server.CQRS.ShowCQRS.Queries;
 using TicketReservationSystem.Shared.Domain;
@@ -65,7 +66,15 @@ namespace TicketReservationSystem.Server.Controllers
       return Ok(show);
     }
 
-    [HttpGet("{showId}/reservations")]
+    [HttpGet("{showId}/isseatreserved/{seatId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<Seat>>> GetIsSeatReserved(int showId, int seatId)
+    {
+        var reserved = await _mediator.Send(new GetIsSeatReservedQuery() { SeatId = seatId , ShowId = showId}) ;
+        return Ok(reserved);
+    }
+
+        [HttpGet("{showId}/reservations")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<Seat>>> GetReservations(int showId)
     {

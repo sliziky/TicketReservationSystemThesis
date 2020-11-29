@@ -14,7 +14,8 @@ namespace TicketReservationSystem.Server.CQRS.SeatsCQRS
   public class SeatsHandler :
     IRequestHandler<AddSeatCommand,Seat>,
     IRequestHandler<GetSeatsQuery, IEnumerable<Seat>>,
-    IRequestHandler<DeleteSeatCommand, Seat>
+    IRequestHandler<DeleteSeatCommand, Seat>,
+        IRequestHandler<GetIsSeatReservedQuery, bool>
   {
     private readonly SeatRepository _repository;
 
@@ -36,6 +37,11 @@ namespace TicketReservationSystem.Server.CQRS.SeatsCQRS
     public async Task<Seat> Handle(DeleteSeatCommand request, CancellationToken cancellationToken)
     {
       return await _repository.DeleteAsync(request.Id);
+    }
+
+    public async Task<bool> Handle(GetIsSeatReservedQuery request, CancellationToken cancellationToken)
+    {
+        return await _repository.IsSeatReserved(request.SeatId, request.ShowId);
     }
   }
 }

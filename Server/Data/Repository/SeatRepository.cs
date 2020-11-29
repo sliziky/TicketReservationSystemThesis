@@ -78,6 +78,18 @@ namespace TicketReservationSystem.Server.Data.Repository
       }
       return seat;
     }
+    public async Task<bool> IsSeatReserved(int seatId, int showId)
+    {
+        var show = await _context.MovieShows.Include(s => s.ReservationSeats).ThenInclude(rs => rs.Seats).Include(s => s.Reservations).FirstOrDefaultAsync(show => show.MovieShowId == showId);
+        if (show == null) { return false; }
+        foreach (var sr in show.ReservationSeats)
+        {
+            if (sr.Reservation.SoftDeleted) { continue; }
+            var seat = sr.Seats.FirstOrDefault(seat => seat.SeatId == seatId);
+            if (seat != null) { return true; }
+        }
+        return false;
+    }
 
     Seat IRepository<Seat>.Update(int id, Seat entity)
     {

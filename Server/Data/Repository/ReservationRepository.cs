@@ -38,6 +38,7 @@ namespace TicketReservationSystem.Server.Data.Repository
     {
       var reservation = await _context.Reservations.Include(res => res.MovieShow).Include(res => res.Payment).FirstOrDefaultAsync(res => res.ReservationId == entityId);
       if (reservation != null) {
+        //_context.Reservations.Remove(reservation);
         reservation.SoftDeleted = true;
         await _context.SaveChangesAsync();
       }
