@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 using TicketReservationSystem.Client.Data.NewFolder;
 using TicketReservationSystem.Client.Services;
 using TicketReservationSystem.Client.Services.Abstraction;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TicketReservationSystem.Client
 {
@@ -37,6 +39,7 @@ namespace TicketReservationSystem.Client
         BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
       };
       builder.Services.AddSingleton<HttpClient>(httpClient);
+      builder.Services.AddSingleton<IUrlDecoder, UrlDecoder>();
       builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
       builder.Services.AddScoped<IMailService, MailService>();
       await builder.Build().RunAsync();

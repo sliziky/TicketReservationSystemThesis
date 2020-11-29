@@ -197,6 +197,7 @@
         var token = JsonConvert.DeserializeObject<DesObject>(body);
         var tokenId = token.Id;
         var paymentToken = "pk_test_51Hq6mILLnywEZaChdOLjvKjG8xt2CONqxPhc00RBCcKTJmCt7d0Rdr7KRqDV7ucAHYCVrHAxAk1rLF3zv98NudAt00jGum4A5a";
+        //await Http.PostAsJsonAsync<string>("https://api.stripe.com/v1/payment_intents/"+ token.PaymentIntent +"/cancel", "sk_test_51Hq6mILLnywEZaCh5zRv3DcYUVDlWanxIZpLFaPsu2WhLRrWAsSwcVU6xW6PtORR56XVGPwvGMF5ASFu1JB6hCoq00t5xiR1Ki");
         await JSRuntime.InvokeAsync<string>("stripeCheckout", null, tokenId, paymentToken);
 
     }
@@ -229,5 +230,6 @@
     public class DesObject
     {
         public string Id { get; set; }
+        public string PaymentIntent { get; set; }
     }
 }

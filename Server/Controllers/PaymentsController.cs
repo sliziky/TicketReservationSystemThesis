@@ -11,6 +11,8 @@ using Newtonsoft.Json;
 using TicketReservationSystem.Shared.Domain;
 using MediatR;
 using TicketReservationSystem.Server.CQRS.PaymentsCQRS.Queries;
+using Microsoft.Extensions.DependencyInjection;
+using TicketReservationSystem.Server.Services;
 
 namespace TicketReservationSystem.Server.Controllers
 {
@@ -19,11 +21,13 @@ namespace TicketReservationSystem.Server.Controllers
   public class PaymentsController : ControllerBase
   {
     private readonly IMediator _mediator;
-    public PaymentsController(IMediator mediator)
+    private readonly IPaymentTimeoutService _service;
+    public PaymentsController(IMediator mediator, IPaymentTimeoutService service)
     {
       // Set your secret key. Remember to switch to your live secret key in production!
       // See your keys here: https://dashboard.stripe.com/account/apikeys
       _mediator = mediator;
+      _service = service;
       StripeConfiguration.ApiKey = "sk_test_51Hq6mILLnywEZaCh5zRv3DcYUVDlWanxIZpLFaPsu2WhLRrWAsSwcVU6xW6PtORR56XVGPwvGMF5ASFu1JB6hCoq00t5xiR1Ki";
     }
 
@@ -36,7 +40,7 @@ namespace TicketReservationSystem.Server.Controllers
     }
 
     [HttpPost("create-checkout-session")]
-    public ActionResult CreateCheckoutSession([FromBody]Reservation reservation)
+    public async Task<ActionResult> CreateCheckoutSessionAsync([FromBody]Reservation reservation)
     {
             var options = new SessionCreateOptions
             {
@@ -58,6 +62,7 @@ namespace TicketReservationSystem.Server.Controllers
               },
 
             },
+            Description = "Payment will expire at " + reservation.Payment.Created.AddMinutes(7).ToString(),
             Quantity = reservation.ReservationSeats.Count
           },
         },
@@ -68,7 +73,8 @@ namespace TicketReservationSystem.Server.Controllers
 
       var service = new SessionService();
       Session session = service.Create(options);
-      return Ok(JsonConvert.SerializeObject(new { id = session.Id }));
+      _service.StartAsync();
+      return Ok(JsonConvert.SerializeObject(new { id = session.Id, paymentIntent = session.PaymentIntentId }));
     }
   }
 }

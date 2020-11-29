@@ -66,7 +66,7 @@ namespace TicketReservationSystem.Server.Data.Repository
       var res = await _context.Reservations.Include(res => res.MovieShow).Include(res => res.Payment).Include(res => res.ReservationSeats).FirstOrDefaultAsync(i => i.ReservationId == id);
       if (res == null) { return null; }
       if (res.Payment != null) { return null; }
-      entity.Created = new DateTime();
+      entity.Created = DateTime.Now;
       entity.Reservation = res;
       _context.Payments.Add(entity);
       await _context.SaveChangesAsync();

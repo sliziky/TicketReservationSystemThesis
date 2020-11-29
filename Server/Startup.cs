@@ -45,6 +45,7 @@ namespace TicketReservationSystem.Server
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
         options.SerializerSettings.MaxDepth = 10;
       });
+      services.AddTransient<IPaymentTimeoutService, PaymentTimeoutService>();
       services.AddRazorPages();
       services.AddTransient<IMailService, MailService>();
       services.AddTransient<MovieRepository>();

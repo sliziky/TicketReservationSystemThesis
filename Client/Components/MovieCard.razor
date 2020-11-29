@@ -1,4 +1,5 @@
 @inject NavigationManager NavigationManager
+@inject IUrlDecoder UrlDecoder
 <Card Class="movie-hero__card">
     <div class="movie-hero__card__reveal">
         <CardText>
@@ -17,7 +18,7 @@
     public MovieDTO Movie { get; set; }
     private void NavigateTo(string url)
     {
-      NavigationManager.NavigateTo(url);
+        NavigationManager.NavigateTo(url);
     }
 }
 
