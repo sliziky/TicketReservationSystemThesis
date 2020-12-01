@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketReservationSystem.Server.Context;
 
 namespace TicketReservationSystem.Server.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20201201191809_ChangedDbName")]
+    partial class ChangedDbName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,14 +29,10 @@ namespace TicketReservationSystem.Server.Migrations
 
                     b.HasKey("AdminId");
 
-                    b.ToTable("Admins");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
-                    b.HasData(
-                        new
-                        {
-                            AdminId = 1,
-                            UserId = 1
-                        });
+                    b.ToTable("Admins");
                 });
 
             modelBuilder.Entity("TicketReservationSystem.Shared.Domain.Cinema", b =>
@@ -308,12 +306,6 @@ namespace TicketReservationSystem.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("AdminId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("AdminId1")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Email")
                         .HasColumnType("TEXT");
 
@@ -331,19 +323,18 @@ namespace TicketReservationSystem.Server.Migrations
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("AdminId1");
-
                     b.ToTable("Users");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            AdminId = 1,
-                            Email = "admin@admin.com",
-                            Password = "$2b$10$e340EcBabEmssA./wbyl3.2G3lIUxSEGx8Tt56W2RdcOM.N33kHYi",
-                            Salt = "$2b$06$zLsnQ6/v.k/kMQaJKD/R4."
-                        });
+            modelBuilder.Entity("TicketReservationSystem.Shared.Domain.Admin", b =>
+                {
+                    b.HasOne("TicketReservationSystem.Shared.Domain.User", "User")
+                        .WithOne("Admin")
+                        .HasForeignKey("TicketReservationSystem.Shared.Domain.Admin", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TicketReservationSystem.Shared.Domain.CinemaEmailAccount", b =>
@@ -438,15 +429,6 @@ namespace TicketReservationSystem.Server.Migrations
                     b.Navigation("Show");
                 });
 
-            modelBuilder.Entity("TicketReservationSystem.Shared.Domain.User", b =>
-                {
-                    b.HasOne("TicketReservationSystem.Shared.Domain.Admin", "Admin")
-                        .WithMany()
-                        .HasForeignKey("AdminId1");
-
-                    b.Navigation("Admin");
-                });
-
             modelBuilder.Entity("TicketReservationSystem.Shared.Domain.Cinema", b =>
                 {
                     b.Navigation("Account");
@@ -486,6 +468,11 @@ namespace TicketReservationSystem.Server.Migrations
             modelBuilder.Entity("TicketReservationSystem.Shared.Domain.SeatReservation", b =>
                 {
                     b.Navigation("Seats");
+                });
+
+            modelBuilder.Entity("TicketReservationSystem.Shared.Domain.User", b =>
+                {
+                    b.Navigation("Admin");
                 });
 #pragma warning restore 612, 618
         }

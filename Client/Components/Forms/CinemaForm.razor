@@ -28,8 +28,14 @@
         </Validation>
         <Validation>
             <Field>
-                <FieldLabel>Payment Gateway Key</FieldLabel>
-                <TextEdit Placeholder="Key" Role="TextRole.Text" @bind-Text="@Model.GatewayApiKey" />
+                <FieldLabel>Payment Gateway Publishable Key</FieldLabel>
+                <TextEdit Placeholder="pk.." Role="TextRole.Text" @bind-Text="@Model.GatewayApiKey" />
+            </Field>
+        </Validation>
+        <Validation>
+            <Field>
+                <FieldLabel>Payment Gateway Secret Key</FieldLabel>
+                <TextEdit Placeholder="sk..." Role="TextRole.Text" @bind-Text="@Model.GatewayApiSecretKey" />
             </Field>
         </Validation>
     </Validations>

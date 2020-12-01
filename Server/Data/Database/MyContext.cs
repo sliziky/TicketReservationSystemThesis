@@ -22,9 +22,22 @@ namespace TicketReservationSystem.Server.Context
         public DbSet<Seat> Seats { get; set; } 
         public DbSet<User> Users { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder options)
-=> options.UseSqlite("Data Source=blogging.db");
+=> options.UseSqlite("Data Source = cinemasystem.db");
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+      var salt = BCrypt.Net.BCrypt.GenerateSalt(6);
+            var pw = BCrypt.Net.BCrypt.HashPassword("admin" + salt);
+            var user = new User()
+            {
+                Email = "admin@admin.com",
+                Password = pw,
+                Salt = salt,
+                UserId = 1,
+                AdminId = 1,
+            };
+      var admin = new Admin() { AdminId = 1, UserId = user.UserId, };
+            modelBuilder.Entity<User>().HasData(user);
+            modelBuilder.Entity<Admin>().HasData(admin);
       base.OnModelCreating(modelBuilder);
     }
   }

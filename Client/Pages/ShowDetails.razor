@@ -9,21 +9,19 @@
     <Fields Class="seat-adder__form__row">
         <Field>
             <FieldLabel>Adults</FieldLabel>
-            <Incrementor OnChange="OnIncrementorChange" Type="adults" />
+            <Incrementor OnChange="OnIncrementorChange" Type="adults" CurrentTickets="CurrentNumberOfTickets" />
         </Field>
         <Field>
             <FieldLabel>Kids</FieldLabel>
-            <Incrementor OnChange="OnIncrementorChange" Type="kids" />
-
+            <Incrementor OnChange="OnIncrementorChange" Type="kids" CurrentTickets="CurrentNumberOfTickets"/>
         </Field>
         <Field>
             <FieldLabel>Senior</FieldLabel>
-            <Incrementor OnChange="OnIncrementorChange" Type="seniors" />
-
+            <Incrementor OnChange="OnIncrementorChange" Type="seniors" CurrentTickets="CurrentNumberOfTickets"/>
         </Field>
         <Field>
             <FieldLabel>Students</FieldLabel>
-            <Incrementor OnChange="OnIncrementorChange" Type="students" />
+            <Incrementor OnChange="OnIncrementorChange" Type="students" CurrentTickets="CurrentNumberOfTickets"/>
 
         </Field>
     </Fields>
@@ -141,15 +139,13 @@
     async Task OnBuyTickets()
     {
         Reservation = new Reservation() { EmailForTickets = EmailModel.Email, Created = DateTime.Now, Status = Reservation.ReservationStatus.NotPaid };
-        var newPayment = new Payment() { TotalPrice = CalculateTotalPrice(), Created = DateTime.Now };
-        Reservation.Payment = newPayment;
+        Reservation.Payment = new Payment() { TotalPrice = CalculateTotalPrice(), Created = DateTime.Now };
         var resp = await Http.PostAsJsonAsync<Reservation>("api/shows/" + Id + "/reservations", Reservation);
         if (resp.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var body = await resp.Content.ReadAsStringAsync();
             var desBody = JsonConvert.DeserializeObject<DeserializedReservationResponse>(body);
             var sr = new SeatReservation() { Price = CalculateTotalPrice() };
-            //await Http.PostAsJsonAsync<Payment>("api/reservations/" + desBody.ReservationId + "/addpayment", newPayment);
             Reservation.ReservationId = desBody.ReservationId;
             var r = await Http.PostAsJsonAsync<SeatReservation>("api/reservations/" + desBody.ReservationId + "/seatreservation", sr);
             var body2 = await r.Content.ReadAsStringAsync();
@@ -195,9 +191,8 @@
         var body = await response.Content.ReadAsStringAsync();
         var token = JsonConvert.DeserializeObject<DesObject>(body);
         var tokenId = token.Id;
-        var paymentToken = "pk_test_51Hq6mILLnywEZaChdOLjvKjG8xt2CONqxPhc00RBCcKTJmCt7d0Rdr7KRqDV7ucAHYCVrHAxAk1rLF3zv98NudAt00jGum4A5a";
-        //await Http.PostAsJsonAsync<string>("https://api.stripe.com/v1/payment_intents/"+ token.PaymentIntent +"/cancel", "sk_test_51Hq6mILLnywEZaCh5zRv3DcYUVDlWanxIZpLFaPsu2WhLRrWAsSwcVU6xW6PtORR56XVGPwvGMF5ASFu1JB6hCoq00t5xiR1Ki");
-        await JSRuntime.InvokeAsync<string>("stripeCheckout", null, tokenId, paymentToken);
+        var cinema = await Http.GetFromJsonAsync<Cinema>("api/cinemas/first");
+        await JSRuntime.InvokeAsync<string>("stripeCheckout", null, tokenId, cinema.GatewayApiKey);
 
     }
     private async Task FetchReservedSeats()

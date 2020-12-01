@@ -13,23 +13,31 @@
     [Parameter]
     public string Type { get; set; }
 
+    [Parameter]
+    public int CurrentTickets { get; set; }
+
+
     void DecrementValue() {
-      Value -= 1;
-      if (Value < 0)
-      {
-        Value = 0;
-        OnChange.Invoke(0, Type);
-      }
-      else
-      {
-        OnChange.Invoke(-1, Type);
-      }
-      StateHasChanged();
+        Value -= 1;
+        if (Value < 0)
+        {
+            Value = 0;
+            OnChange.Invoke(0, Type);
+        }
+        else
+        {
+            OnChange.Invoke(-1, Type);
+        }
+        StateHasChanged();
     }
 
     void IncrementValue() {
-      Value += 1;
-      StateHasChanged();
-      OnChange.Invoke(1, Type);
+        if (CurrentTickets >= 6) 
+        {
+            return;
+        }
+        Value += 1;
+        StateHasChanged();
+        OnChange.Invoke(1, Type);
     }
 }

@@ -11,5 +11,6 @@ namespace TicketReservationSystem.Client.Services.Abstraction
     public Task<bool> AuthenticateUser(string email, string password);
     public bool IsLoggedIn();
     public void LogOut();
+    public bool IsUserAdmin();
   }
 }

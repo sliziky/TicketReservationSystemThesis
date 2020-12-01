@@ -24,15 +24,20 @@
       </BarItem>
     </BarStart>
     <BarEnd>
-      <BarItem>
-        <Button Color="Color.Primary" @onclick="@(e => NavigateTo("/signup"))">Sign up</Button>
-        @if (AuthenticationService.IsLoggedIn())
-        {
-<Button Color="Color.Secondary" @onclick="@(OnLogOutClick)">Log Out</Button> }
-              else
-              {
-<Button Color="Color.Secondary" @onclick="@(e => NavigateTo("/login"))">Log in</Button>}
-      </BarItem>
+        <BarItem>
+
+            @if (AuthenticationService.IsLoggedIn())
+            {
+                @if (AuthenticationService.IsUserAdmin())
+                {
+                    Console.WriteLine(AuthenticationService.IsUserAdmin());
+                    <Button Color="Color.Primary" @onclick="@(e => NavigateTo("/signup"))">Sign up</Button>
+                }
+                <Button Color="Color.Secondary" @onclick="@(OnLogOutClick)">Log Out</Button> }
+            else
+            {
+                <Button Color="Color.Secondary" @onclick="@(e => NavigateTo("/login"))">Log in</Button>}
+        </BarItem>
     </BarEnd>
   </BarMenu>
 </Bar>

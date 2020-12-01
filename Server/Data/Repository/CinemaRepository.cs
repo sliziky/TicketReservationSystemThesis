@@ -56,6 +56,11 @@ namespace TicketReservationSystem.Server.Data.Repository
       return hall;
     }
 
+    public async Task<Cinema> GetFirstCinema()
+    {
+       return await _context.Cinemas.FirstOrDefaultAsync();    
+    }
+
 
     public async Task<Cinema> GetAsync(int id)
     {

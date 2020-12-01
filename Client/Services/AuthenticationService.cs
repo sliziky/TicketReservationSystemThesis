@@ -25,14 +25,16 @@ namespace TicketReservationSystem.Client.Services
     public UserDTO User { get; set; } = null;
 
     public event Action OnChange;
+        public bool IsAdmin { get; set; } = false;
 
-    public async Task<bool> AuthenticateUser(string email, string password) {
+        public async Task<bool> AuthenticateUser(string email, string password) {
       var response = await Http.PostAsJsonAsync<User>("api/users/authenticateUser", new User() { Email = email, Password =password });
       var body = await response.Content.ReadAsStringAsync();
       var authenticated = JsonConvert.DeserializeObject<bool>(body);
       if (authenticated) {
         User = await Http.GetFromJsonAsync<UserDTO>("api/users/" + email);
-      }
+        IsAdmin = await Http.GetFromJsonAsync<bool>("api/users/" + User.Id + "/isadmin");
+       }
       InvokeEvent();
       return User != null;
     }
@@ -45,5 +47,9 @@ namespace TicketReservationSystem.Client.Services
     }
     private void InvokeEvent() => OnChange?.Invoke();
 
-  }
+        public bool IsUserAdmin()
+        {
+            return IsAdmin;
+        }
+    }
 }

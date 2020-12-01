@@ -60,8 +60,9 @@ namespace TicketReservationSystem.Server
       services.AddTransient<SeatRepository>();
       services.AddTransient<ShowRepository>();
       services.AddTransient<CinemaRepository>();
-      services.AddTransient<UserRepository>();
-      services.AddDbContext<MyContext>(options => options.UseSqlite("Data Source = blogging.db"));
+      services.AddTransient<AdminRepository>();
+            services.AddTransient<UserRepository>();
+      services.AddDbContext<MyContext>(options => options.UseSqlite("Data Source = cinemasystem.db"));
       services.AddMediatR(typeof(Startup));
     }
 

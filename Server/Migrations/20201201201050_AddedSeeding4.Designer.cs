@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketReservationSystem.Server.Context;
 
 namespace TicketReservationSystem.Server.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20201201201050_AddedSeeding4")]
+    partial class AddedSeeding4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -339,10 +341,10 @@ namespace TicketReservationSystem.Server.Migrations
                         new
                         {
                             UserId = 1,
-                            AdminId = 1,
+                            AdminId = 0,
                             Email = "admin@admin.com",
-                            Password = "$2b$10$e340EcBabEmssA./wbyl3.2G3lIUxSEGx8Tt56W2RdcOM.N33kHYi",
-                            Salt = "$2b$06$zLsnQ6/v.k/kMQaJKD/R4."
+                            Password = "$2b$10$VTtiEu3L1U.9.ql84lIMO.hcQlZKirjQovOZ7OS/MqlVHqP.oYHHu",
+                            Salt = "$2b$06$0i92pVTArAXwIJZ2Vy7gmO"
                         });
                 });
 

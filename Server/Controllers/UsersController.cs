@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TicketReservationSystem.Server.CQRS.AdminCQRS.Queries;
 using TicketReservationSystem.Server.CQRS.Queries;
 using TicketReservationSystem.Server.CQRS.UserCQRS;
 using TicketReservationSystem.Shared.Domain;
@@ -43,12 +44,17 @@ namespace TicketReservationSystem.Server.Controllers
             return Ok(userAuthenticated);
         }
 
-        // GET api/<UsersController>/5
-        //[HttpGet("{id}")]
-        //public async Task<User> Get(int id)
-        //{
-        //  return await _mediator.Send(new GetUserQueryId() { Id = id });
-        //}
+        //GET api/<UsersController>/5
+        [HttpGet("{id:int}")]
+        public async Task<User> Get(int id)
+        {
+            return await _mediator.Send(new GetUserQueryId() { Id = id });
+        }
+        [HttpGet("{id}/isadmin")]
+        public async Task<bool> IsUserAdmin(int id)
+        {
+            return await _mediator.Send(new GetIsUserAdminQuery() {UserId = id });
+        }
 
         // GET api/<UsersController>/5
         [HttpGet("{email}")]

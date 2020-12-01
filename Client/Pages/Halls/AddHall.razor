@@ -1,4 +1,4 @@
-@page "/hall/new"
+﻿@page "/hall/new"
 
 @inject HttpClient Http
 @using Newtonsoft.Json
@@ -6,35 +6,47 @@
 <HallForm FormMode="FormMode.New" CallbackValidSubmit="HandleValidSubmit" HallDetails="HallDetails" />
 @if (AllSeats != null)
 {
-<SeatAdder AllSeats="AllSeats" HallDetails="HallDetails" CallbackAddHall="OnAddHall" />}
-@code { public HallDetailsModel HallDetails { get; set; } = new HallDetailsModel();
-  public Hall Hall { get; set; }
+    <SeatAdder AllSeats="AllSeats" HallDetails="HallDetails" CallbackAddHall="OnAddHall" />
+}
+<Alert Class="alert__success" Visible="@(submitted && (int)_response.StatusCode == 200)" Style="margin-top: 10px;">
+    <AlertMessage>Hala bola pridana do databázy</AlertMessage>
+</Alert>
+<Alert Color="Color.Danger" Visible="@(submitted && (int)_response.StatusCode != 200)" Style="margin-top: 10px;">
+    <AlertMessage>Kino sa nepodarilo vytvoriť</AlertMessage>
+</Alert>
+@code { 
+    private HttpResponseMessage _response = new HttpResponseMessage();
+    private bool submitted = false;
+    public HallDetailsModel HallDetails { get; set; } = new HallDetailsModel();
+    public Hall Hall { get; set; }
 
-  public List<List<Seat>> AllSeats { get; set; }
+    public List<List<Seat>> AllSeats { get; set; }
 
-  public async void OnAddHall(List<List<Seat>> seats)
-  {
-    var respo = await Http.PostAsJsonAsync<Hall>("api/halls", Hall);
-    var body = await respo.Content.ReadAsStringAsync();
-    var desBody = JsonConvert.DeserializeObject<DeserializedObject>(body);
-    foreach (var row in seats)
+    public async void OnAddHall(List<List<Seat>> seats)
     {
-      foreach (var seat in row)
-      {
-        await Http.PostAsJsonAsync<Seat>("api/halls/" + desBody.HallId + "/seat", seat);
-      }
+        _response = await Http.PostAsJsonAsync<Hall>("api/halls", Hall);
+        var body = await _response.Content.ReadAsStringAsync();
+        var desBody = JsonConvert.DeserializeObject<DeserializedObject>(body);
+        foreach (var row in seats)
+        {
+            foreach (var seat in row)
+            {
+                await Http.PostAsJsonAsync<Seat>("api/halls/" + desBody.HallId + "/seat", seat);
+            }
+        }
+        submitted = true;
+        AllSeats = seats;
+        StateHasChanged();
     }
-    AllSeats = seats;
-    StateHasChanged();
-  }
-  public void HandleValidSubmit(List<List<Seat>> seats, HallDetailsModel model, Hall hall)
-  {
-    Hall = hall;
-    HallDetails = model;
-    AllSeats = seats;
-    StateHasChanged();
-  }
-  public class DeserializedObject
-  {
-    public int HallId { get; set; }
-  } }
+    public void HandleValidSubmit(List<List<Seat>> seats, HallDetailsModel model, Hall hall)
+    {
+        Hall = hall;
+        HallDetails = model;
+        AllSeats = seats;
+
+        StateHasChanged();
+    }
+    public class DeserializedObject
+    {
+        public int HallId { get; set; }
+    } }

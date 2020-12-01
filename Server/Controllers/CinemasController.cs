@@ -36,8 +36,17 @@ namespace TicketReservationSystem.Server.Controllers
       return Ok(cinemas);
     }
 
-    // GET api/<CinemaController>/5
-    [HttpGet("{id}")]
+    // GET api/<CinemaController>
+    [HttpGet("first")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<Cinema>>> GetFirst()
+    {
+      var cinema = await _mediator.Send(new GetFirstCinemaQuery());
+      return Ok(cinema);
+    }
+
+        // GET api/<CinemaController>/5
+        [HttpGet("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Cinema>> GetAsync(int id)

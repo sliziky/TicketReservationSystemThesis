@@ -291,6 +291,14 @@ body {
     color: white;
 }
 
+.alert__success {
+    margin-top: 10px;
+    margin-left: 30%;
+    margin-right: 30%;
+    text-align: center;
+    background-color: palegreen;
+}
+
 .payment__error > h3 {
     color:white;
 }

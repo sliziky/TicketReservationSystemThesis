@@ -18,7 +18,8 @@ namespace TicketReservationSystem.Server.CQRS.CinemaCQRS
       IRequestHandler<GetCinemaQuery, Cinema>,
     IRequestHandler<GetCinemasQuery, IEnumerable<Cinema>>,
     IRequestHandler<AddHallToCinemaCommand, Hall>,
-    IRequestHandler<DeleteCinemaCommand, Cinema>
+    IRequestHandler<DeleteCinemaCommand, Cinema>,
+        IRequestHandler<GetFirstCinemaQuery, Cinema>
   {
     private IMapper _mapper;
     private CinemaRepository _repository;
@@ -57,6 +58,11 @@ namespace TicketReservationSystem.Server.CQRS.CinemaCQRS
     public async Task<Cinema> Handle(DeleteCinemaCommand request, CancellationToken cancellationToken)
     {
       return await _repository.DeleteAsync(request.Id);
+    }
+
+    public async Task<Cinema> Handle(GetFirstCinemaQuery request, CancellationToken cancellationToken)
+    {
+        return await _repository.GetFirstCinema();
     }
   }
 }

@@ -12,7 +12,6 @@ namespace TicketReservationSystem.Shared.Domain
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
     public int AdminId { get; set; }
-        public User User { get; set; }
         public int UserId { get; set;}
     }
 }

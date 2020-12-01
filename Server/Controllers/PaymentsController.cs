@@ -13,6 +13,9 @@ using MediatR;
 using TicketReservationSystem.Server.CQRS.PaymentsCQRS.Queries;
 using Microsoft.Extensions.DependencyInjection;
 using TicketReservationSystem.Server.Services;
+using System.Net.Http;
+using System.Net.Http.Json;
+using TicketReservationSystem.Server.CQRS.CinemaCQRS.Queries;
 
 namespace TicketReservationSystem.Server.Controllers
 {
@@ -22,14 +25,15 @@ namespace TicketReservationSystem.Server.Controllers
   {
     private readonly IMediator _mediator;
     private readonly IPaymentTimeoutService _service;
-    public PaymentsController(IMediator mediator, IPaymentTimeoutService service)
+    private IHttpContextAccessor _httpContextAccessor;
+    public PaymentsController(IMediator mediator, IPaymentTimeoutService service, IHttpContextAccessor httpContextAccessor)
     {
       // Set your secret key. Remember to switch to your live secret key in production!
       // See your keys here: https://dashboard.stripe.com/account/apikeys
       _mediator = mediator;
       _service = service;
-      StripeConfiguration.ApiKey = "sk_test_51Hq6mILLnywEZaCh5zRv3DcYUVDlWanxIZpLFaPsu2WhLRrWAsSwcVU6xW6PtORR56XVGPwvGMF5ASFu1JB6hCoq00t5xiR1Ki";
-    }
+      _httpContextAccessor = httpContextAccessor;
+      }
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -42,6 +46,8 @@ namespace TicketReservationSystem.Server.Controllers
     [HttpPost("create-checkout-session")]
     public async Task<ActionResult> CreateCheckoutSessionAsync([FromBody]Reservation reservation)
     {
+            var cinema = await _mediator.Send(new GetFirstCinemaQuery());
+            StripeConfiguration.ApiKey = cinema.GatewayApiSecretKey;
             var options = new SessionCreateOptions
             {
                 PaymentMethodTypes = new List<string>
@@ -73,7 +79,7 @@ namespace TicketReservationSystem.Server.Controllers
 
       var service = new SessionService();
       Session session = service.Create(options);
-      _service.StartAsync(session.PaymentIntentId, reservation.ReservationId);
+      _service.StartAsync(session.PaymentIntentId, reservation.ReservationId, cinema.GatewayApiSecretKey);
       return Ok(JsonConvert.SerializeObject(new { id = session.Id, paymentIntent = session.PaymentIntentId }));
     }
   }

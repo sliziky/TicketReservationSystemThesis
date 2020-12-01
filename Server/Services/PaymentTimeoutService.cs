@@ -24,12 +24,12 @@ namespace TicketReservationSystem.Server.Services
         {
             _httpContextAccessor = httpContextAccessor;
             client.BaseAddress = new Uri("https://" + _httpContextAccessor.HttpContext.Request.Host.Value);
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + "sk_test_51Hq6mILLnywEZaCh5zRv3DcYUVDlWanxIZpLFaPsu2WhLRrWAsSwcVU6xW6PtORR56XVGPwvGMF5ASFu1JB6hCoq00t5xiR1Ki");
         }
 
-        public Task StartAsync(string intent, int reservationId)
+        public Task StartAsync(string intent, int reservationId, string apiToken)
         {
- 
+        
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiToken);
             _reservationId = reservationId;
             _paymentIntent = intent;
             _timer = new Timer(DoWork, null, 20000, Timeout.Infinite);

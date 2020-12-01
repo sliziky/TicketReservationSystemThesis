@@ -17,6 +17,9 @@ namespace TicketReservationSystem.Shared.Domain
     public string GatewayApiKey { get; set; }
 
     [Required]
+    public string GatewayApiSecretKey { get; set; }
+
+    [Required]
     public string Name { get; set; }
 
     public CinemaEmailAccount Account { get; set; }

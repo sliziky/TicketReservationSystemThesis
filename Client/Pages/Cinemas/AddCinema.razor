@@ -5,12 +5,12 @@
 @using System.ComponentModel.DataAnnotations;
 
 <CinemaForm Model="CinemaModel" ModelAccount="CinemaAccount" CallBack="HandleValidSubmit" ButtonText="Add new cinema"/>
-<Alert Color="Color.Success" Visible="@(submitted && (int)_response.StatusCode == 200)" Style="margin-top: 10px;">
+<Alert Class="alert__success" Visible="@(submitted && (int)_response.StatusCode == 200)" Style="margin-top: 10px;">
       <AlertMessage>Kino bolo pridané do databázy</AlertMessage>
-    </Alert>
-    <Alert Color="Color.Danger" Visible="@(submitted && (int)_response.StatusCode != 200)" Style="margin-top: 10px;">
-      <AlertMessage>Kino sa nepodarilo vytvoriť</AlertMessage>
-    </Alert>
+</Alert>
+<Alert Color="Color.Danger" Visible="@(submitted && (int)_response.StatusCode != 200)" Style="margin-top: 10px;">
+    <AlertMessage>Kino sa nepodarilo vytvoriť</AlertMessage>
+</Alert>
 
 @code {
     private HttpResponseMessage _response = new HttpResponseMessage();

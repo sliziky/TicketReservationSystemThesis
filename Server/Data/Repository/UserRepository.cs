@@ -25,17 +25,17 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<IEnumerable<User>> GetAllAsync()
     {
-      return await _context.Users.ToListAsync();
+      return await _context.Users.Include(s => s.Admin).ToListAsync();
     }
 
     public async Task<User> GetAsync(int id)
     {
-      return await _context.Users.FirstOrDefaultAsync(user => user.UserId == id);
+      return await _context.Users.Include(user => user.Admin).FirstOrDefaultAsync(user => user.UserId == id);
     }
 
     public async Task<User> GetAsync(string email)
     {
-      return await _context.Users.FirstOrDefaultAsync(user => user.Email == email);
+      return await _context.Users.Include(user => user.Admin).FirstOrDefaultAsync(user => user.Email == email);
     }
 
     public User Save(User entity)

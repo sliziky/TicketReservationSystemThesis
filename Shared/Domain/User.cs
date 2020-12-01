@@ -18,5 +18,6 @@ namespace TicketReservationSystem.Shared.Domain
         public string PhoneNumber { get; set; }
         public string Salt { get; set; }
         public Admin Admin { get; set; }
+        public int AdminId { get; set; }
     }
 }
