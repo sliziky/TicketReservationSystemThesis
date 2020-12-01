@@ -262,8 +262,39 @@ body {
     right: 0.75rem;
     top: 0.5rem;
   }
-  
+
+.payment__error {
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+    height: 100%;
+    justify-content:center;
+}
+
+.payment__success {
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+}
+
+.payment__error-icon {
+    color: #F1C6A3;
+}
+
+.payment__success-icon {
+    color: #F1C6A3;
+}
+
+.payment__success > h3 {
+    color: white;
+}
+
+.payment__error > h3 {
+    color:white;
+}
 @media only screen and (max-width: 600px) {
-  .seat {
+    .seat {
   }
 }

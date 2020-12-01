@@ -141,7 +141,7 @@
     async Task OnBuyTickets()
     {
         Reservation = new Reservation() { EmailForTickets = EmailModel.Email, Created = DateTime.Now, Status = Reservation.ReservationStatus.NotPaid };
-        var newPayment = new Payment() { TotalPrice = CalculateTotalPrice(), Created = new DateTime() };
+        var newPayment = new Payment() { TotalPrice = CalculateTotalPrice(), Created = DateTime.Now };
         Reservation.Payment = newPayment;
         var resp = await Http.PostAsJsonAsync<Reservation>("api/shows/" + Id + "/reservations", Reservation);
         if (resp.StatusCode == System.Net.HttpStatusCode.OK)
@@ -162,7 +162,6 @@
             }
             ShowEmail = true;
         }
-        StateHasChanged();
         await StartPaymentClick();
 
     }

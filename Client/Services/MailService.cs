@@ -26,7 +26,7 @@ namespace TicketReservationSystem.Client.Services
       // send email
       using var smtp = new SmtpClient();
       smtp.Connect("smtp.ethereal.email", 587, SecureSocketOptions.StartTls);
-      smtp.Authenticate("peterbolfa4@gmail.com", "whatthefuc1");
+      smtp.Authenticate("peterbolfa4@gmail.com", "");
       smtp.Send(email);
       smtp.Disconnect(true);
     }

@@ -16,6 +16,9 @@ using TicketReservationSystem.Server.Data.Mapper;
 using TicketReservationSystem.Shared.DTO;
 using System.Text.Json.Serialization;
 using TicketReservationSystem.Server.Services;
+using System.Net.Http;
+using System;
+using Microsoft.AspNetCore.Http;
 
 namespace TicketReservationSystem.Server
 {
@@ -45,6 +48,7 @@ namespace TicketReservationSystem.Server
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
         options.SerializerSettings.MaxDepth = 10;
       });
+      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
       services.AddTransient<IPaymentTimeoutService, PaymentTimeoutService>();
       services.AddRazorPages();
       services.AddTransient<IMailService, MailService>();

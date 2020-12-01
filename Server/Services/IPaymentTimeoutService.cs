@@ -7,7 +7,7 @@ namespace TicketReservationSystem.Server.Services
 {
     public interface IPaymentTimeoutService
     {
-        Task StartAsync();
+        Task StartAsync(string intent, int reservationId);
         void DoWork(object state);
         Task StopAsync();
     }

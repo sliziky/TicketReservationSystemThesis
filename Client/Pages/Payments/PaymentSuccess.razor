@@ -4,7 +4,11 @@
 @inject NavigationManager NavigationManager
 @inject IMailService MailService
 @using Newtonsoft.Json
-<h3>Payment Successful. Check your email for tickets</h3>
+<div class="payment__success">
+    <h3>Payment Successful</h3>
+    <h3>Check email for tickets</h3>
+    <Icon Name="@("fas fa-check-circle fa-10x")" Class="payment__success-icon" />
+</div>
 
 @code { [Parameter]
     public int Id { get; set; }

@@ -4,15 +4,20 @@
 @inject NavigationManager NavigationManager
 @inject IMailService MailService
 @using Newtonsoft.Json
-<h3>Payment Error. Reservation was deleted</h3>
+<div class="payment__error">
+    <h3>Payment Error</h3>
+    <h3>You either canceled the reservation or didn't make payment in time</h3>
+    <h3>Create new reservation if you wish to buy tickets again</h3>
+    <Icon Name="@("fas fa-exclamation-circle fa-10x")" Class="payment__error-icon" />
+</div>
 
-@code { [Parameter]
+@code {
+    [Parameter]
     public int Id { get; set; }
 
     public Reservation Reservation { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
-        await Http.DeleteAsync("api/reservations/" + Id);
     }
 }
