@@ -7,7 +7,7 @@ namespace TicketReservationSystem.Client.Services.Abstraction
 {
     public interface IUrlDecoder
     {
-        public string EncodeUrl(string url);
-        public string DecodeUrl(string url);
+        public string Encode(string url);
+        public string Decode(string url);
     }
 }

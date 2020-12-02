@@ -4,35 +4,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using TicketReservationSystem.Client.Services.Abstraction;
 using Microsoft.AspNetCore.DataProtection;
+using System.Web;
+using System.Text;
 
 namespace TicketReservationSystem.Client.Services
 {
     public class UrlDecoder : IUrlDecoder
     {
-        //private readonly IDataProtector protector;
-
-        //public UrlDecoder(IDataProtectionProvider provider)
-        //{
-        //    this.protector = provider.CreateProtector("EmployeesApp.EmployeesController");
-        //}
-
-        //public string DecodeUrl(string url)
-        //{
-        //    return protector.Protect(url);
-        //}
-
-        //public string EncodeUrl(string url)
-        //{
-        //    return protector.Unprotect(url);
-        //}
-        public string DecodeUrl(string url)
+        public string Decode(string data)
         {
-            throw new NotImplementedException();
+            return HttpUtility.UrlDecode(data);
         }
-
-        public string EncodeUrl(string url)
+        public string Encode(string data)
         {
-            throw new NotImplementedException();
+            Console.WriteLine(Convert.ToBase64String(Encoding.Unicode.GetBytes(data)));
+            Console.WriteLine(HttpUtility.UrlEncodeUnicode(data));
+            Console.WriteLine(HttpUtility.JavaScriptStringEncode(data));
+            return HttpUtility.UrlEncode(data);
         }
     }
 }

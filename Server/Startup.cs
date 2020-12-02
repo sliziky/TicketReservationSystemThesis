@@ -19,6 +19,8 @@ using TicketReservationSystem.Server.Services;
 using System.Net.Http;
 using System;
 using Microsoft.AspNetCore.Http;
+using Hangfire;
+using Hangfire.MemoryStorage;
 
 namespace TicketReservationSystem.Server
 {
@@ -31,42 +33,44 @@ namespace TicketReservationSystem.Server
 
     public IConfiguration Configuration { get; }
 
-    // This method gets called by the runtime. Use this method to add services to the container.
-    // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
-    public void ConfigureServices(IServiceCollection services)
-    {
-      var mapperConfig = new MapperConfiguration(mc =>
-      {
-        mc.AddProfile(new MappingProfile());
-      });
+        // This method gets called by the runtime. Use this method to add services to the container.
+        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public void ConfigureServices(IServiceCollection services)
+        {
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MappingProfile());
+            });
 
-      IMapper mapper = mapperConfig.CreateMapper();
+            IMapper mapper = mapperConfig.CreateMapper();
 
-      services.AddSingleton(mapper);
-      services.AddControllersWithViews().AddNewtonsoftJson(options =>
-      {
-        options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-        options.SerializerSettings.MaxDepth = 10;
-      });
-      services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-      services.AddTransient<IPaymentTimeoutService, PaymentTimeoutService>();
-      services.AddRazorPages();
-      services.AddTransient<IMailService, MailService>();
-      services.AddTransient<MovieRepository>();
-      services.AddTransient<HallRepository>();
-      services.AddTransient<PaymentRepository>();
-      services.AddTransient<ReservationRepository>();
-      services.AddTransient<SeatReservationRepository>();
-      services.AddTransient<SeatRepository>();
-      services.AddTransient<ShowRepository>();
-      services.AddTransient<CinemaRepository>();
-      services.AddTransient<AdminRepository>();
+ 
+            services.AddSingleton(mapper);
+            services.AddControllersWithViews().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.MaxDepth = 10;
+            });
+            services.AddDataProtection();
+            services.AddHangfire(c => c.UseMemoryStorage());
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<IPaymentTimeoutService, PaymentTimeoutService>();
+            services.AddRazorPages();
+            services.AddTransient<IMailService, MailService>();
+            services.AddTransient<MovieRepository>();
+            services.AddTransient<HallRepository>();
+            services.AddTransient<PaymentRepository>();
+            services.AddTransient<ReservationRepository>();
+            services.AddTransient<SeatReservationRepository>();
+            services.AddTransient<SeatRepository>();
+            services.AddTransient<ShowRepository>();
+            services.AddTransient<CinemaRepository>();
+            services.AddTransient<AdminRepository>();
             services.AddTransient<UserRepository>();
-      services.AddDbContext<MyContext>(options => options.UseSqlite("Data Source = cinemasystem.db"));
-      services.AddMediatR(typeof(Startup));
-    }
-
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+            services.AddDbContext<MyContext>(options => options.UseSqlite("Data Source = cinemasystem.db"));
+            services.AddMediatR(typeof(Startup));
+        }
+    // This method gets called by the rutime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
       if (env.IsDevelopment())
@@ -80,14 +84,15 @@ namespace TicketReservationSystem.Server
         // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
       }
-
+  
       app.UseHttpsRedirection();
       app.UseBlazorFrameworkFiles();
       app.UseStaticFiles();
+            app.UseHangfireDashboard("/mydashboard");
 
-      app.UseRouting();
-
-      app.UseEndpoints(endpoints =>
+            app.UseRouting();
+            app.UseHangfireServer();
+            app.UseEndpoints(endpoints =>
       {
         endpoints.MapRazorPages();
         endpoints.MapControllers();

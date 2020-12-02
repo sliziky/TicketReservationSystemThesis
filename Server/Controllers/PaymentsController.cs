@@ -55,8 +55,8 @@ namespace TicketReservationSystem.Server.Controllers
                     "card",
                 },
                 LineItems = new List<SessionLineItemOptions>
-        {
-          new SessionLineItemOptions
+            {
+            new SessionLineItemOptions
           {
             PriceData = new SessionLineItemPriceDataOptions
             {
@@ -79,7 +79,7 @@ namespace TicketReservationSystem.Server.Controllers
 
       var service = new SessionService();
       Session session = service.Create(options);
-      _service.StartAsync(session.PaymentIntentId, reservation.ReservationId, cinema.GatewayApiSecretKey);
+      await _service.StartAsync(session.PaymentIntentId, reservation.ReservationId, cinema.GatewayApiSecretKey);
       return Ok(JsonConvert.SerializeObject(new { id = session.Id, paymentIntent = session.PaymentIntentId }));
     }
   }

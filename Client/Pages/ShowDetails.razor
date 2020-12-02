@@ -192,9 +192,17 @@
         var token = JsonConvert.DeserializeObject<DesObject>(body);
         var tokenId = token.Id;
         var cinema = await Http.GetFromJsonAsync<Cinema>("api/cinemas/first");
-        await JSRuntime.InvokeAsync<string>("stripeCheckout", null, tokenId, cinema.GatewayApiKey);
+        var dotNetReference = DotNetObjectReference.Create(this);
+        await JSRuntime.InvokeAsync<string>("stripeCheckout", null, tokenId, cinema.GatewayApiKey, DotNetObjectReference.Create(this));
 
     }
+    [JSInvokable]
+    public async Task TokenReceived(string token)
+    {
+        Console.WriteLine(token);
+        int x = 5;
+    }
+
     private async Task FetchReservedSeats()
     {
         var seats1D = Hall.Seats;
