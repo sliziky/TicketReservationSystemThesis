@@ -13,7 +13,8 @@ namespace TicketReservationSystem.Server.CQRS.PaymentsCQRS
 {
   public class PaymentHandler
     : IRequestHandler<GetPaymentsQuery, IEnumerable<Payment>>,
-    IRequestHandler<AddSessionIdCommand, Payment>
+    IRequestHandler<AddSessionIdCommand, Payment>,
+        IRequestHandler<GetPaymentQuery, Payment>
     {
     private readonly PaymentRepository _repository;
 
@@ -29,6 +30,11 @@ namespace TicketReservationSystem.Server.CQRS.PaymentsCQRS
         public async Task<Payment> Handle(AddSessionIdCommand request, CancellationToken cancellationToken)
         {
             return await _repository.AddSessionId(request.PaymentId, request.Id);
+        }
+
+        public async Task<Payment> Handle(GetPaymentQuery request, CancellationToken cancellationToken)
+        {
+            return await _repository.GetAsync(request.Id);
         }
     }
 }

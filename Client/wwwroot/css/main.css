@@ -9,13 +9,21 @@ body {
   background-color: #1F2933 !important;
   color: white !important;
 }
-
+.loading-circle {
+    top:45%;
+    position: relative;
+}
+.loading-circle__spinner {
+    width: 3rem !important;
+    height: 3rem !important;
+    color: #F1C6A3 !important;
+}
 .login-form {
-  width: 30%;
-  margin-left: 30%;
-  margin-right: 30%;
-  margin-top: 10%;
-  color: #F1C6A3 !important;
+    width: 30%;
+    margin-left: 30%;
+    margin-right: 30%;
+    margin-top: 10%;
+    color: #F1C6A3 !important;
 }
 .show-adder__form__row {
   display: flex;

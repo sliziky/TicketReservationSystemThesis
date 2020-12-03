@@ -13,32 +13,38 @@
         </Field>
         <Field>
             <FieldLabel>Kids</FieldLabel>
-            <Incrementor OnChange="OnIncrementorChange" Type="kids" CurrentTickets="CurrentNumberOfTickets"/>
+            <Incrementor OnChange="OnIncrementorChange" Type="kids" CurrentTickets="CurrentNumberOfTickets" />
         </Field>
         <Field>
             <FieldLabel>Senior</FieldLabel>
-            <Incrementor OnChange="OnIncrementorChange" Type="seniors" CurrentTickets="CurrentNumberOfTickets"/>
+            <Incrementor OnChange="OnIncrementorChange" Type="seniors" CurrentTickets="CurrentNumberOfTickets" />
         </Field>
         <Field>
             <FieldLabel>Students</FieldLabel>
-            <Incrementor OnChange="OnIncrementorChange" Type="students" CurrentTickets="CurrentNumberOfTickets"/>
+            <Incrementor OnChange="OnIncrementorChange" Type="students" CurrentTickets="CurrentNumberOfTickets" />
 
         </Field>
     </Fields>
 </EditForm>
 <h3 class="screen__text">SCREEN</h3>
-
-@if (Seats.Count != 0)
+@if (Loading)
 {
-    <ShowSeatAdder AllSeats="Seats" HallDetails="HallDetails" MaxNumberOfTickets="@CurrentNumberOfTickets" BuyTicketsCallBack="BuyTickets" ShowId="Id" FetchReservedSeats="FetchReservedSeats"/>
+    <LoadingCircle />
 }
-@if (ReservationContainsAlreadyReservedSeat)
-{ 
-    <CustomAlert Color="Color.Warning" AlertDescr="Seat is already reserved" AlertMessage="Some seat in your reservation has been reserved" />
-}
-@if (ShowEmail)
+else
 {
-    <TicketBuyingEmailForm Model="EmailModel" OnProceedToPayment="BuyTicketsCallback" />
+    @if (Seats.Count != 0)
+    {
+        <ShowSeatAdder AllSeats="Seats" HallDetails="HallDetails" MaxNumberOfTickets="@CurrentNumberOfTickets" BuyTicketsCallBack="BuyTickets" ShowId="Id" FetchReservedSeats="FetchReservedSeats" />
+    }
+    @if (ReservationContainsAlreadyReservedSeat)
+    {
+        <CustomAlert Color="Color.Warning" AlertDescr="Seat is already reserved" AlertMessage="Some seat in your reservation has been reserved" />
+    }
+    @if (ShowEmail)
+    {
+        <TicketBuyingEmailForm Model="EmailModel" OnProceedToPayment="BuyTicketsCallback" />
+    }
 }
 
 @code {
@@ -58,7 +64,7 @@
     public Reservation Reservation { get; set; }
 
     public bool ReservationContainsAlreadyReservedSeat { get; set; } = false;
-
+    public bool Loading { get; set; } = true;
     protected async override Task OnInitializedAsync()
     {
         Show = await Http.GetFromJsonAsync<MovieShow>("api/shows/" + Id);
@@ -88,6 +94,7 @@
         }
         Seats = TransformSeats(seats1D, Hall.Rows, Hall.Seats.Count);
         HallDetails = new HallDetailsModel() { Name = Hall.Name, NumberOfSeatsInRow = (Hall.Seats.Count / Hall.Rows).ToString(), Rows = Hall.Rows.ToString() };
+        Loading = false;
     }
     void OnIncrementorChange(int value, string type)
     {
@@ -123,7 +130,8 @@
         foreach (var pickedSeat in seats)
         {
             var isReserved = await Http.GetFromJsonAsync<bool>("api/shows/" + Id + "/isseatreserved/" + pickedSeat.SeatId);
-            if (isReserved) {
+            if (isReserved)
+            {
                 ReservationContainsAlreadyReservedSeat = true;
                 await FetchReservedSeats();
                 StateHasChanged();

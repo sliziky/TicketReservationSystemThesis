@@ -45,6 +45,18 @@ namespace TicketReservationSystem.Server.Controllers
       return Ok(payments);
     }
 
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<Payment>>> Get(int id)
+        {
+            var payment = await _mediator.Send(new GetPaymentQuery() { Id = id});
+            if (payment != null)
+            {
+                return Ok(payment);
+            }
+            return NotFound();
+        }
+
         [HttpPost("{id}/addsessionid")]
         public async Task<ActionResult<Payment>> AddSessionId(int id, [FromBody]string sessionId)
         {
@@ -84,8 +96,8 @@ namespace TicketReservationSystem.Server.Controllers
           },
         },
         Mode = "payment",
-        SuccessUrl = "https://localhost:44379/payment/" + reservation.ReservationId  + "/success?sessionId={CHECKOUT_SESSION_ID}",
-        CancelUrl = "https://localhost:44379/payment/" + reservation.ReservationId + "/cancel",
+        SuccessUrl = "https://localhost:44379/payment/" + reservation.PaymentId  + "/success?sessionId={CHECKOUT_SESSION_ID}",
+        CancelUrl = "https://localhost:44379/payment/" + reservation.PaymentId + "/cancel",
       };
 
       var service = new SessionService();

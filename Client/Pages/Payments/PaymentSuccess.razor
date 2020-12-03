@@ -1,34 +1,39 @@
-@page "/payment/{Id:int}/success/{SessionId:guid}"
+@page "/payment/{Id:int}/success"
 @inject IJSRuntime JSRuntime
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject IMailService MailService
 @using Newtonsoft.Json
+@using TicketReservationSystem.Shared.Domain 
+@if (Paid)
+{
 <div class="payment__success">
     <h3>Payment Successful</h3>
     <h3>Check email for tickets</h3>
     <Icon Name="@("fas fa-check-circle fa-10x")" Class="payment__success-icon" />
 </div>
+}
 
-@code { [Parameter]
+@code { 
+    [Parameter]
     public int Id { get; set; }
 
-    [Parameter]
-    public Guid SessionId { get; set; }
-
-    public Reservation Reservation { get; set; }
+    public bool Paid { get; set; } = false;
+    public TicketReservationSystem.Shared.Domain.Payment Payment { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
-        Reservation = await Http.GetFromJsonAsync<Reservation>("api/reservations/" + Id);
-        //SessionId = SessionId.Substring(0, 1);
-        //SessionId = SessionId.Substring(SessionId.Length - 1, 1);
-        //if (Reservation.Payment.SessionId == SessionId)
-        //{
-        //    var x = 10;
-        //   // await Http.PostAsync("api/reservations/" + Id + "/paid", null);
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var parameters = uri.Query.Split("=");
+        var sessionId = parameters.Count() >= 1 ? parameters[1] : null;
+        Payment = await Http.GetFromJsonAsync<TicketReservationSystem.Shared.Domain.Payment>("api/payments/" + Id);
+        if (Payment.SessionId == sessionId)
+        {
+            await Http.PostAsync("api/reservations/" + Payment.Reservation.ReservationId + "/paid", null);
+            Paid = true;
+            await Http.PostAsJsonAsync<int>("api/mail/send", Id);
+            StateHasChanged();
 
-        //}
-        //await Http.PostAsJsonAsync<int>("api/mail/send", Id);
+        }
     }
 }

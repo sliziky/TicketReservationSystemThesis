@@ -19,8 +19,6 @@
     public MovieDTO Movie { get; set; }
     private void NavigateTo(string url)
     {
-        var urlT = UrlDecoder.Encode(url);
-        Console.WriteLine(urlT);
         NavigationManager.NavigateTo(url);
     }
 }

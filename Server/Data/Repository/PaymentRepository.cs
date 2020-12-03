@@ -44,9 +44,9 @@ namespace TicketReservationSystem.Server.Data.Repository
             return payment;
         }
 
-    public Task<Payment> GetAsync(int id)
+    public async Task<Payment> GetAsync(int id)
     {
-      throw new NotImplementedException();
+       return await _context.Payments.Include(r => r.Reservation).FirstOrDefaultAsync(payment => payment.PaymentId == id);
     }
 
     public Payment Save(Payment entity)
