@@ -16,6 +16,7 @@ using TicketReservationSystem.Server.Services;
 using System.Net.Http;
 using System.Net.Http.Json;
 using TicketReservationSystem.Server.CQRS.CinemaCQRS.Queries;
+using TicketReservationSystem.Server.CQRS.PaymentsCQRS.Commands;
 
 namespace TicketReservationSystem.Server.Controllers
 {
@@ -26,6 +27,7 @@ namespace TicketReservationSystem.Server.Controllers
     private readonly IMediator _mediator;
     private readonly IPaymentTimeoutService _service;
     private IHttpContextAccessor _httpContextAccessor;
+    private readonly IStripeClient client;
     public PaymentsController(IMediator mediator, IPaymentTimeoutService service, IHttpContextAccessor httpContextAccessor)
     {
       // Set your secret key. Remember to switch to your live secret key in production!
@@ -42,6 +44,15 @@ namespace TicketReservationSystem.Server.Controllers
       var payments = await _mediator.Send(new GetPaymentsQuery());
       return Ok(payments);
     }
+
+        [HttpPost("{id}/addsessionid")]
+        public async Task<ActionResult<Payment>> AddSessionId(int id, [FromBody]string sessionId)
+        {
+            var payment = await _mediator.Send(new AddSessionIdCommand() { PaymentId = id, Id = sessionId });
+            if (payment != null) { return Ok(payment); }
+            return NotFound();
+        }
+
 
     [HttpPost("create-checkout-session")]
     public async Task<ActionResult> CreateCheckoutSessionAsync([FromBody]Reservation reservation)
@@ -73,7 +84,7 @@ namespace TicketReservationSystem.Server.Controllers
           },
         },
         Mode = "payment",
-        SuccessUrl = "https://localhost:44379/payment/" + reservation.ReservationId + "/success",
+        SuccessUrl = "https://localhost:44379/payment/" + reservation.ReservationId  + "/success?sessionId={CHECKOUT_SESSION_ID}",
         CancelUrl = "https://localhost:44379/payment/" + reservation.ReservationId + "/cancel",
       };
 

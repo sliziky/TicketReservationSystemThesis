@@ -39,7 +39,6 @@ namespace TicketReservationSystem.Client
       {
         BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
       };
-
       builder.Services.AddSingleton<HttpClient>(httpClient);
       builder.Services.AddSingleton<IUrlDecoder, UrlDecoder>();
       builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();

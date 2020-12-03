@@ -33,6 +33,17 @@ namespace TicketReservationSystem.Server.Data.Repository
       return await _context.Payments.Include(p => p.Reservation).ToListAsync();
     }
 
+        public async Task<Payment> AddSessionId(int paymentId,string id)
+        {
+            var payment = await _context.Payments.FirstOrDefaultAsync(payment => payment.PaymentId == paymentId);
+            if (payment != null) {
+                payment.SessionId = id;
+                _context.Entry(payment).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+            return payment;
+        }
+
     public Task<Payment> GetAsync(int id)
     {
       throw new NotImplementedException();

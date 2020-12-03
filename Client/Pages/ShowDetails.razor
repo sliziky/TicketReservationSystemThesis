@@ -191,10 +191,9 @@
         var body = await response.Content.ReadAsStringAsync();
         var token = JsonConvert.DeserializeObject<DesObject>(body);
         var tokenId = token.Id;
+        await Http.PostAsJsonAsync<string>("api/payments/" + Reservation.PaymentId + "/addsessionid", tokenId);
         var cinema = await Http.GetFromJsonAsync<Cinema>("api/cinemas/first");
-        var dotNetReference = DotNetObjectReference.Create(this);
         await JSRuntime.InvokeAsync<string>("stripeCheckout", null, tokenId, cinema.GatewayApiKey, DotNetObjectReference.Create(this));
-
     }
     [JSInvokable]
     public async Task TokenReceived(string token)

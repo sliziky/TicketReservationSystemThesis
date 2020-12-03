@@ -1,4 +1,4 @@
-@page "/payment/{Id:int}/success"
+@page "/payment/{Id:int}/success/{SessionId:guid}"
 @inject IJSRuntime JSRuntime
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
@@ -13,12 +13,22 @@
 @code { [Parameter]
     public int Id { get; set; }
 
+    [Parameter]
+    public Guid SessionId { get; set; }
+
     public Reservation Reservation { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
         Reservation = await Http.GetFromJsonAsync<Reservation>("api/reservations/" + Id);
-        await Http.PostAsync("api/reservations/" + Id + "/paid", null);
+        //SessionId = SessionId.Substring(0, 1);
+        //SessionId = SessionId.Substring(SessionId.Length - 1, 1);
+        //if (Reservation.Payment.SessionId == SessionId)
+        //{
+        //    var x = 10;
+        //   // await Http.PostAsync("api/reservations/" + Id + "/paid", null);
+
+        //}
         //await Http.PostAsJsonAsync<int>("api/mail/send", Id);
     }
-  }
+}

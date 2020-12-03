@@ -15,5 +15,6 @@ namespace TicketReservationSystem.Shared.Domain
         public int TotalPrice { get; set; }
         public DateTime Created { get; set; }
         public Reservation Reservation { get; set; }
-  }
+        public string SessionId { get; set; }
+    }
 }

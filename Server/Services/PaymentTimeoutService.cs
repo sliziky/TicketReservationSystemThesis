@@ -36,7 +36,7 @@ namespace TicketReservationSystem.Server.Services
             //_timer = new Timer(DoWork, null, timeInMinutes * 60 * 10000, Timeout.Infinite);
             var jobId = BackgroundJob.Schedule(
                 () => DoWork(reservationId, intent, apiToken),
-                TimeSpan.FromSeconds(40));
+                TimeSpan.FromSeconds(120));
             return Task.CompletedTask;
         }
 
