@@ -33,7 +33,7 @@ namespace TicketReservationSystem.Client.Services
       var authenticated = JsonConvert.DeserializeObject<bool>(body);
       if (authenticated) {
         User = await Http.GetFromJsonAsync<UserDTO>("api/users/" + email);
-        IsAdmin = await Http.GetFromJsonAsync<bool>("api/users/" + User.Id + "/isadmin");
+        IsAdmin = await Http.GetFromJsonAsync<bool>("api/users/" + User.UserId + "/isadmin");
        }
       InvokeEvent();
       return User != null;

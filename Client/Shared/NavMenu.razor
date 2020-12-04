@@ -30,7 +30,6 @@
             {
                 @if (AuthenticationService.IsUserAdmin())
                 {
-                    Console.WriteLine(AuthenticationService.IsUserAdmin());
                     <Button Color="Color.Primary" @onclick="@(e => NavigateTo("/signup"))">Sign up</Button>
                 }
                 <Button Color="Color.Secondary" @onclick="@(OnLogOutClick)">Log Out</Button> }
