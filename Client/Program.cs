@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using TicketReservationSystem.Client.Data.NewFolder;
 using TicketReservationSystem.Client.Services;
 using TicketReservationSystem.Client.Services.Abstraction;
 using Microsoft.AspNetCore.DataProtection;
@@ -35,14 +34,12 @@ namespace TicketReservationSystem.Client
       })
       .AddBootstrapProviders()
       .AddFontAwesomeIcons();
-      HttpClient httpClient = new HttpClient()
-      {
-        BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+            HttpClient httpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
       };
       builder.Services.AddSingleton<HttpClient>(httpClient);
-      builder.Services.AddSingleton<IUrlDecoder, UrlDecoder>();
       builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
-      builder.Services.AddScoped<IMailService, MailService>();
       await builder.Build().RunAsync();
     }
   }

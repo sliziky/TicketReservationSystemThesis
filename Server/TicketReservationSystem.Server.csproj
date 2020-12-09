@@ -17,6 +17,7 @@
     <PackageReference Include="Blazorise.Bootstrap" Version="0.9.2" />
     <PackageReference Include="Blazorise.Components" Version="0.9.2" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="0.9.2" />
+    <PackageReference Include="EntityFrameworkCore.Diagrams" Version="0.4.2" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.18" />
     <PackageReference Include="HangFire.Core" Version="1.7.18" />
     <PackageReference Include="Hangfire.Dashboard.Authorization" Version="3.0.0" />

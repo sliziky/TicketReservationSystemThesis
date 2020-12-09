@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using TicketReservationSystem.Server.CQRS.ReservationsCQRS.Commands;
@@ -44,7 +45,19 @@ namespace TicketReservationSystem.Server.Controllers
       return Ok(show);
     }
 
-    [HttpPost("{showId}/reservations")]
+
+        [HttpGet("getByDate/{dayDate}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<IEnumerable<MovieShow>>> GetByDay(string dayDate)
+        {
+            var newDate = DateTime.ParseExact(dayDate, "dd-MM-yyyy", CultureInfo.InvariantCulture);
+            var show = await _mediator.Send(new GetShowsForDay() { Day = newDate });
+            if (show == null) { return NotFound(); }
+            return Ok(show);
+        }
+
+        [HttpPost("{showId}/reservations")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Reservation>> AddReservation(int showId, [FromBody] Reservation r)

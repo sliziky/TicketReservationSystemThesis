@@ -1,5 +1,4 @@
 @inject NavigationManager NavigationManager
-@inject IUrlDecoder UrlDecoder
 
 <Card Class="movie-hero__card">
     <div class="movie-hero__card__reveal">
@@ -11,12 +10,12 @@
     </CardImage>
     <CardBody Class="movie-hero__card__body">
         <CardTitle Size="5">@Movie.Title</CardTitle>
-        <Button Color="Color.Primary" @onclick="@(e => NavigateTo("/movie/" + Movie.MovieID))">See shows</Button>
+        <Button Color="Color.Primary" @onclick="@(e => NavigateTo("/movie/" + Movie.MovieId))">See shows</Button>
     </CardBody>
 </Card>
 @code {
     [Parameter]
-    public MovieDTO Movie { get; set; }
+    public Movie Movie { get; set; }
     private void NavigateTo(string url)
     {
         NavigationManager.NavigateTo(url);

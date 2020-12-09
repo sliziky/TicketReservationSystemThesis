@@ -10,7 +10,7 @@ namespace TicketReservationSystem.Server.Context
     {
         public MyContext(DbContextOptions<MyContext> options)
     : base(options)
-        { }
+        {  }
         public DbSet<Admin> Admins { get; set; } 
         public DbSet<Cinema> Cinemas { get; set; } 
         public DbSet<Hall> Halls { get; set; } 
@@ -35,7 +35,7 @@ namespace TicketReservationSystem.Server.Context
                 UserId = 1,
                 AdminId = 1,
             };
-      var admin = new Admin() { AdminId = 1, UserId = user.UserId, };
+            var admin = new Admin() { AdminId = 1, UserId = user.UserId, };
             modelBuilder.Entity<User>().HasData(user);
             modelBuilder.Entity<Admin>().HasData(admin);
       base.OnModelCreating(modelBuilder);

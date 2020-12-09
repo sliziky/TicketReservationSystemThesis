@@ -16,7 +16,8 @@ namespace TicketReservationSystem.Server.CQRS.ShowCQRS
     IRequestHandler<DeleteShowCommand, MovieShow>,
     IRequestHandler<GetShowQuery, MovieShow>,
     IRequestHandler<GetShowSeatReservationsQuery, IEnumerable<Seat>>,
-    IRequestHandler<GetShowReservationsQuery, IEnumerable<Reservation>>
+    IRequestHandler<GetShowReservationsQuery, IEnumerable<Reservation>>,
+        IRequestHandler<GetShowsForDay, IEnumerable<MovieShow>>
   {
 
     private readonly ShowRepository _repository;
@@ -49,5 +50,10 @@ namespace TicketReservationSystem.Server.CQRS.ShowCQRS
     {
       return await _repository.GetReservationsForShow(request.Id);
     }
-  }
+
+        public async Task<IEnumerable<MovieShow>> Handle(GetShowsForDay request, CancellationToken cancellationToken)
+        {
+            return await _repository.GetShowsForDay(request.Day);
+        }
+    }
 }

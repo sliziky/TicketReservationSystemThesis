@@ -1,0 +1,20 @@
+@inject HttpClient Http
+@if (Movies.Count == 0)
+{
+    <div class="payment__error">
+        <h3>No shows</h3>
+        <h3>There are not available shows for the current configuration</h3>
+        <Icon Name="@("fas fa-exclamation-circle fa-10x")" Class="payment__error-icon" />
+    </div>
+}
+<Jumbotron Margin="Margin.Is4.FromBottom" Class="movies-hero">
+    @foreach (var movie in Movies)
+    {
+        <MovieCard Movie="@movie" />
+    }
+</Jumbotron>
+@code {
+    [Parameter]
+    public List<Movie> Movies { get; set; }
+
+}

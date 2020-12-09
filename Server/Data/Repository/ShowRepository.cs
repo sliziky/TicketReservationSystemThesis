@@ -40,8 +40,13 @@ namespace TicketReservationSystem.Server.Data.Repository
     public async Task<MovieShow> GetAsync(int id)
     {
       return await _context.MovieShows.Include(m => m.Hall).Include(m => m.Movie).Include(s => s.ReservationSeats).Include(s => s.Reservations).FirstOrDefaultAsync(s => s.MovieShowId == id);
-
     }
+        public async Task<IEnumerable<MovieShow>> GetShowsForDay(DateTime date)
+        {
+            var shows = await _context.MovieShows.Include(m => m.Hall).Include(m => m.Movie).Include(s => s.ReservationSeats).Include(s => s.Reservations)
+                .Where(i => i.Date.Date == date.Date).ToListAsync();
+            return shows;
+        }
 
     public async Task<MovieShow> AddMovieShow(int hallId, int movieId, MovieShow show) {
       var foundShow = await _context.MovieShows.Include(m => m.Hall).Include(m => m.Movie).Include(s => s.ReservationSeats).Include(s => s.Reservations).FirstOrDefaultAsync(s => s.HallId == show.HallId && s.MovieId == show.MovieId && s.Start == show.Start);

@@ -13,6 +13,9 @@ body {
     top:45%;
     position: relative;
 }
+.bar__settings {
+    display:flex;
+}
 .loading-circle__spinner {
     width: 3rem !important;
     height: 3rem !important;

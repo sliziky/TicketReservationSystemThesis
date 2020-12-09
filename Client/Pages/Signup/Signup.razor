@@ -33,6 +33,9 @@
           <TextEdit Placeholder="Password..." Role="TextRole.Password" @bind-Text="@userData.ConfirmPassword" />
         </Field>
       </Validation>
+      <Field>
+          <p>Admin</p><input type="checkbox" @bind="isAdmin">
+      </Field>
     </Validations>
 
     <Button Color="Color.Primary" Type="ButtonType.Submit">Sign Up</Button>
@@ -47,52 +50,53 @@
 
 
 @code {
-
+    private bool isAdmin = false;
     private UserLogin userData = new UserLogin();
     private bool _showErrorMsg = false;
     private bool _showSignedIn = false;
     private bool _userLoggedIn = false;
-    //private System.Net.HttpStatusCode statusCode = System.Net.HttpStatusCode.;
+
     public class UserLogin
     {
-      [Required(ErrorMessage = "Name is required")]
-      public string Name { get; set; }
+        [Required(ErrorMessage = "Name is required")]
+        public string Name { get; set; }
 
-      [Required(ErrorMessage = "Email is required")]
-      [EmailAddress]
-      public string Email { get; set; }
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress]
+        public string Email { get; set; }
 
-      [Required(ErrorMessage = "Password is required")]
-      [StringLength(255, ErrorMessage = "Must be between 5 and 255 characters", MinimumLength = 5)]
-      [DataType(DataType.Password)]
-      public string Password { get; set; }
+        [Required(ErrorMessage = "Password is required")]
+        [StringLength(255, ErrorMessage = "Must be between 5 and 255 characters", MinimumLength = 5)]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
 
-      [Required(ErrorMessage = "Confirm Password is required")]
-      [StringLength(255, ErrorMessage = "Must be between 5 and 255 characters", MinimumLength = 5)]
-      [DataType(DataType.Password)]
-      [Compare("Password", ErrorMessage = "Password does not match")]
-      public string ConfirmPassword { get; set; }
+        [Required(ErrorMessage = "Confirm Password is required")]
+        [StringLength(255, ErrorMessage = "Must be between 5 and 255 characters", MinimumLength = 5)]
+        [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "Password does not match")]
+        public string ConfirmPassword { get; set; }
     }
 
     async void HandleValidSubmit()
     {
-      var user = new User() { Email = userData.Email, Password = userData.Password, Name = userData.Name };
-      var response = await Http.PostAsJsonAsync<User>("api/users", user);
+        var user = new User() { Email = userData.Email, Password = userData.Password, Name = userData.Name };
+        if (isAdmin) { user.Admin = new Admin(); }
+        var response = await Http.PostAsJsonAsync<User>("api/users", user);
 
-      if (response.StatusCode == System.Net.HttpStatusCode.OK)
-      {
-        _showSignedIn = true;
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            _showSignedIn = true;
+            StateHasChanged();
+            await Task.Delay(1000);
+            NavigationManager.NavigateTo("/");
+
+        }
+        else if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
+        {
+            _showErrorMsg = true;
+        }
         StateHasChanged();
-        await Task.Delay(1000);
-        NavigationManager.NavigateTo("/");
-
-      }
-      else if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
-      {
-        _showErrorMsg = true;
-      }
-      StateHasChanged();
-      Console.WriteLine(response.StatusCode);
+        Console.WriteLine(response.StatusCode);
     }
 
 }

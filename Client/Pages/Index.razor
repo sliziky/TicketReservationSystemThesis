@@ -1,10 +1,101 @@
 @page "/"
-@using System.Net.Http 
+@using System.Net.Http
 @inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JsRuntime
+@using Microsoft.AspNetCore.WebUtilities
+@*<Select TValue="string">
+        @foreach (var date in NextFiveDays)
+        {
+            <SelectItem Value="@date.ToString("dd/MM - dddd")">@date.ToString("dd/MM - dddd")</SelectItem>
+        }
+    </Select>*@
+<Dropdown>
+    <DropdownToggle Color="Color.Primary">
+        Pick a day
+    </DropdownToggle>
+    <DropdownMenu>
+        @foreach (var date in NextFiveDays)
+        {
+            <DropdownItem @onclick="@(e => OnDateClick(date))">@date.ToString("dd/MM - dddd")</DropdownItem>
+            <DropdownDivider />
+        }
+    </DropdownMenu>
+</Dropdown>
+@if (IsLoading) 
+{
+    <LoadingCircle/>
+}
+else 
+{
+    <MoviesHero Movies="@Movies"></MoviesHero>
+}
 
+@code {
+    public bool IsLoading { get; set; } = true;
+    public List<DateTime> NextFiveDays { get; set; } = new List<DateTime>();
+    public DateTime PickedDate;
+    public List<Movie> Movies { get; set; } = new List<Movie>();
+    public List<MovieShow> Shows { get; set; }
+    protected async override Task OnInitializedAsync()
+    {
+        IsLoading = true;
+        NextFiveDays = new List<DateTime>();
+        Shows = new List<MovieShow>();
+        Movies = new List<Movie>();
+        var now = DateTime.Now;
+        for (int i = 0; i < 5; i++)
+        {
+            NextFiveDays.Add(now);
+            now = now.AddDays(1);
+        }
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
 
-<MoviesHero></MoviesHero>
+        var date = String.Empty;
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("day", out var token))
+        {
+            date = token.First();
+        }
 
-@code {      
-
-} 
+        if (date != String.Empty)
+        {
+            Shows = await Http.GetFromJsonAsync<List<MovieShow>>("api/shows/getByDate/" + date);
+            foreach (var show in Shows)
+            {
+                if (!Movies.Select(m => m.MovieId).Contains(show.MovieId))
+                {
+                    Movies.Add(show.Movie);
+                }
+            }
+            await JsRuntime.InvokeVoidAsync("console.log", Shows);
+        }
+        else
+        {
+            Shows = await Http.GetFromJsonAsync<List<MovieShow>>("api/shows");
+            foreach (var show in Shows)
+            {
+                if (!Movies.Select(m => m.MovieId).Contains(show.MovieId))
+                {
+                    Movies.Add(show.Movie);
+                }
+            }
+            await JsRuntime.InvokeVoidAsync("console.log", Shows);
+        }
+        IsLoading = false;
+        StateHasChanged();
+        base.OnInitialized();
+    }
+    protected override Task OnParametersSetAsync()
+    {
+        Console.WriteLine('X');
+        return base.OnParametersSetAsync();
+    }
+    public void OnDateClick(DateTime x)
+    {
+        PickedDate = x;
+        var uri = "?day=" + x.ToString("dd-MM-yyyy");
+        NavigationManager.NavigateTo(uri);
+        this.OnInitializedAsync();
+        StateHasChanged();
+    }
+}

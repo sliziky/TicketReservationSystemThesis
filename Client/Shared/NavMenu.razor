@@ -24,12 +24,22 @@
       </BarItem>
     </BarStart>
     <BarEnd>
-        <BarItem>
+        <BarItem Class="bar__settings">
 
             @if (AuthenticationService.IsLoggedIn())
             {
                 @if (AuthenticationService.IsUserAdmin())
                 {
+                    <BarDropdown>
+                        <BarDropdownToggle Class="navbar__link">Settings</BarDropdownToggle>
+                        <BarDropdownMenu Class="navbar__dropdown__menu">
+                            <BarDropdownItem Class="navbar__dropdown__menu__item">
+                                <BarLink To="/signup" Style="" Class="navbar__link">Create new account</BarLink>
+                                <BarLink To="" Style="" Class="navbar__link">Change password</BarLink>
+                            </BarDropdownItem>
+ 
+                        </BarDropdownMenu>
+                    </BarDropdown>
                     <Button Color="Color.Primary" @onclick="@(e => NavigateTo("/signup"))">Sign up</Button>
                 }
                 <Button Color="Color.Secondary" @onclick="@(OnLogOutClick)">Log Out</Button> }
@@ -41,32 +51,38 @@
   </BarMenu>
 </Bar>
 @code { public bool UserLoggedIn { get; set; }
+    public bool SettingsClicked { get; set; }
     protected override async Task OnInitializedAsync()
     {
-      AuthenticationService.OnChange += OnNotify;
+        AuthenticationService.OnChange += OnNotify;
+    }
+    public void OnSettingsClick() 
+    {
+        SettingsClicked = !SettingsClicked;
+        StateHasChanged();
     }
 
 
     public async void OnNotify()
     {
-      await InvokeAsync(() =>
-      {
-        StateHasChanged();
-      });
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
     }
     protected override void OnParametersSet()
     {
-      UserLoggedIn = AuthenticationService.IsLoggedIn();
-      StateHasChanged();
+        UserLoggedIn = AuthenticationService.IsLoggedIn();
+        StateHasChanged();
     }
     private void NavigateTo(string url)
     {
-      NavigationManager.NavigateTo(url);
+        NavigationManager.NavigateTo(url);
     }
     private void OnLogOutClick()
     {
-      AuthenticationService.LogOut();
-      UserLoggedIn = false;
-      StateHasChanged();
-      NavigateTo("/");
+        AuthenticationService.LogOut();
+        UserLoggedIn = false;
+        StateHasChanged();
+        NavigateTo("/");
     } }
