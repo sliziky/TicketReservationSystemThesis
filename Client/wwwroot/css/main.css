@@ -152,15 +152,21 @@ body {
   width: calc(25% - 10px);
   margin-top: 15px;
   border: 1px solid lightgrey !important;
+  margin-left: 10px;
   display: flex !important; /* new */
   flex-direction: column !important; /* new */
 }
+.menu__dropdown__day {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
 
 .movie-hero__card__reveal {
-  visibility: hidden;
-  opacity: 0;
-  height: 0;
-  padding: 0;
+    visibility: hidden;
+    opacity: 0;
+    height: 0;
+    padding: 0;
 }
 
 .seat {
@@ -201,7 +207,7 @@ body {
 .movies-hero {
   display: -webkit-flex;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   margin-left: 100px;
   margin-right: 100px;
   flex-wrap: wrap;
