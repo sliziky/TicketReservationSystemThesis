@@ -53,7 +53,6 @@ namespace TicketReservationSystem.Server.Data.Repository
       if (foundShow != null) { return null; }
       show.HallId = hallId;
       show.MovieId = movieId;
-      show.Start = show.Start.AddDays(1);
       await _context.MovieShows.AddAsync(show);
       await _context.SaveChangesAsync();
       return show;

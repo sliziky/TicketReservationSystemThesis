@@ -4,7 +4,7 @@
     @foreach (var show in Shows)
     {
       <Button Color="Color.Primary" Type="ButtonType.Submit" Class="show-display__button" Clicked="@(() => ShowClicked(show.MovieShowId))">
-        @show.Start
+        @show.Date
       </Button>
     }
   }

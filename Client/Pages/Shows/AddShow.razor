@@ -54,37 +54,39 @@
     public Hall SelectedHall { get; set; } = new Hall();
     protected override async Task OnInitializedAsync()
     {
-      await JSRuntime.InvokeVoidAsync("console.log", "ASDASD");
+        await JSRuntime.InvokeVoidAsync("console.log", "ASDASD");
 
-      Movies = await Http.GetFromJsonAsync<List<Movie>>("api/movies");
-      SelectedMovie = Movies[0];
-      Halls = await Http.GetFromJsonAsync<List<Hall>>("api/halls/nonobsolete");
-      SelectedHall = Halls[0];
+        Movies = await Http.GetFromJsonAsync<List<Movie>>("api/movies");
+        SelectedMovie = Movies[0];
+        Halls = await Http.GetFromJsonAsync<List<Hall>>("api/halls/nonobsolete");
+        SelectedHall = Halls[0];
     }
 
     void MyListValueChangedHandler(int newC)
     {
-      SelectedMovie.MovieId = newC;
+        SelectedMovie.MovieId = newC;
     }
     void HallValueChangedHandler(int hallId)
     {
-      SelectedHall = Halls.Where(h => h.HallId == hallId).ToList()[0];
+        SelectedHall = Halls.Where(h => h.HallId == hallId).ToList()[0];
     }
     void MovieValueChangedHandler(int movieId)
     {
-      SelectedMovie = Movies.Where(m => m.MovieId == movieId).ToList()[0];
+        SelectedMovie = Movies.Where(m => m.MovieId == movieId).ToList()[0];
     }
     async void HandleValidSubmit()
     {
-      var showData = new { Start = ShowDetails.StartTime.ToString(), Date = ShowDetails.ShowDate };
-      await Http.PostAsJsonAsync("api/halls/" + SelectedHall.HallId + "/movies/" + SelectedMovie.MovieId + "/show", showData);
+        ShowDetails.ShowDate = ShowDetails.ShowDate.Value.AddMilliseconds(ShowDetails.StartTime.Value.TotalMilliseconds);
+        var showData = new { Start = ShowDetails.StartTime.ToString(), Date = ShowDetails.ShowDate };
+        await Http.PostAsJsonAsync("api/halls/" + SelectedHall.HallId + "/movies/" + SelectedMovie.MovieId + "/show", showData);
     }
 
     void OnShowDateChanged(DateTime? date)
     {
-      ShowDetails.ShowDate = date;
+        ShowDetails.ShowDate = date;
     }
     void OnStartTimeChanged(TimeSpan? Time)
     {
-      ShowDetails.StartTime = Time;
+        ShowDetails.StartTime = Time;
+
     } }
