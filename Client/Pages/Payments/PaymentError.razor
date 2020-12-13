@@ -18,5 +18,12 @@
 
     protected async override Task OnInitializedAsync()
     {
+        Payment payment = await Http.GetFromJsonAsync<Payment>("api/payments/" + Id);
+        await Http.DeleteAsync("api/reservations/" + payment.Reservation.ReservationId);
+        //if (res.Status == Reservation.ReservationStatus.Paid) { await StopAsync(); return; }
+
+        //var response = await _client.PostAsync("https://api.stripe.com/v1/payment_intents/" + intentId + "/cancel", null);
+        //var body = await response.Content.ReadAsStringAsync();
+        //var response2 = await _client.DeleteAsync("api/reservations/" + reservationId);
     }
 }
