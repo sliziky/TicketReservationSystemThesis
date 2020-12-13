@@ -43,35 +43,34 @@
     private bool _userLoggedIn = false;
     public class UserLogin
     {
-      [Required(ErrorMessage="Email is required")]
-      [EmailAddress]
-      public string Email { get; set; }
+        [Required(ErrorMessage="Email is required")]
+        [EmailAddress]
+        public string Email { get; set; }
 
-      [Required(ErrorMessage = "Password is required")]
-      [StringLength(255, ErrorMessage = "Must be between 5 and 255 characters", MinimumLength = 5)]
-      [DataType(DataType.Password)]
-      public string Password { get; set; }
+        [Required(ErrorMessage = "Password is required")]
+        [StringLength(255, ErrorMessage = "Must be between 5 and 255 characters", MinimumLength = 5)]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
     }
     async void HandleValidSubmit(EditContext editContext)
     {
-      if (AuthenticationService.IsLoggedIn()) { return; }
-      UserLogin model = (UserLogin)editContext.Model;
-      var authenticated = await AuthenticationService.AuthenticateUser(model.Email, model.Password);
-      if (authenticated)
-      {
-        _userLoggedIn = true;
-        _showErrorMsg = false;
-        _showLoggedIn = true;
-        StateHasChanged();
-        await Task.Delay(1000);
-        NavigationManager.NavigateTo("/");
-      }
-      else {
-        _userLoggedIn = false;
-        _showErrorMsg = true;
-        _showLoggedIn = false;
-        StateHasChanged();
-      }
-      await jsRuntime.InvokeAsync<string>("console.log", authenticated);
+        if (await AuthenticationService.IsLoggedIn()) { return; }
+        UserLogin model = (UserLogin)editContext.Model;
+        var authenticated = await AuthenticationService.AuthenticateUser(model.Email, model.Password);
+        if (authenticated)
+        {
+            _userLoggedIn = true;
+            _showErrorMsg = false;
+            _showLoggedIn = true;
+            StateHasChanged();
+            NavigationManager.NavigateTo("/", true);
+        }
+        else {
+            _userLoggedIn = false;
+            _showErrorMsg = true;
+            _showLoggedIn = false;
+            StateHasChanged();
+        }
+        await jsRuntime.InvokeAsync<string>("console.log", authenticated);
     }
 }

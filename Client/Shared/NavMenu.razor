@@ -10,26 +10,16 @@
       <BarItem>
         <img src="./imgs/cinema_logo.png" class="cinema_logo" @onclick="@(e => NavigateTo("/"))" />
       </BarItem>
-      <BarItem>
-        <NavbarDropdownMenu Title="CINEMAS" Url="/cinema" />
-      </BarItem>
-      <BarItem>
-        <NavbarDropdownMenu Title="MOVIES" Url="/movie"/>
-      </BarItem>
-      <BarItem>
-        <NavbarDropdownMenu Title="HALLS" Url="/hall" />
-      </BarItem>
-      <BarItem>
-        <NavbarDropdownMenu Title="SHOWS" Url="/show" />
-      </BarItem>
+      <NavbarMenu/>
     </BarStart>
     <BarEnd>
         <BarItem Class="bar__settings">
 
-            @if (AuthenticationService.IsLoggedIn())
+            @if (UserLoggedIn)
             {
-                @if (AuthenticationService.IsUserAdmin())
+                @if (IsAdmin)
                 {
+                    @if(Reload) { <div></div> }
                     <BarDropdown>
                         <BarDropdownToggle Class="navbar__link">Settings</BarDropdownToggle>
                         <BarDropdownMenu Class="navbar__dropdown__menu">
@@ -50,13 +40,26 @@
     </BarEnd>
   </BarMenu>
 </Bar>
-@code { public bool UserLoggedIn { get; set; }
+@code { 
+    public bool Reload { get; set; } = false;
+    public bool UserLoggedIn { get; set; }
+    public bool IsAdmin { get; set; }
     public bool SettingsClicked { get; set; }
     protected override async Task OnInitializedAsync()
     {
         AuthenticationService.OnChange += OnNotify;
+        UserLoggedIn = await AuthenticationService.IsLoggedIn();
+        IsAdmin = await AuthenticationService.IsUserAdmin();
+        Reload = !Reload;
+        Console.WriteLine("OnInit " + UserLoggedIn + " " + IsAdmin);
+        StateHasChanged();
     }
-    public void OnSettingsClick() 
+    protected override async Task OnParametersSetAsync()
+    {
+        Console.WriteLine("OMG");
+        await Task.Delay(10);
+    }
+    public void OnSettingsClick()
     {
         SettingsClicked = !SettingsClicked;
         StateHasChanged();
@@ -65,24 +68,19 @@
 
     public async void OnNotify()
     {
+        Reload = !Reload;
+
         await InvokeAsync(() =>
         {
             StateHasChanged();
         });
     }
-    protected override void OnParametersSet()
-    {
-        UserLoggedIn = AuthenticationService.IsLoggedIn();
-        StateHasChanged();
-    }
     private void NavigateTo(string url)
     {
         NavigationManager.NavigateTo(url);
     }
-    private void OnLogOutClick()
+    private async void OnLogOutClick()
     {
-        AuthenticationService.LogOut();
-        UserLoggedIn = false;
-        StateHasChanged();
-        NavigateTo("/");
+        await AuthenticationService.LogOut();
+        NavigationManager.NavigateTo("/", true);
     } }

@@ -1,0 +1,30 @@
+﻿@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IAuthenticationService AuthenticationService
+@using TicketReservationSystem.Shared;
+@using System.ComponentModel.DataAnnotations;
+@using Newtonsoft.Json
+
+@if (IsLoggedIn)
+{
+    @ChildContent
+}
+else
+{
+    <div class="payment__error">
+        <h3>Not authorized</h3>
+        <h3>Sorry, there is nothing for you to see</h3>
+        <Icon Name="@("fas fa-frown fa-10x")" Class="payment__error-icon" />
+    </div>
+}
+
+@code {
+    public bool IsLoggedIn { get; set; }
+    protected async override Task OnInitializedAsync()
+    {
+        IsLoggedIn = await AuthenticationService.IsLoggedIn();
+    }
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

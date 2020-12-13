@@ -1,0 +1,58 @@
+﻿@inject IAuthenticationService AuthenticationService
+@if (IsAdmin)
+{
+    <BarItem>
+        <NavbarDropdownMenu Title="CINEMAS" Url="/cinema" />
+    </BarItem>
+    <BarItem>
+        <NavbarDropdownMenu Title="MOVIES" Url="/movie" />
+    </BarItem>
+    <BarItem>
+        <NavbarDropdownMenu Title="HALLS" Url="/hall" />
+    </BarItem>
+    <BarItem>
+        <NavbarDropdownMenu Title="SHOWS" Url="/show" />
+    </BarItem>
+}
+else if (IsLoggedIn)
+{
+    <BarDropdown>
+        <BarDropdownToggle Class="navbar__link">MOVIES</BarDropdownToggle>
+        <BarDropdownMenu Class="navbar__dropdown__menu">
+            <BarDropdownItem Class="navbar__dropdown__menu__item">
+                <BarLink To=@("/movie/new") Style="" Class="navbar__link">@("Add Movie")</BarLink>
+            </BarDropdownItem>
+        </BarDropdownMenu>
+    </BarDropdown>
+    <BarDropdown>
+        <BarDropdownToggle Class="navbar__link">SHOWS</BarDropdownToggle>
+        <BarDropdownMenu Class="navbar__dropdown__menu">
+            <BarDropdownItem Class="navbar__dropdown__menu__item">
+                <BarLink To=@("/show/new") Style="" Class="navbar__link">@("Add Show")</BarLink>
+            </BarDropdownItem>
+        </BarDropdownMenu>
+    </BarDropdown>
+}
+else
+{ 
+
+}
+@code {
+    public bool IsLoggedIn { get; set; }
+    public bool IsAdmin { get; set; }
+    protected async override Task OnInitializedAsync()
+    {
+        AuthenticationService.OnChange += OnNotify;
+        IsLoggedIn = await AuthenticationService.IsLoggedIn();
+        IsAdmin = await AuthenticationService.IsUserAdmin();
+        StateHasChanged();
+    }
+
+    public async void OnNotify()
+    {
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+}

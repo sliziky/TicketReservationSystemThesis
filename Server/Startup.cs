@@ -21,6 +21,7 @@ using System;
 using Microsoft.AspNetCore.Http;
 using Hangfire;
 using Hangfire.MemoryStorage;
+using Microsoft.OpenApi.Models;
 
 namespace TicketReservationSystem.Server
 {
@@ -68,6 +69,10 @@ namespace TicketReservationSystem.Server
             services.AddTransient<AdminRepository>();
             services.AddTransient<UserRepository>();
             services.AddDbContext<MyContext>(options => options.UseSqlite("Data Source = cinemasystem.db"));
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("V1", new OpenApiInfo { Title = "API", Version = "V1" });
+            });
             services.AddMediatR(typeof(Startup));
         }
     // This method gets called by the rutime. Use this method to configure the HTTP request pipeline.
@@ -84,6 +89,15 @@ namespace TicketReservationSystem.Server
         // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
       }
+            app.UseSwagger();
+
+        // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+        // specifying the Swagger JSON endpoint.
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+
+        });
   
       app.UseHttpsRedirection();
       app.UseBlazorFrameworkFiles();

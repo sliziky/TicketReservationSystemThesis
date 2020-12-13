@@ -1,3 +1,4 @@
+@inject IAuthenticationService AuthenticationService
 <BarDropdown>
   <BarDropdownToggle Class="navbar__link">@Title</BarDropdownToggle>
   <BarDropdownMenu Class="navbar__dropdown__menu">
@@ -17,11 +18,13 @@
     public string Title { get; set; }
     [Parameter]
     public string Url { get; set; }
+    [Parameter]
+    public UserType UserType { get; set; }
 
     public string FirstCharToUpper(string str)
     {
-      // Remove the '/'
-      str = str.Substring(1);
-      return char.ToUpper(str[0]) + str.Substring(1);
+        // Remove the '/'
+        str = str.Substring(1);
+        return char.ToUpper(str[0]) + str.Substring(1);
     }
 }

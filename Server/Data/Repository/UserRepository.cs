@@ -58,8 +58,12 @@ namespace TicketReservationSystem.Server.Data.Repository
       var salt = BCrypt.Net.BCrypt.GenerateSalt(6);
       var password = entity.Password + salt;
       entity.Salt = salt;
-            entity.Password = BCrypt.Net.BCrypt.HashPassword(password);
+      entity.Password = BCrypt.Net.BCrypt.HashPassword(password);
       await _context.AddAsync(entity);
+      await _context.SaveChangesAsync();
+      var admin = _context.Admins.Find(entity.Admin.AdminId);
+      await _context.SaveChangesAsync();
+      admin.UserId = entity.UserId;
       await _context.SaveChangesAsync();
       return entity;
     }

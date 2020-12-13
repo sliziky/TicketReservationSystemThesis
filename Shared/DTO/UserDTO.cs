@@ -9,8 +9,7 @@ namespace TicketReservationSystem.Shared.DTO
     public class UserDTO
     {
         public int UserId { get; set; }
-        public int AdminId { get; set; }
-        public Admin Admin { get; set; }
+        public bool IsAdmin { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }

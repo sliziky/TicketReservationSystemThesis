@@ -85,11 +85,6 @@ else
         StateHasChanged();
         base.OnInitialized();
     }
-    protected override Task OnParametersSetAsync()
-    {
-        Console.WriteLine('X');
-        return base.OnParametersSetAsync();
-    }
     public void OnDateClick(DateTime x)
     {
         PickedDate = x;

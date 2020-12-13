@@ -9,8 +9,8 @@ namespace TicketReservationSystem.Client.Services.Abstraction
   {
     event Action OnChange;
     public Task<bool> AuthenticateUser(string email, string password);
-    public bool IsLoggedIn();
-    public void LogOut();
-    public bool IsUserAdmin();
+    public Task<bool> IsLoggedIn();
+    public Task LogOut();
+    public Task<bool> IsUserAdmin();
   }
 }
