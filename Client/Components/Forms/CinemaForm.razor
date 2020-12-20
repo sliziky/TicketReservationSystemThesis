@@ -38,6 +38,12 @@
                 <TextEdit Placeholder="sk..." Role="TextRole.Text" @bind-Text="@Model.GatewayApiSecretKey" />
             </Field>
         </Validation>
+        <Validation>
+            <Field>
+                <FieldLabel>SendGrid API Key</FieldLabel>
+                <TextEdit Placeholder="sk..." Role="TextRole.Text" @bind-Text="@Model.SendGridApiKey" />
+            </Field>
+        </Validation>
     </Validations>
     <Button Color="Color.Primary" Type="ButtonType.Submit">@ButtonText</Button>
   </EditForm>

@@ -29,11 +29,10 @@ namespace TicketReservationSystem.Server.Services
 
         public async Task SendEmailAsync(MailRequest mailRequest, int reservationId)
        {
-
             var cinema = _context.Cinemas.Include(h => h.Account).ToList().FirstOrDefault(c => !c.IsObsolete);
             var reservation = _context.Reservations.Include(h => h.Payment).Include(h => h.MovieShow).ThenInclude(ms => ms.Movie).Include(h => h.MovieShow).ThenInclude(s => s.Hall).ThenInclude(s => s.Cinema).Include(h => h.ReservationSeats).ThenInclude(h => h.Seats).FirstOrDefault(r => r.ReservationId == reservationId);
-            
-            var apiKey = "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";
+
+            var apiKey = cinema.SendGridApiKey;
             var client = new SendGridClient(apiKey);
 
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
@@ -42,41 +41,23 @@ namespace TicketReservationSystem.Server.Services
                 $"Reservation: {reservation.ReservationId}", QRCodeGenerator.ECCLevel.Q);
             QRCode qrCode = new QRCode(qrCodeData);
             Bitmap qrCodeImage = qrCode.GetGraphic(20);
- 
+
             ImageConverter converter = new ImageConverter();
             var bytes = (byte[])converter.ConvertTo(qrCodeImage, typeof(byte[]));
             var file = Convert.ToBase64String(bytes);
-            
 
-            var from = new EmailAddress(cinema.Account.Email, "NoReply");
+
+            var from = new EmailAddress(cinema.Account.Email, "Tickets " + reservation.MovieShow.Movie.Title);
             var to = new EmailAddress(reservation.EmailForTickets);
             var plainTextContent = " ";
-            var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
-           
+            var htmlContent = "Tickets for you";
+
             var msg = MailHelper.CreateSingleEmail(from, to, "Tickets", plainTextContent, htmlContent);
             msg.AddAttachment("Tickets.png", file);
             var response = await client.SendEmailAsync(msg);
             Console.WriteLine(response);
             var dataArray = await response.Body.ReadAsStringAsync();
             Console.WriteLine(dataArray);
-
-
-
-            //    var builder = new BodyBuilder();
-            //    builder.Attachments.Add("file.png");
-
-            //var email = new MimeMessage();
-            //email.Sender = MailboxAddress.Parse(cinema.Account.Email);
-            //email.To.Add(MailboxAddress.Parse(mailRequest.ToEmail));
-            //email.Subject = mailRequest.Subject;
-            //builder.HtmlBody = "Price: " + (reservation.Payment.TotalPrice/100).ToString() +'\n'+
-            //        "For " + reservation.MovieShow.Movie.Title;
-            //email.Body = builder.ToMessageBody();
-            //using var smtp = new SmtpClient();
-            //smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-            // smtp.Authenticate(cinema.Account.Email, cinema.Account.Password);
-            //await smtp.SendAsync(email);
-            //smtp.Disconnect(true);
         }
     }
 }

@@ -18,6 +18,9 @@ namespace TicketReservationSystem.Shared.Domain
 
     [Required]
     public string GatewayApiSecretKey { get; set; }
+        
+    [Required]
+    public string SendGridApiKey { get; set; }
 
     [Required]
     public string Name { get; set; }
