@@ -1,28 +1,36 @@
-@page "/cinema/new" 
+@page "/cinema/new"
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 @using System.ComponentModel.DataAnnotations;
 
-<CinemaForm Model="CinemaModel" ModelAccount="CinemaAccount" CallBack="HandleValidSubmit" ButtonText="Add new cinema"/>
-<Alert Class="alert__success" Visible="@(submitted && (int)_response.StatusCode == 200)" Style="margin-top: 10px;">
-      <AlertMessage>Kino bolo pridané do databázy</AlertMessage>
+<CinemaForm Model="CinemaModel" ModelAccount="CinemaAccount" CallBack="HandleValidSubmit" ButtonText="Add new cinema" Disabled="ProcessingMovie" />
+@if (ProcessingMovie)
+{
+    <LoadingCircle />
+}
+<Alert Class="alert__success" Visible="@(Submitted && (int)Response.StatusCode == 200)" Style="margin-top: 10px;">
+    <AlertMessage>Movie was added</AlertMessage>
 </Alert>
-<Alert Color="Color.Danger" Visible="@(submitted && (int)_response.StatusCode != 200)" Style="margin-top: 10px;">
-    <AlertMessage>Kino sa nepodarilo vytvoriť</AlertMessage>
+<Alert Color="Color.Danger" Visible="@(Submitted && (int)Response.StatusCode != 200)" Style="margin-top: 10px;">
+    <AlertMessage>Error occured during movie adding</AlertMessage>
 </Alert>
-
 @code {
-    private HttpResponseMessage _response = new HttpResponseMessage();
-    private bool submitted = false;
+    private HttpResponseMessage Response = new HttpResponseMessage();
+    public bool Submitted { get; set; } = false;
     public Cinema CinemaModel = new Cinema();
+    public bool ProcessingMovie { get; set; } = false;
+
     public CinemaEmailAccount CinemaAccount = new CinemaEmailAccount();
 
     public async Task HandleValidSubmit(EditContext context)
     {
-      CinemaModel.Account = CinemaAccount;
-      _response = await Http.PostAsJsonAsync<Cinema>("/api/cinemas", CinemaModel);
-      submitted = true;
-      StateHasChanged();
+        ProcessingMovie = true;
+        StateHasChanged();
+        CinemaModel.Account = CinemaAccount;
+        Response = await Http.PostAsJsonAsync<Cinema>("/api/cinemas", CinemaModel);
+        Submitted = true;
+        ProcessingMovie = false;
+        StateHasChanged();
     }
 }

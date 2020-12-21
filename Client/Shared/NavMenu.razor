@@ -25,12 +25,14 @@
                         <BarDropdownMenu Class="navbar__dropdown__menu">
                             <BarDropdownItem Class="navbar__dropdown__menu__item">
                                 <BarLink To="/signup" Style="" Class="navbar__link">Create new account</BarLink>
+                            </BarDropdownItem>
+                            <BarDropdownItem Class="navbar__dropdown__menu__item">
                                 <BarLink To="" Style="" Class="navbar__link">Change password</BarLink>
                             </BarDropdownItem>
  
                         </BarDropdownMenu>
                     </BarDropdown>
-                    <Button Color="Color.Primary" @onclick="@(e => NavigateTo("/signup"))">Sign up</Button>
+                    <Button Color="Color.Primary" @onclick="@(e => NavigateTo("/signup"))">Create account</Button>
                 }
                 <Button Color="Color.Secondary" @onclick="@(OnLogOutClick)">Log Out</Button> }
             else

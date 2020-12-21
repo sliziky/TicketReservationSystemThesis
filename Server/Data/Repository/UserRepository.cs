@@ -50,7 +50,13 @@ namespace TicketReservationSystem.Server.Data.Repository
         var hashedPw = BCrypt.Net.BCrypt.HashPassword(entity.Password + user.Salt);
             return BCrypt.Net.BCrypt.Verify(entity.Password + user.Salt, user.Password);
     }
-
+        public async Task<User> ChangePassword(User user) 
+        {
+            var userFound = await _context.Users.FirstOrDefaultAsync(user => user.Email == user.Email);
+            userFound.Password = BCrypt.Net.BCrypt.HashPassword(user.Password + userFound.Salt);
+            await _context.SaveChangesAsync();
+            return null;
+        }
     public async Task<User> SaveAsync(User entity)
     {
       var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == entity.Email);

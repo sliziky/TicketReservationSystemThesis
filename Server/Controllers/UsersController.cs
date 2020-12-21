@@ -76,8 +76,16 @@ namespace TicketReservationSystem.Server.Controllers
       return Ok();
     }
 
-    // PUT api/<UsersController>/5
-    [HttpPut("{id}")]
+        [HttpPost("changepassword")]
+        public async Task<ActionResult<User>> ChangePassword([FromBody] User user)
+        {
+            var userFound = await _mediator.Send(new ChangePasswordForUserCommand { User = user });
+            if (userFound == null) { return Ok(); }
+            return Ok();
+        }
+
+        // PUT api/<UsersController>/5
+        [HttpPut("{id}")]
     public void Put(int id, [FromBody] string value)
     {
     }

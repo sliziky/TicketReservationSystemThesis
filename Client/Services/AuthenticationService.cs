@@ -61,6 +61,7 @@ namespace TicketReservationSystem.Client.Services
             
             InvokeEvent();
     }
+        public UserDTO GetCurrentUser() { return User; }
     private void InvokeEvent() => OnChange?.Invoke();
 
         public async Task<bool> IsUserAdmin()

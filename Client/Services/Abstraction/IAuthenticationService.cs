@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TicketReservationSystem.Shared.DTO;
 
 namespace TicketReservationSystem.Client.Services.Abstraction
 {
@@ -12,5 +13,6 @@ namespace TicketReservationSystem.Client.Services.Abstraction
     public Task<bool> IsLoggedIn();
     public Task LogOut();
     public Task<bool> IsUserAdmin();
+        public UserDTO GetCurrentUser();
   }
 }
