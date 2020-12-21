@@ -12,7 +12,10 @@
     <Icon Name="@("fas fa-check-circle fa-10x")" Class="payment__success-icon" />
 </div>
 }
-
+else 
+{
+    <LoadingCircle/>
+}
 @code { 
     [Parameter]
     public int Id { get; set; }
@@ -29,8 +32,8 @@
         if (Payment.SessionId == sessionId)
         {
             await Http.PostAsync("api/reservations/" + Payment.Reservation.ReservationId + "/paid", null);
-            Paid = true;
             await Http.PostAsJsonAsync<int>("api/mail/send", Id);
+            Paid = true;
             StateHasChanged();
 
         }

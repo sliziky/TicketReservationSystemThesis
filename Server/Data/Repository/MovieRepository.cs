@@ -61,8 +61,9 @@ namespace TicketReservationSystem.Server.Data.Repository
       {
         await _context.Movies.AddAsync(entity);
         await _context.SaveChangesAsync();
+        return entity;
       }
-      return movie;
+      return null;
     }
 
     public Movie Update(int id, Movie entity)

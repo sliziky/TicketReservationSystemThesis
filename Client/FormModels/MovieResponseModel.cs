@@ -16,7 +16,8 @@ namespace TicketReservationSystem.Client.FormModels
 
       [JsonPropertyName("backdrop_path")]
       public string BackdropPath { get; set; }
-      public int Id { get; set; }
+            [JsonPropertyName("id")]
+            public int Id { get; set; }
       public string OriginalLanguage { get; set; }
       public string OriginalTitle { get; set; }
 

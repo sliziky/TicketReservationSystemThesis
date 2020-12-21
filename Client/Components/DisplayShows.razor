@@ -1,12 +1,16 @@
 <div class="movie-details__shows">
   @if (Shows.Count != 0)
-    {
+  {
     @foreach (var show in Shows)
     {
       <Button Color="Color.Primary" Type="ButtonType.Submit" Class="show-display__button" Clicked="@(() => ShowClicked(show.MovieShowId))">
         @show.Date
       </Button>
     }
+  }
+  else 
+  {
+    <p>No upcoming shows available</p>
   }
 </div>
 

@@ -34,8 +34,16 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<IEnumerable<MovieShow>> GetAllAsync()
     {
-      return await _context.MovieShows.Include(s => s.Hall).Include(s => s.Movie).Include(s => s.ReservationSeats).ThenInclude(rs => rs.Seats).Include(s => s.Reservations).ToListAsync();
+           // return await _context.MovieShows.ToListAsync();
+            //return await _context.MovieShows.Include(s => s.Hall).Include(s => s.Movie).Include(s => s.ReservationSeats).ThenInclude(rs => rs.Seats).Include(s => s.Reservations).ToListAsync();
+            //
+            return await _context.MovieShows.Include(s => s.Movie).ToListAsync();
     }
+        public async Task<IEnumerable<MovieShow>> GetUpcomingShows()
+        {
+            var today = DateTime.Today;
+            return await _context.MovieShows.Where(show => show.Date.Date >= today).ToListAsync();
+        }
 
     public async Task<MovieShow> GetAsync(int id)
     {
@@ -51,6 +59,8 @@ namespace TicketReservationSystem.Server.Data.Repository
     public async Task<MovieShow> AddMovieShow(int hallId, int movieId, MovieShow show) {
       var foundShow = await _context.MovieShows.Include(m => m.Hall).Include(m => m.Movie).Include(s => s.ReservationSeats).Include(s => s.Reservations).FirstOrDefaultAsync(s => s.HallId == show.HallId && s.MovieId == show.MovieId && s.Start == show.Start);
       if (foundShow != null) { return null; }
+      var shows = await _context.MovieShows.Include(m => m.Hall).Include(m => m.Movie).Include(s => s.ReservationSeats).Include(s => s.Reservations).ToListAsync();
+           // shows.Where(s => s.HallId == hallId && s.Date <= show.Date && s.Date.AddMinutes(s.Movie.Length));
       show.HallId = hallId;
       show.MovieId = movieId;
       await _context.MovieShows.AddAsync(show);

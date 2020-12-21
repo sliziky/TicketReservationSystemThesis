@@ -20,6 +20,7 @@
             <DropdownItem @onclick="@(e => OnDateClick(date))">@date.ToString("dd/MM - dddd")</DropdownItem>
             <DropdownDivider />
         }
+        <DropdownItem @onclick="@(e => OnCancelClick())">Cancel</DropdownItem>
     </DropdownMenu>
 </Dropdown>
 @if (IsLoading) 
@@ -74,7 +75,7 @@ else
             Shows = await Http.GetFromJsonAsync<List<MovieShow>>("api/shows");
             foreach (var show in Shows)
             {
-                if (!Movies.Select(m => m.MovieId).Contains(show.MovieId))
+                if (!Movies.Select(m => m.MovieId).Contains(show.MovieId) && show.Date >= DateTime.Today)
                 {
                     Movies.Add(show.Movie);
                 }
@@ -84,6 +85,13 @@ else
         IsLoading = false;
         StateHasChanged();
         base.OnInitialized();
+    }
+    public void OnCancelClick()
+    {
+        var uri = "";
+        NavigationManager.NavigateTo(uri);
+        this.OnInitializedAsync();
+        StateHasChanged();
     }
     public void OnDateClick(DateTime x)
     {

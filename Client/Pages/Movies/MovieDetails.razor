@@ -34,11 +34,11 @@ else
         </Field>
         <Field Class="movie-details__field">
             <p>Released:</p>
-            <FieldLabel Class="movie-details__field__label">@Movie.Released</FieldLabel>
+            <FieldLabel Class="movie-details__field__label">@Movie.Released.Year</FieldLabel>
         </Field>
         <Field Class="movie-details__field">
             <p>Shows:</p>
-            <DisplayShows Shows="@Movie.Shows" OnShowClick="@OnShowClick" />
+            <DisplayShows Shows="@UpcomingShows" OnShowClick="@OnShowClick" />
         </Field>
 
     </Fields>
@@ -47,6 +47,7 @@ else
 
 @code {
     public Movie Movie { get; set; } = new Movie();
+    public List<MovieShow> UpcomingShows { get; set; } = new List<MovieShow>();
 
     [Parameter]
     public int Id { get; set; }
@@ -55,6 +56,7 @@ else
     protected async override Task OnInitializedAsync()
     {
         Movie = await Http.GetFromJsonAsync<Movie>("api/movies/" + Id);
+        UpcomingShows = Movie.Shows.Where(m => m.Date.Date >= DateTime.Today).ToList();
         Loading = false;
     }
     void OnShowClick(int id)

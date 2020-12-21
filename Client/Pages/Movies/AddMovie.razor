@@ -5,29 +5,39 @@
 @using System.ComponentModel.DataAnnotations;
 <Authorized>
     <EditForm Model="@Movie" OnValidSubmit="@HandleValidSubmit" Class="login-form">
-      <DataAnnotationsValidator />
-      <Field>
-        <FieldLabel>Movie</FieldLabel>
-        <TextEdit @onchange="@onMovieTitleChange" @bind-Text="Movie.Title" />
-      </Field>
-      <Field>
-          @if (LoadingMovies)
-          {
-            <LoadingCircle/>
-          }
-          else
-          {
+        <DataAnnotationsValidator />
+        <Field>
+            <FieldLabel>Movie</FieldLabel>
+            <TextEdit @onchange="@onMovieTitleChange" @bind-Text="Movie.Title" />
+        </Field>
+        <Field>
+            @if (LoadingMovies)
+            {
+                <LoadingCircle />
+            }
+            else
+            {
                 <FieldLabel>Suggestions</FieldLabel>
-                <Select  @bind-SelectedValue="@SelectedMovie" TValue="int">
-                  @foreach (var movie in MoviesDetails)
-                  {
-                    <SelectItem Value="@movie.Id">@movie.Title @movie.ReleaseDate</SelectItem>
-                  }
+                <Select @bind-SelectedValue="@SelectedMovie" TValue="int">
+                    @foreach (var movie in MoviesDetails)
+                    {
+                        <SelectItem Value="@movie.Id">@movie.Title @movie.ReleaseDate</SelectItem>
+                    }
                 </Select>
-          }
-    </Field>
-      <Button Color="Color.Primary" Type="ButtonType.Submit" Clicked="@OnAddMovieClicked">Add Movie</Button>
+            }
+        </Field>
+        <Button Color="Color.Primary" Type="ButtonType.Submit" Clicked="@OnAddMovieClicked" Disabled="ProcessingMovie">Add Movie</Button>
     </EditForm>
+    @if (ProcessingMovie)
+    {
+        <LoadingCircle />
+    }
+    <Alert Class="alert__success" Visible="@(Submitted && (int)Response.StatusCode == 200)" Style="margin-top: 10px;">
+        <AlertMessage>Movie was added</AlertMessage>
+    </Alert>
+    <Alert Color="Color.Danger" Visible="@(Submitted && (int)Response.StatusCode != 200)" Style="margin-top: 10px;">
+        <AlertMessage>Error occured during movie adding</AlertMessage>
+    </Alert>
 </Authorized>
 @code {
     public int SelectedMovie { get; set; }
@@ -35,6 +45,9 @@
     public MovieModel Movie { get; set; } = new MovieModel();
     public List<MovieDetailsModel> MoviesDetails { get; set; } = new List<MovieDetailsModel>();
     public bool LoadingMovies { get; set; } = false;
+    public bool Submitted { get; set; } = false;
+    public HttpResponseMessage Response = new HttpResponseMessage();
+    public bool ProcessingMovie { get; set; } = false;
     private void HandleValidSubmit(EditContext editContext) { }
     private async void onMovieTitleChange()
     {
@@ -55,7 +68,11 @@
         StateHasChanged();
     }
 
-    private async void OnAddMovieClicked() {
+    private async void OnAddMovieClicked()
+    {
+        ProcessingMovie = true;
+        Submitted = true;
+        StateHasChanged();
         var selectedMovie = MoviesDetails.Find(movie => movie.Id == SelectedMovie);
         MovieDTO movie = new MovieDTO();
         movie.Country = selectedMovie.Title;
@@ -63,12 +80,14 @@
         movie.Genre = selectedMovie.Genres.Count != 0 ? selectedMovie.Genres[0].Name : "";
         movie.ImageUrl = selectedMovie.ImagePath;
         movie.Language = selectedMovie.OriginalLanguage;
-        movie.Length = TimeSpan.FromMinutes(selectedMovie.Length).ToString();
+        movie.Length = selectedMovie != null ? TimeSpan.FromMinutes(selectedMovie.Length.Value).ToString() : "-";
         movie.Released = selectedMovie.ReleaseDate != "" ? DateTime.Parse(selectedMovie.ReleaseDate) : null;
         movie.Shows = new List<MovieShow>();
         movie.Subtitles = false;
         movie.SubtitlesLanguage = "";
         movie.Title = selectedMovie.Title;
-        await Http.PostAsJsonAsync<MovieDTO>("api/movies", movie);
+        Response = await Http.PostAsJsonAsync<MovieDTO>("api/movies", movie);
+        ProcessingMovie = false;
+        StateHasChanged();
     }
 }

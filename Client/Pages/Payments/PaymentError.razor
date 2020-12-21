@@ -3,23 +3,31 @@
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @using Newtonsoft.Json
-<div class="payment__error">
-    <h3>Payment Error</h3>
-    <h3>You either canceled the reservation or didn't make payment in time</h3>
-    <h3>Create new reservation if you wish to buy tickets again</h3>
-    <Icon Name="@("fas fa-exclamation-circle fa-10x")" Class="payment__error-icon" />
-</div>
-
+@if (Paid)
+{
+    <div class="payment__error">
+        <h3>Payment Error</h3>
+        <h3>You either canceled the reservation or didn't make payment in time</h3>
+        <h3>Create new reservation if you wish to buy tickets again</h3>
+        <Icon Name="@("fas fa-exclamation-circle fa-10x")" Class="payment__error-icon" />
+    </div>
+}
+else
+{
+    <LoadingCircle />
+}
 @code {
     [Parameter]
     public int Id { get; set; }
-
+    public bool Paid { get; set; } = false;
     public Reservation Reservation { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
         Payment payment = await Http.GetFromJsonAsync<Payment>("api/payments/" + Id);
         await Http.DeleteAsync("api/reservations/" + payment.Reservation.ReservationId);
+        Paid = true;
+        StateHasChanged();
         //if (res.Status == Reservation.ReservationStatus.Paid) { await StopAsync(); return; }
 
         //var response = await _client.PostAsync("https://api.stripe.com/v1/payment_intents/" + intentId + "/cancel", null);

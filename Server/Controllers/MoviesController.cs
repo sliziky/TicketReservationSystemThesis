@@ -54,7 +54,7 @@ namespace TicketReservationSystem.Server.Controllers
     public async Task<ActionResult<Movie>> Post([FromBody] MovieDTO Movie)
     {
       var movie = await _mediator.Send(new AddMovieCommand { Movie = _mapper.Map<Movie>(Movie) });
-      if (movie != null) {
+      if (movie == null) {
         return Conflict(movie);
       }
       return Ok(movie);
