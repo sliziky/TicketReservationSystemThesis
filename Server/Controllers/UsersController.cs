@@ -77,11 +77,11 @@ namespace TicketReservationSystem.Server.Controllers
     }
 
         [HttpPost("changepassword")]
-        public async Task<ActionResult<User>> ChangePassword([FromBody] User user)
+        public async Task<ActionResult<User>> ChangePassword([FromBody] UserChangePassword user)
         {
             var userFound = await _mediator.Send(new ChangePasswordForUserCommand { User = user });
-            if (userFound == null) { return Ok(); }
-            return Ok();
+            if (userFound == null) { return Conflict(); }
+            return Ok(userFound);
         }
 
         // PUT api/<UsersController>/5

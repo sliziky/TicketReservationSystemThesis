@@ -9,6 +9,6 @@ namespace TicketReservationSystem.Server.CQRS.UserCQRS
 {
     public class ChangePasswordForUserCommand: IRequest<User>
     {
-        public User User;
+        public UserChangePassword User;
     }
 }
