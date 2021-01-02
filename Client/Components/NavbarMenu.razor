@@ -4,12 +4,23 @@
     <BarItem>
         <NavbarDropdownMenu Title="CINEMAS" Url="/cinema" />
     </BarItem>
-    <BarItem>
-        <NavbarDropdownMenu Title="MOVIES" Url="/movie" />
-    </BarItem>
+
+
+    <BarDropdown>
+        <BarDropdownToggle Class="navbar__link">MOVIES</BarDropdownToggle>
+        <BarDropdownMenu Class="navbar__dropdown__menu">
+            <BarDropdownItem Class="navbar__dropdown__menu__item">
+                <BarLink To=@("movie/new") Style="" Class="navbar__link">@("Add Movie")</BarLink>
+            </BarDropdownItem>
+        </BarDropdownMenu>
+    </BarDropdown>
+
+
     <BarItem>
         <NavbarDropdownMenu Title="HALLS" Url="/hall" />
     </BarItem>
+
+
     <BarItem>
         <NavbarDropdownMenu Title="SHOWS" Url="/show" />
     </BarItem>

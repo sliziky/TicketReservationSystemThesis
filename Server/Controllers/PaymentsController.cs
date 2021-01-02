@@ -17,6 +17,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using TicketReservationSystem.Server.CQRS.CinemaCQRS.Queries;
 using TicketReservationSystem.Server.CQRS.PaymentsCQRS.Commands;
+using System.Configuration;
 
 namespace TicketReservationSystem.Server.Controllers
 {
@@ -96,8 +97,8 @@ namespace TicketReservationSystem.Server.Controllers
           },
         },
         Mode = "payment",
-        SuccessUrl = "https://localhost:44379/payment/" + reservation.PaymentId  + "/success?sessionId={CHECKOUT_SESSION_ID}",
-        CancelUrl = "https://localhost:44379/payment/" + reservation.PaymentId + "/cancel",
+        SuccessUrl = "https://" + _httpContextAccessor.HttpContext.Request.Host.Value + "/payment/" + reservation.PaymentId  + "/success?sessionId={CHECKOUT_SESSION_ID}",
+        CancelUrl = "https://" + _httpContextAccessor.HttpContext.Request.Host.Value + "/payment/" + reservation.PaymentId + "/cancel",
       };
 
       var service = new SessionService();

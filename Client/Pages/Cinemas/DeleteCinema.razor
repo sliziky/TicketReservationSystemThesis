@@ -3,13 +3,14 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 
-@if (Cinemas != null)
-{
-  <ListWithAction ItemList="@Cinemas" Callback="CallBack" IconName="fas fa-trash-alt">
-    @context.Name @context.City
-   </ListWithAction>
-}
-
+<Authorized>
+    @if (Cinemas != null)
+    {
+        <ListWithAction ItemList="@Cinemas" Callback="CallBack" IconName="fas fa-trash-alt">
+            @context.Name @context.City
+        </ListWithAction>
+    }
+</Authorized>
 @code {
     public List<Cinema> Cinemas { get; set; } = null;
     public Cinema SelectedCinema { get; set; } = null;

@@ -2,19 +2,26 @@
 
 @inject HttpClient Http
 @using Newtonsoft.Json
+<Authorized>
 
-<HallForm FormMode="FormMode.New" CallbackValidSubmit="HandleValidSubmit" HallDetails="HallDetails" />
-@if (AllSeats != null)
-{
-    <SeatAdder AllSeats="AllSeats" HallDetails="HallDetails" CallbackAddHall="OnAddHall" />
-}
-<Alert Class="alert__success" Visible="@(submitted && (int)_response.StatusCode == 200)" Style="margin-top: 10px;">
-    <AlertMessage>Hala bola pridana do databázy</AlertMessage>
-</Alert>
-<Alert Color="Color.Danger" Visible="@(submitted && (int)_response.StatusCode != 200)" Style="margin-top: 10px;">
-    <AlertMessage>Kino sa nepodarilo vytvoriť</AlertMessage>
-</Alert>
+    <HallForm FormMode="FormMode.New" CallbackValidSubmit="HandleValidSubmit" HallDetails="HallDetails" Disabled="ProcessingHall" />
+    @if (AllSeats != null)
+    {
+        <SeatAdder AllSeats="AllSeats" HallDetails="HallDetails" CallbackAddHall="OnAddHall" />
+    }
+    @if (ProcessingHall)
+    {
+        <LoadingCircle />
+    }
+    <Alert Class="alert__success" Visible="@(submitted && (int)_response.StatusCode == 200)" Style="margin-top: 10px;">
+        <AlertMessage>Hala bola pridana do databázy</AlertMessage>
+    </Alert>
+    <Alert Color="Color.Danger" Visible="@(submitted && (int)_response.StatusCode != 200)" Style="margin-top: 10px;">
+        <AlertMessage>Kino sa nepodarilo vytvoriť</AlertMessage>
+    </Alert>
+</Authorized>
 @code { 
+    public bool ProcessingHall { get; set; } = false;
     private HttpResponseMessage _response = new HttpResponseMessage();
     private bool submitted = false;
     public HallDetailsModel HallDetails { get; set; } = new HallDetailsModel();
@@ -24,6 +31,8 @@
 
     public async void OnAddHall(List<List<Seat>> seats)
     {
+        ProcessingHall = true;
+        StateHasChanged();
         _response = await Http.PostAsJsonAsync<Hall>("api/halls", Hall);
         var body = await _response.Content.ReadAsStringAsync();
         var desBody = JsonConvert.DeserializeObject<DeserializedObject>(body);

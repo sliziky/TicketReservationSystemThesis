@@ -1,5 +1,6 @@
 @if(Model != null) {
   <EditForm Model="@Model" OnValidSubmit="OnValidSubmit" Class="login-form">
+    <h3>@Title</h3>
     <DataAnnotationsValidator />
     <Validations Mode="ValidationMode.Auto" Model="@Model">
         <Validation>
@@ -12,18 +13,6 @@
             <Field>
                 <FieldLabel>Mesto</FieldLabel>
                 <TextEdit Placeholder="Mesto.." Role="TextRole.Text" @bind-Text="@Model.City" />
-            </Field>
-        </Validation>
-        <Validation>
-            <Field>
-                <FieldLabel>Email</FieldLabel>
-                <TextEdit Placeholder="Email" Role="TextRole.Email" @bind-Text="@ModelAccount.Email" />
-            </Field>
-        </Validation>
-        <Validation>
-            <Field>
-                <FieldLabel>Password</FieldLabel>
-                <TextEdit Placeholder="Password" Role="TextRole.Password" @bind-Text="@ModelAccount.Password" />
             </Field>
         </Validation>
         <Validation>
@@ -53,9 +42,6 @@
     public Cinema Model { get; set; }
 
     [Parameter]
-    public CinemaEmailAccount ModelAccount { get; set; }
-
-    [Parameter]
     public bool Disabled { get; set; }
 
     [Parameter]
@@ -63,6 +49,9 @@
 
     [Parameter]
     public string ButtonText { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
 
     public async Task OnValidSubmit(EditContext editContext) {
         await CallBack.Invoke(editContext);

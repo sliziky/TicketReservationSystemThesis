@@ -10,7 +10,7 @@ namespace TicketReservationSystem.Server.Context
     {
         public MyContext(DbContextOptions<MyContext> options)
     : base(options)
-        {  }
+        { Database.EnsureCreated(); }
         public DbSet<Admin> Admins { get; set; } 
         public DbSet<Cinema> Cinemas { get; set; } 
         public DbSet<Hall> Halls { get; set; } 

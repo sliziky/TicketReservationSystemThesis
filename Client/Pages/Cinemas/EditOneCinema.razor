@@ -2,18 +2,52 @@
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
-<CinemaForm ButtonText="Edit cinema" Model="Cinema" CallBack="EditCinema"/>
-@code
-{
-    [Parameter]
-    public string Id { get; set; }
-
-    public Cinema Cinema { get; set; } = null;
-
-    protected async override Task OnInitializedAsync()
+<Authorized>
+    @if (Cinema != null)
     {
-      Cinema = await Http.GetFromJsonAsync<Cinema>("api/cinemas/" + Id);
+        <CinemaForm ButtonText="Edit cinema" Model="@Cinema" CallBack="EditCinema" Disabled="false" Title="Edit Cinema" />
     }
+    @if (Processing)
+    {
+        <LoadingCircle />
+    }
+    @if (Response != null && (int)Response.StatusCode == 200)
+    {
+        <Alert Color="Color.Success" Visible="true" Style="margin-top: 10px; width: 30%; margin-left: 35%;">
+            <AlertMessage>Successfuly updated</AlertMessage>
+        </Alert>
+    }
+    @if (Response != null && (int)Response.StatusCode != 200)
+    {
+        <Alert Color="Color.Danger" Visible="true" Style="margin-top: 10px; width: 30%; margin-left: 35%;">
+            <AlertMessage>Error occured while processing request</AlertMessage>
+        </Alert>
+    }
+</Authorized>
+    @code
+{
+        [Parameter]
+        public string Id { get; set; }
 
-    public async Task EditCinema(EditContext editContext) { }
-}
+        public Cinema Cinema { get; set; } = null;
+
+        public bool Processing { get; set; } = false;
+
+        public HttpResponseMessage Response { get; set; } = null;
+
+        protected async override Task OnInitializedAsync()
+        {
+            Cinema = await Http.GetFromJsonAsync<Cinema>("api/cinemas/" + Id);
+            StateHasChanged();
+        }
+
+        public async Task EditCinema(EditContext editContext) 
+        {
+            Processing = true;
+            StateHasChanged();
+            Response = await Http.PutAsJsonAsync<Cinema>("api/cinemas/" + Id, Cinema);
+            Processing = false;
+            StateHasChanged();
+        
+        }
+    }

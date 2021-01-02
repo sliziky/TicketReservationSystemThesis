@@ -3,21 +3,33 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 
-@if (Cinemas != null)
-{
-<ListWithAction ItemList="@Cinemas" Callback="CallBack" IconName="fas fa-edit">
-  @context.Name @context.City
-</ListWithAction>}
-
+<Authorized>
+    @if (Cinemas != null)
+    {
+        <div class="edit-cinemas-list">
+            <ListWithAction ItemList="@Cinemas" Callback="CallBack" IconName="fas fa-edit">
+                @context.Name @context.City
+            </ListWithAction>
+        </div>
+    }
+    @if (Cinemas != null && Cinemas.Count == 0)
+    {
+        <div class="payment__error">
+            <h3>No cinema to edit</h3>
+            <h3>Sorry, there is not any cinema created yet</h3>
+            <Icon Name="@("fas fa-frown fa-10x")" Class="payment__error-icon" />
+        </div>
+    }
+</Authorized>
 @code {
 
     public List<Cinema> Cinemas { get; set; } = null;
     protected async override Task OnInitializedAsync()
     {
-      Cinemas = await Http.GetFromJsonAsync<List<Cinema>>("api/cinemas");
+        Cinemas = await Http.GetFromJsonAsync<List<Cinema>>("api/cinemas");
     }
     void CallBack(Cinema cinema)
     {
-      NavigationManager.NavigateTo("/cinema/edit/" + cinema.CinemaId);
+        NavigationManager.NavigateTo("/cinema/edit/" + cinema.CinemaId);
     }
 }

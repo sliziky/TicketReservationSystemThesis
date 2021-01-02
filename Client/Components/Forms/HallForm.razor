@@ -53,12 +53,12 @@
       </Validation>
     </Fields>
     <Fields Class="seat-adder__form__row seat-adder__form__row__alert">
-        <Alert Color="Color.Primary" Visible="true">
+        <Alert Color="Color.Primary" Visible="true" Style="width: 100%;">
           <AlertDescription>If you make any changes to the form above, don't forget to re-generate layout!</AlertDescription>
         </Alert>
     </Fields>
   </Validations>
-  <Button Color="Color.Primary" Type="ButtonType.Submit" Class="hall-form__button">Generate layout</Button>
+  <Button Color="Color.Primary" Type="ButtonType.Submit" Class="hall-form__button" Disabled="Disabled">Generate layout</Button>
   
 </EditForm>
 
@@ -71,6 +71,9 @@
 
     [Parameter]
     public Action<List<List<Seat>>, HallDetailsModel, Hall> CallbackValidSubmit { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
 
     [Parameter]
     public FormMode FormMode { get; set; }
@@ -86,60 +89,60 @@
 
     protected override async Task OnInitializedAsync()
     {
-      Cinemas = await Http.GetFromJsonAsync<List<Cinema>>("api/cinemas");
-      if (FormMode == FormMode.New)
-      {
-        SelectedCinema.CinemaId = Cinemas[0].CinemaId;
-      }
-      if (FormMode == FormMode.Edit)
-      {
-        SelectedCinema.CinemaId = SelectedCinema.CinemaId;
-      }
+        Cinemas = await Http.GetFromJsonAsync<List<Cinema>>("api/cinemas");
+        if (FormMode == FormMode.New)
+        {
+            SelectedCinema.CinemaId = Cinemas[0].CinemaId;
+        }
+        if (FormMode == FormMode.Edit)
+        {
+            SelectedCinema.CinemaId = SelectedCinema.CinemaId;
+        }
     }
     void MyListValueChangedHandler(int newC)
     {
-      SelectedCinema = Cinemas.Where(c => c.CinemaId == newC).ToList()[0];
+        SelectedCinema = Cinemas.Where(c => c.CinemaId == newC).ToList()[0];
     }
     void HandleValidSubmit()
     {
-      GenerateSeatLayout();
-      DisplaySeats = true;
-      Hall hall = new Hall()
-      {
-        Name = HallDetails.Name,
-        Capacity = (uint)GetHallCapacity(),
-        Cinema = Cinemas.Where(c => c.CinemaId == SelectedCinema.CinemaId).FirstOrDefault(),
-        CinemaId = SelectedCinema.CinemaId,
-        Rows = Int32.Parse(HallDetails.Rows)
-      };
-      CallbackValidSubmit.Invoke(AllSeats, HallDetails, hall);
+        GenerateSeatLayout();
+        DisplaySeats = true;
+        Hall hall = new Hall()
+        {
+            Name = HallDetails.Name,
+            Capacity = (uint)GetHallCapacity(),
+            Cinema = Cinemas.Where(c => c.CinemaId == SelectedCinema.CinemaId).FirstOrDefault(),
+            CinemaId = SelectedCinema.CinemaId,
+            Rows = Int32.Parse(HallDetails.Rows)
+        };
+        CallbackValidSubmit.Invoke(AllSeats, HallDetails, hall);
     }
     private void GenerateSeatLayout()
     {
-      AllSeats = new List<List<Seat>>();
-      for (int i = 0; i < Int32.Parse(HallDetails.Rows); i++)
-      {
-        List<Seat> Row = new List<Seat>();
-        for (int j = 0; j < Int32.Parse(HallDetails.NumberOfSeatsInRow); j++)
+        AllSeats = new List<List<Seat>>();
+        for (int i = 0; i < Int32.Parse(HallDetails.Rows); i++)
         {
-          Row.Add(new Seat() { Number = j, Row = i, Type = SeatType.Classic, Index = j });
+            List<Seat> Row = new List<Seat>();
+            for (int j = 0; j < Int32.Parse(HallDetails.NumberOfSeatsInRow); j++)
+            {
+                Row.Add(new Seat() { Number = j, Row = i, Type = SeatType.Classic, Index = j });
+            }
+            AllSeats.Add(Row);
         }
-        AllSeats.Add(Row);
-      }
     }
     private int GetHallCapacity()
     {
-      int capacity = 0;
-      foreach (var row in AllSeats)
-      {
-        foreach (var seat in row)
+        int capacity = 0;
+        foreach (var row in AllSeats)
         {
-          if (seat.Type == SeatType.Classic || seat.Type == SeatType.Disabled)
-          {
-            capacity++;
-          }
+            foreach (var seat in row)
+            {
+                if (seat.Type == SeatType.Classic || seat.Type == SeatType.Disabled)
+                {
+                    capacity++;
+                }
+            }
         }
-      }
-      return capacity;
+        return capacity;
     }
 }

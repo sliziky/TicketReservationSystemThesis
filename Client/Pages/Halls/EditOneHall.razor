@@ -5,6 +5,9 @@
 
 @inject HttpClient Http
 @using Newtonsoft.Json
+
+<Authorized>
+
 @if(HallDetails != null)
 {
   <HallForm FormMode="FormMode.Edit" CallbackValidSubmit="HandleValidSubmit" HallDetails="HallDetails" SelectedCinema="SelectedCinema"/>
@@ -13,6 +16,7 @@
 {
 <SeatAdder AllSeats="AllSeats" HallDetails="HallDetails" CallbackAddHall="OnAddHall" />
 }
+</Authorized>
 @code
 {   [Parameter]
     public string Id { get; set; }

@@ -57,18 +57,18 @@ namespace TicketReservationSystem.Server.Controllers
         }
 
         // GET api/<UsersController>/5
-        [HttpGet("{email}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<User>> Get(string email)
-    {
-      var user = await _mediator.Send(new GetUserQueryEmail() { Email = email });
-      if (user == null) { return NotFound(); }
-      return Ok(_mapper.Map<UserDTO>(user));
-    }
+        [HttpGet("email/{email}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<User>> Get(string email)
+        {
+            var user = await _mediator.Send(new GetUserQueryEmail() { Email = email });
+            if (user == null) { return NotFound(); }
+            return Ok(_mapper.Map<UserDTO>(user));
+        }
 
-    // POST api/<UsersController>
-    [HttpPost]
+        // POST api/<UsersController>
+        [HttpPost]
     public async Task<ActionResult<User>> PostAsync([FromBody] User user)
     {
       var userFound = await _mediator.Send(new AddUserCommand { User = user });
@@ -92,8 +92,9 @@ namespace TicketReservationSystem.Server.Controllers
 
     // DELETE api/<UsersController>/5
     [HttpDelete("{id}")]
-    public void Delete(int id)
+    public async Task DeleteAsync(int id)
     {
+        var deleted = await _mediator.Send(new DeleteUserCommand { Id = id });
     }
   }
 }

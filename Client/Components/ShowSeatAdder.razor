@@ -19,7 +19,6 @@
         rowIndex++;
       }
   }
-  <h3>@ReservedSeats.Count / @MaxNumberOfTickets</h3>
     <CustomAlert Color="Color.Warning" AlertDescr="AlertDe" AlertMessage="Seat is already reserved"/>
   <Button Color="Color.Primary" Type="ButtonType.Submit" Disabled="@(ReservedSeats.Count == 0)" Clicked="@(() => BuyTicketsCallBack(ReservedSeats))" Class="hall-form__button">Go to payment</Button>
 </div>

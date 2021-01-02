@@ -30,12 +30,12 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<User> GetAsync(int id)
     {
-      return await _context.Users.Include(user => user.Admin).FirstOrDefaultAsync(user => user.UserId == id);
+      return await _context.Users.Include(user => user.Admin).FirstOrDefaultAsync(user => user.UserId == id && !user.Deleted);
     }
 
     public async Task<User> GetAsync(string email)
     {
-      return await _context.Users.Include(user => user.Admin).FirstOrDefaultAsync(user => user.Email == email);
+      return await _context.Users.Include(user => user.Admin).FirstOrDefaultAsync(user => user.Email == email && !user.Deleted);
     }
 
     public User Save(User entity)
@@ -45,7 +45,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<bool> AuthenticateUser(User entity) 
     {
-        var user = _context.Users.FirstOrDefault(user => user.Email == entity.Email);
+        var user = _context.Users.FirstOrDefault(user => user.Email == entity.Email && !user.Deleted);
         if (user == null) { return false; }
         var hashedPw = BCrypt.Net.BCrypt.HashPassword(entity.Password + user.Salt);
             return BCrypt.Net.BCrypt.Verify(entity.Password + user.Salt, user.Password);
@@ -90,7 +90,7 @@ namespace TicketReservationSystem.Server.Data.Repository
     {
       var user = _context.Users.FirstOrDefault(user => user.UserId == entityId);
       if (user != null) {
-        _context.Users.Remove(user);
+        user.Deleted = true;
         await _context.SaveChangesAsync();
       }
       return user;

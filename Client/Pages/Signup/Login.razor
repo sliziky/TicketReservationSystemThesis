@@ -8,6 +8,7 @@
 @using Newtonsoft.Json 
 
 <EditForm Model="@userData" OnValidSubmit="@HandleValidSubmit" Class="login-form">
+    <h3>Log In</h3>
     <DataAnnotationsValidator />
     <Validations Mode="ValidationMode.Auto" Model="@userData">
         <Validation>

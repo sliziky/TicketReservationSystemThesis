@@ -19,5 +19,6 @@ namespace TicketReservationSystem.Shared.Domain
         public string Salt { get; set; }
         public Admin Admin { get; set; }
         public int AdminId { get; set; }
+        public bool Deleted { get; set; } = false;
     }
 }

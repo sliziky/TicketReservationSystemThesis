@@ -1,0 +1,35 @@
+﻿@page "/show/edit"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+
+<Authorized>
+    @if (Shows != null)
+    {
+        <div class="edit-cinemas-list">
+            <ListWithAction ItemList="@Shows" Callback="CallBack" IconName="fas fa-edit">
+                @context.Movie.Title @context.Start @context.Hall.Name
+            </ListWithAction>
+        </div>
+    }
+    @if (Shows != null && Shows.Count == 0)
+    {
+        <div class="payment__error">
+            <h3>No show to edit</h3>
+            <h3>Sorry, there is not any show created yet</h3>
+            <Icon Name="@("fas fa-frown fa-10x")" Class="payment__error-icon" />
+        </div>
+    }
+</Authorized>
+@code {
+
+    public List<MovieShow> Shows{ get; set; } = null;
+    protected async override Task OnInitializedAsync()
+    {
+        Shows = await Http.GetFromJsonAsync<List<MovieShow>>("api/shows");
+    }
+    void CallBack(MovieShow show)
+    {
+        NavigationManager.NavigateTo("/show/edit/" + show.MovieShowId);
+    }
+}

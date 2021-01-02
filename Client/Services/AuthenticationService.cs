@@ -35,7 +35,7 @@ namespace TicketReservationSystem.Client.Services
       var body = await response.Content.ReadAsStringAsync();
       var authenticated = JsonConvert.DeserializeObject<bool>(body);
       if (authenticated) {
-        User = await Http.GetFromJsonAsync<UserDTO>("api/users/" + email);
+        User = await Http.GetFromJsonAsync<UserDTO>("api/users/email/" + email);
         User.IsAdmin = await Http.GetFromJsonAsync<bool>("api/users/" + User.UserId + "/isadmin");
 
                 string serializedUser = System.Text.Json.JsonSerializer.Serialize(User);

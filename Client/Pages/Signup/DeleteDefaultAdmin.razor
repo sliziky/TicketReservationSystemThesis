@@ -1,0 +1,31 @@
+﻿@page "/deletedefault"
+
+@inject IJSRuntime jsRuntime
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IAuthenticationService AuthenticationService
+@using TicketReservationSystem.Shared;
+@using System.ComponentModel.DataAnnotations;
+@using Newtonsoft.Json
+
+<div class="delete-default-account__form">
+
+<Alert Color="Color.Danger" Visible="true" Style="margin-top: 10px;">
+    <AlertMessage>Are you sure you want to delete default admin account? Make sure you already have another admin account created</AlertMessage>
+</Alert>
+<Button Color="Color.Primary" Type="ButtonType.Submit" Clicked="OnDeleteAdminAccount">Delete</Button>
+@if (Deleting)
+{ 
+    <LoadingCircle/>
+}
+</div>
+@code {
+    public bool Deleting { get; set; }
+    public async Task OnDeleteAdminAccount()
+    {
+        Deleting = true;
+        StateHasChanged();
+        await Http.DeleteAsync("api/users/1");
+        await AuthenticationService.LogOut();
+    }
+}

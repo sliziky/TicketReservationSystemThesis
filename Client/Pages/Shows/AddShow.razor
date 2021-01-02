@@ -3,6 +3,7 @@
 @inject IJSRuntime JSRuntime
 @using System.ComponentModel.DataAnnotations;
 @using Blazorise.Components;
+<Authorized>
 
 <EditForm Model="@ShowDetails" OnValidSubmit="@HandleValidSubmit" Class="hall-form">
     <DataAnnotationsValidator />
@@ -56,7 +57,9 @@
 <Alert Color="Color.Danger" Visible="@(Submitted && (int)Response.StatusCode != 200)" Style="margin-top: 10px;">
     <AlertMessage>Error occured during creating show</AlertMessage>
 </Alert>
-@code { public DateTime ShowDate = new DateTime();
+</Authorized>
+@code { 
+    public DateTime ShowDate = new DateTime();
     public ShowDetailsModel ShowDetails = new ShowDetailsModel();
     public List<Movie> Movies { get; set; } = new List<Movie>();
     public List<Hall> Halls { get; set; } = new List<Hall>();

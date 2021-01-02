@@ -42,7 +42,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<IEnumerable<Cinema>> GetAllAsync()
     {
-      return await _context.Cinemas.Include(h => h.Halls).Include(c => c.Account).ToListAsync();
+      return await _context.Cinemas.Include(h => h.Halls).ToListAsync();
     }
 
     public async Task<Hall> AddHall(int cinemaId, Hall hall) {
@@ -64,7 +64,7 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<Cinema> GetAsync(int id)
     {
-      return await _context.Cinemas.Include(c => c.Account).Include(h => h.Halls).FirstOrDefaultAsync(cinema => cinema.CinemaId == id);
+      return await _context.Cinemas.Include(h => h.Halls).FirstOrDefaultAsync(cinema => cinema.CinemaId == id);
     }
 
     public Cinema Save(Cinema entity)
@@ -80,10 +80,6 @@ namespace TicketReservationSystem.Server.Data.Repository
       {
           return null;
       }
-      var salt = BCrypt.Net.BCrypt.GenerateSalt(6);
-      var password = entity.Account.Password+ salt;
-      entity.Account.Salt = salt;
-      //entity.Account.Password = BCrypt.Net.BCrypt.HashPassword(password);
       await _context.Cinemas.AddAsync(entity);
       await _context.SaveChangesAsync();
       return entity;
@@ -98,9 +94,11 @@ namespace TicketReservationSystem.Server.Data.Repository
     {
       var cinema = await _context.Cinemas.FirstOrDefaultAsync(cinema => cinema.CinemaId == id);
       if (cinema != null) {
-        cinema.City = entity.City;
-        cinema.GatewayApiKey = entity.GatewayApiKey;
         cinema.Name = entity.Name;
+        cinema.City = entity.City;
+        cinema.GatewayApiSecretKey = cinema.GatewayApiSecretKey;
+        cinema.GatewayApiKey = entity.GatewayApiKey;
+        cinema.SendGridApiKey = entity.SendGridApiKey;
         await _context.SaveChangesAsync();
         return cinema;
       }

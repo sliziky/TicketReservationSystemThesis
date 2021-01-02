@@ -29,7 +29,7 @@ namespace TicketReservationSystem.Server.Services
 
         public async Task SendEmailAsync(MailRequest mailRequest, int reservationId)
        {
-            var cinema = _context.Cinemas.Include(h => h.Account).ToList().FirstOrDefault(c => !c.IsObsolete);
+            var cinema = _context.Cinemas.ToList().FirstOrDefault(c => !c.IsObsolete);
             var reservation = _context.Reservations.Include(h => h.Payment).Include(h => h.MovieShow).ThenInclude(ms => ms.Movie).Include(h => h.MovieShow).ThenInclude(s => s.Hall).ThenInclude(s => s.Cinema).Include(h => h.ReservationSeats).ThenInclude(h => h.Seats).FirstOrDefault(r => r.ReservationId == reservationId);
 
             var apiKey = cinema.SendGridApiKey;
@@ -47,17 +47,14 @@ namespace TicketReservationSystem.Server.Services
             var file = Convert.ToBase64String(bytes);
 
 
-            var from = new EmailAddress(cinema.Account.Email, "Tickets " + reservation.MovieShow.Movie.Title);
+            var from = new EmailAddress("cinematest@gmail.com", "Tickets " + reservation.MovieShow.Movie.Title);
             var to = new EmailAddress(reservation.EmailForTickets);
             var plainTextContent = " ";
             var htmlContent = "Tickets for you";
 
             var msg = MailHelper.CreateSingleEmail(from, to, "Tickets", plainTextContent, htmlContent);
             msg.AddAttachment("Tickets.png", file);
-            var response = await client.SendEmailAsync(msg);
-            Console.WriteLine(response);
-            var dataArray = await response.Body.ReadAsStringAsync();
-            Console.WriteLine(dataArray);
+            await client.SendEmailAsync(msg);
         }
     }
 }

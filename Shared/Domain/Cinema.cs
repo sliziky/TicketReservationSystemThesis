@@ -25,8 +25,6 @@ namespace TicketReservationSystem.Shared.Domain
     [Required]
     public string Name { get; set; }
 
-    public CinemaEmailAccount Account { get; set; }
-
      public bool IsObsolete { get; set; } = false;
 
     [Required]

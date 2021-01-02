@@ -68,11 +68,9 @@ namespace TicketReservationSystem.Server
             services.AddTransient<CinemaRepository>();
             services.AddTransient<AdminRepository>();
             services.AddTransient<UserRepository>();
-            services.AddDbContext<MyContext>(options => options.UseSqlite("Data Source = cinemasystem.db"));
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("V1", new OpenApiInfo { Title = "API", Version = "V1" });
-            });
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddDbContext<MyContext>(options => options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddSwaggerGen();
             services.AddMediatR(typeof(Startup));
         }
     // This method gets called by the rutime. Use this method to configure the HTTP request pipeline.
@@ -91,20 +89,20 @@ namespace TicketReservationSystem.Server
       }
             app.UseSwagger();
 
-        // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-        // specifying the Swagger JSON endpoint.
-        app.UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "API V1");
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
 
-        });
-  
-      app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
       app.UseBlazorFrameworkFiles();
       app.UseStaticFiles();
             app.UseHangfireDashboard("/mydashboard");
 
             app.UseRouting();
+            app.UseDeveloperExceptionPage();
             app.UseHangfireServer();
             app.UseEndpoints(endpoints =>
       {

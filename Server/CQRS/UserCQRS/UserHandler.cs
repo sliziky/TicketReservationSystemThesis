@@ -17,6 +17,7 @@ namespace TicketReservationSystem.Server.CQRS.UserCQRS
     IRequestHandler<GetUserQueryEmail, User>,
     IRequestHandler<GetUsersQuery, IEnumerable<User>>,
     IRequestHandler<AuthenticateUserCommand, bool>,
+        IRequestHandler<DeleteUserCommand, User>,
         IRequestHandler<ChangePasswordForUserCommand, User>
   {
     private readonly UserRepository _repository;
@@ -54,6 +55,11 @@ namespace TicketReservationSystem.Server.CQRS.UserCQRS
         public async Task<User> Handle(ChangePasswordForUserCommand request, CancellationToken cancellationToken)
         {
             return await _repository.ChangePassword(request.User);
+        }
+
+        public async Task<User> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+        {
+            return await _repository.DeleteAsync(request.Id);
         }
     }
 }

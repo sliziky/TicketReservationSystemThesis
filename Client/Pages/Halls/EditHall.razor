@@ -2,13 +2,18 @@
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
+<Authorized>
 
-@if (Halls != null)
-{
-<ListWithAction ItemList="@Halls" Callback="CallBack" IconName="fas fa-edit">
-  @context.Cinema.Name @context.Name @context.Capacity
-</ListWithAction>}
+    @if (Halls != null)
+    {
+        <div class="edit-cinemas-list">
+            <ListWithAction ItemList="@Halls" Callback="CallBack" IconName="fas fa-edit">
+                @context.Cinema.Name @context.Name @context.Capacity
+            </ListWithAction>
+        </div>
+    }
 
+    </Authorized>
 @code {
       public List<Hall> Halls { get; set; } = null;
       protected async override Task OnInitializedAsync()

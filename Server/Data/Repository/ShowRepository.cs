@@ -37,7 +37,7 @@ namespace TicketReservationSystem.Server.Data.Repository
            // return await _context.MovieShows.ToListAsync();
             //return await _context.MovieShows.Include(s => s.Hall).Include(s => s.Movie).Include(s => s.ReservationSeats).ThenInclude(rs => rs.Seats).Include(s => s.Reservations).ToListAsync();
             //
-            return await _context.MovieShows.Include(s => s.Movie).ToListAsync();
+            return await _context.MovieShows.Include(s => s.Movie).Include(s => s.Hall).ToListAsync();
     }
         public async Task<IEnumerable<MovieShow>> GetUpcomingShows()
         {
@@ -47,7 +47,11 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<MovieShow> GetAsync(int id)
     {
-      return await _context.MovieShows.Include(m => m.Hall).Include(m => m.Movie).Include(s => s.ReservationSeats).Include(s => s.Reservations).FirstOrDefaultAsync(s => s.MovieShowId == id);
+            var shows = await _context.MovieShows.Include(m => m.Hall).Include(m => m.Movie).Include(s => s.ReservationSeats).Include(s => s.Reservations).ToListAsync();
+            var show = shows.FirstOrDefault(s => s.MovieShowId == id);
+            show.Hall = _context.Halls.ToList().FirstOrDefault(hall => hall.HallId == show.HallId);      
+            return show;
+
     }
         public async Task<IEnumerable<MovieShow>> GetShowsForDay(DateTime date)
         {

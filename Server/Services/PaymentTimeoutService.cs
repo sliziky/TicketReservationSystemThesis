@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
@@ -13,27 +14,19 @@ using static System.Net.WebRequestMethods;
 
 namespace TicketReservationSystem.Server.Services
 {
-    public class PaymentTimeoutService : IPaymentTimeoutService, IHostedService, IDisposable
+    public class PaymentTimeoutService : IPaymentTimeoutService, IHostedService
     {
-        private Timer _timer;
-        private string _paymentIntent;
-        private int _reservationId;
         private HttpClient _client;
-        private IHttpContextAccessor _httpContextAccessor;
+        private IConfiguration _config;
 
-        public PaymentTimeoutService()
+        public PaymentTimeoutService(IConfiguration configuration)
         {
-            
+            _config = configuration;
         }
 
         public Task StartAsync(string intent, int reservationId, string apiToken)
         {
 
-            //client.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiToken);
-            _reservationId = reservationId;
-            _paymentIntent = intent;
-            var timeInMinutes = 1;
-            //_timer = new Timer(DoWork, null, timeInMinutes * 60 * 10000, Timeout.Infinite);
             var jobId = BackgroundJob.Schedule(
                 () => DoWork(reservationId, intent, apiToken),
                 TimeSpan.FromSeconds(120));
@@ -42,28 +35,18 @@ namespace TicketReservationSystem.Server.Services
 
         public async Task DoWork(int reservationId, string intentId, string apiToken)
         {
-            _client = new HttpClient() { BaseAddress = new Uri("https://localhost:44379") };
+            _client = new HttpClient() { BaseAddress = new Uri(_config.GetConnectionString("URL"))};
             _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + apiToken);
             var res = await _client.GetFromJsonAsync<Reservation>("api/reservations/" + reservationId);
-            if (res.Status == Reservation.ReservationStatus.Paid) { await StopAsync(); return; }
+            if (res.Status == Reservation.ReservationStatus.Paid) { return; }
 
             var response = await _client.PostAsync("https://api.stripe.com/v1/payment_intents/" + intentId + "/cancel", null);
-            var body = await response.Content.ReadAsStringAsync();
-            var response2 = await _client.DeleteAsync("api/reservations/" + reservationId);
+            await _client.DeleteAsync("api/reservations/" + reservationId);
         }
 
         public Task StopAsync()
         {
-            Console.WriteLine("Canceling work");
-
-            _timer?.Change(Timeout.Infinite, 0);
-
-            return Task.CompletedTask;
-        }
-
-        public void Dispose()
-        {
-            _timer?.Dispose();
+            throw new NotImplementedException();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -75,6 +58,5 @@ namespace TicketReservationSystem.Server.Services
         {
             throw new NotImplementedException();
         }
-
     }
 }

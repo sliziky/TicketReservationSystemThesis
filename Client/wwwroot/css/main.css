@@ -23,9 +23,9 @@ body {
 }
 .login-form {
     width: 30%;
-    margin-left: 30%;
-    margin-right: 30%;
-    margin-top: 10%;
+    margin-left: 35%;
+    margin-right: 35%;
+    margin-top: 5%;
     color: #F1C6A3 !important;
 }
 .show-adder__form__row {
@@ -61,20 +61,42 @@ body {
       margin-right: 10px;
   }
 .delete-action__row {
-  align-items: center;
-  justify-content: space-evenly;
-  margin-left: 30%;
-  margin-right: 30%;
-  flex-direction: row;
-  display: flex;
-  border-style: solid;
-  border-radius: 9px;
+    color: white;
+    /* text-align: center; */
+    align-items: center;
+    justify-content: space-evenly;
+    margin-left: 30%;
+    margin-right: 30%;
+    flex-direction: row;
+    display: flex;
+    border-style: solid;
+    border-radius: 9px;
+    border-color: #F1C6A3;
+}
+.alert {
+    width:100%;
+}
+.delete-default-account__form {
+    width: 30%;
+    margin-left: 35%;
+    margin-right: 35%;
+    margin-top: 15%;
+    text-align: center;
+    justify-content: center;
 }
 .seat-adder__form__row__alert {
-  width: 100%;
+    width: 100%;
+}
+.fa-edit {
+    color: white;
+    cursor: pointer;
 }
 .delete-action__row > p {
-  color: #F1C6A3;
+    text-align: center;
+    color: white;
+    align-items: center;
+    justify-content: center;
+    margin-top: 15px;
 } 
 .seat__chosen {
   background-color: #7d98c9;
@@ -147,6 +169,7 @@ body {
   text-align: center;
   align-items: center;
   margin-top: 15px;
+  margin-bottom: 5%;
 }
 .movie-hero__card {
   width: calc(25% - 10px);
@@ -313,7 +336,11 @@ body {
     height: 100%;
     justify-content: center;
 }
-
+.edit-cinemas-list {
+    display: flex;
+    flex-direction: column;
+    margin-top: 5%;
+}
 .payment__error-icon {
     color: #F1C6A3;
 }
