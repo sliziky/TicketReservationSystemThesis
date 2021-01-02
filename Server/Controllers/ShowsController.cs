@@ -28,6 +28,8 @@ namespace TicketReservationSystem.Server.Controllers
     }
     // GET: api/<HallsController>
     [HttpGet]
+    [Produces("application/json")]
+
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<MovieShow>>> Get()
     {
