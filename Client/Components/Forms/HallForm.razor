@@ -6,60 +6,69 @@
 @using Newtonsoft.Json
 
 <EditForm OnValidSubmit="HandleValidSubmit" Class="hall-form" Model="HallDetails">
-  <DataAnnotationsValidator />
-  <Validations Mode="ValidationMode.Auto" Model="@HallDetails">
-    <Fields Class="seat-adder__form__row">
-      <Validation>
-        <Field Class="hall-form__field" ColumnSize="ColumnSize.Is2.OnDesktop">
-          <FieldLabel>Cinema</FieldLabel>
-          <SelectList TItem="@Cinema"
-                      TValue="int"
-                      Data="@Cinemas"
-                      TextField="@((item) => item.Name)"
-                      ValueField="@((item) => item.CinemaId)"
-                      SelectedValue="@SelectedCinema.CinemaId"
-                      SelectedValueChanged="@MyListValueChangedHandler" />
-        </Field>
-      </Validation>
-      <Validation>
-        <Field ColumnSize="ColumnSize.Is2.OnDesktop" Class="hall-form__field">
-          <FieldLabel>Name</FieldLabel>
-          <TextEdit @bind-Text="@HallDetails.Name">
-            <Feedback>
-              <ValidationError />
-            </Feedback>
-          </TextEdit>
-        </Field>
-      </Validation>
-      <Validation>
-        <Field ColumnSize="ColumnSize.Is2.OnDesktop" Class="hall-form__field">
-          <FieldLabel>Rows</FieldLabel>
-          <TextEdit @bind-Text="@HallDetails.Rows">
-            <Feedback>
-              <ValidationError />
-            </Feedback>
-          </TextEdit>
-        </Field>
-      </Validation>
-      <Validation>
-        <Field ColumnSize="ColumnSize.Is2.OnDesktop" Class="hall-form__field">
-          <FieldLabel>Number of seats in 1 row</FieldLabel>
-          <TextEdit @bind-Text="@HallDetails.NumberOfSeatsInRow">
-            <Feedback>
-              <ValidationError />
-            </Feedback>
-          </TextEdit>
-        </Field>
-      </Validation>
-    </Fields>
-    <Fields Class="seat-adder__form__row seat-adder__form__row__alert">
-        <Alert Color="Color.Primary" Visible="true" Style="width: 100%;">
-          <AlertDescription>If you make any changes to the form above, don't forget to re-generate layout!</AlertDescription>
+    <DataAnnotationsValidator />
+    @if (Cinemas.Count == 0)
+    {
+        <Alert Color="Color.Danger" Visible="true" Style="margin-top: 10px;">
+            <AlertMessage>There must be a cinema added</AlertMessage>
         </Alert>
-    </Fields>
-  </Validations>
-  <Button Color="Color.Primary" Type="ButtonType.Submit" Class="hall-form__button" Disabled="Disabled">Generate layout</Button>
-  
+    }
+    else 
+    {
+    <Validations Mode="ValidationMode.Auto" Model="@HallDetails">
+        <Fields Class="seat-adder__form__row">
+            <Validation>
+                <Field Class="hall-form__field" ColumnSize="ColumnSize.Is2.OnDesktop">
+                    <FieldLabel>Cinema</FieldLabel>
+                    <SelectList TItem="@Cinema"
+                                TValue="int"
+                                Data="@Cinemas"
+                                TextField="@((item) => item.Name)"
+                                ValueField="@((item) => item.CinemaId)"
+                                SelectedValue="@SelectedCinema.CinemaId"
+                                SelectedValueChanged="@MyListValueChangedHandler" />
+                </Field>
+            </Validation>
+            <Validation>
+                <Field ColumnSize="ColumnSize.Is2.OnDesktop" Class="hall-form__field">
+                    <FieldLabel>Name</FieldLabel>
+                    <TextEdit @bind-Text="@HallDetails.Name">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </TextEdit>
+                </Field>
+            </Validation>
+            <Validation>
+                <Field ColumnSize="ColumnSize.Is2.OnDesktop" Class="hall-form__field">
+                    <FieldLabel>Rows</FieldLabel>
+                    <TextEdit @bind-Text="@HallDetails.Rows">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </TextEdit>
+                </Field>
+            </Validation>
+            <Validation>
+                <Field ColumnSize="ColumnSize.Is2.OnDesktop" Class="hall-form__field">
+                    <FieldLabel>Number of seats in 1 row</FieldLabel>
+                    <TextEdit @bind-Text="@HallDetails.NumberOfSeatsInRow">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </TextEdit>
+                </Field>
+            </Validation>
+        </Fields>
+        <Fields Class="seat-adder__form__row seat-adder__form__row__alert">
+            <Alert Color="Color.Primary" Visible="true" Style="width: 100%;">
+                <AlertDescription>If you make any changes to the form above, don't forget to re-generate layout!</AlertDescription>
+            </Alert>
+        </Fields>
+    </Validations>
+    <Button Color="Color.Primary" Type="ButtonType.Submit" Class="hall-form__button" Disabled="Disabled">Generate layout</Button>
+    }
+
 </EditForm>
 
 @code {
@@ -92,7 +101,7 @@
         Cinemas = await Http.GetFromJsonAsync<List<Cinema>>("api/cinemas");
         if (FormMode == FormMode.New)
         {
-            SelectedCinema.CinemaId = Cinemas[0].CinemaId;
+            SelectedCinema.CinemaId = Cinemas.Count != 0 ? Cinemas[0].CinemaId : -1;
         }
         if (FormMode == FormMode.Edit)
         {

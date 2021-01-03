@@ -1,0 +1,39 @@
+﻿@page "/show/delete"
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+
+<Authorized>
+    @if (Shows != null)
+    {
+        <div class="edit-cinemas-list">
+            <ListWithAction ItemList="@Shows" Callback="CallBack" IconName="fas fa-trash-alt">
+                @("Movie:" + context.Movie.Title + " | ") @("Start:" + context.Start + " | ") @("Hall:" + context.Hall.Name + " | ") @("# of reservations:" + context.Reservations.Count)
+            </ListWithAction>
+        </div>
+    }
+    @if (Shows != null && Shows.Count == 0)
+    {
+        <div class="payment__error">
+            <h3>No show to delete</h3>
+            <h3>Sorry, there is not any show created yet</h3>
+            <Icon Name="@("fas fa-frown fa-10x")" Class="payment__error-icon" />
+        </div>
+    }
+</Authorized>
+@code {
+
+    public List<MovieShow> Shows { get; set; } = null;
+    protected async override Task OnInitializedAsync()
+    {
+        Shows = await Http.GetFromJsonAsync<List<MovieShow>>("api/shows");
+    }
+    public async void CallBack(MovieShow show)
+    {
+        if(show.Reservations.Count == 0) 
+        {
+            await Http.DeleteAsync("api/shows/" + show.MovieShowId);
+            NavigationManager.NavigateTo("");
+        }
+    }
+}

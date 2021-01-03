@@ -34,16 +34,13 @@ namespace TicketReservationSystem.Server.Data.Repository
 
     public async Task<IEnumerable<MovieShow>> GetAllAsync()
     {
-           // return await _context.MovieShows.ToListAsync();
-            //return await _context.MovieShows.Include(s => s.Hall).Include(s => s.Movie).Include(s => s.ReservationSeats).ThenInclude(rs => rs.Seats).Include(s => s.Reservations).ToListAsync();
-            //
-            return await _context.MovieShows.Include(s => s.Movie).Include(s => s.Hall).ToListAsync();
+        return await _context.MovieShows.Include(s => s.Movie).Include(s => s.Hall).ToListAsync();
     }
-        public async Task<IEnumerable<MovieShow>> GetUpcomingShows()
-        {
-            var today = DateTime.Today;
-            return await _context.MovieShows.Where(show => show.Date.Date >= today).ToListAsync();
-        }
+    public async Task<IEnumerable<MovieShow>> GetUpcomingShows()
+    {
+        var today = DateTime.Today;
+        return await _context.MovieShows.Where(show => show.Date.Date >= today).ToListAsync();
+    }
 
     public async Task<MovieShow> GetAsync(int id)
     {

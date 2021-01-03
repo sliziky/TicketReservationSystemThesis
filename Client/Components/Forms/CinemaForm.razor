@@ -5,13 +5,13 @@
     <Validations Mode="ValidationMode.Auto" Model="@Model">
         <Validation>
             <Field>
-                <FieldLabel>Názov kina</FieldLabel>
+                <FieldLabel>Title</FieldLabel>
                 <TextEdit Placeholder="Názov.." Role="TextRole.Text" @bind-Text="@Model.Name" />
             </Field>
         </Validation>
         <Validation>
             <Field>
-                <FieldLabel>Mesto</FieldLabel>
+                <FieldLabel>City</FieldLabel>
                 <TextEdit Placeholder="Mesto.." Role="TextRole.Text" @bind-Text="@Model.City" />
             </Field>
         </Validation>
@@ -30,7 +30,7 @@
         <Validation>
             <Field>
                 <FieldLabel>SendGrid API Key</FieldLabel>
-                <TextEdit Placeholder="sk..." Role="TextRole.Text" @bind-Text="@Model.SendGridApiKey" />
+                <TextEdit Placeholder="SendGrid Key..." Role="TextRole.Text" @bind-Text="@Model.SendGridApiKey" />
             </Field>
         </Validation>
     </Validations>

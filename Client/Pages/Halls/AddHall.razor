@@ -13,11 +13,11 @@
     {
         <LoadingCircle />
     }
-    <Alert Class="alert__success" Visible="@(submitted && (int)_response.StatusCode == 200)" Style="margin-top: 10px;">
-        <AlertMessage>Hala bola pridana do databázy</AlertMessage>
+    <Alert Class="alert__success" Visible="@(submitted && (int)_response.StatusCode == 200)" Style="margin-top: 10px; width: 30%; margin-left: 35%; margin-right: 35%">
+        <AlertMessage>Hall was added to the database</AlertMessage>
     </Alert>
-    <Alert Color="Color.Danger" Visible="@(submitted && (int)_response.StatusCode != 200)" Style="margin-top: 10px;">
-        <AlertMessage>Kino sa nepodarilo vytvoriť</AlertMessage>
+    <Alert Color="Color.Danger" Visible="@(submitted && (int)_response.StatusCode != 200)" Style="margin-top: 10px; width: 30%; margin-left: 35%; margin-right: 35%">
+        <AlertMessage>There was an error during hall creating</AlertMessage>
     </Alert>
 </Authorized>
 @code { 
@@ -45,6 +45,7 @@
         }
         submitted = true;
         AllSeats = seats;
+        ProcessingHall = false;
         StateHasChanged();
     }
     public void HandleValidSubmit(List<List<Seat>> seats, HallDetailsModel model, Hall hall)

@@ -20,7 +20,7 @@
             <DropdownItem @onclick="@(e => OnDateClick(date))">@date.ToString("dd/MM - dddd")</DropdownItem>
             <DropdownDivider />
         }
-        <DropdownItem @onclick="@(e => OnCancelClick())">Cancel</DropdownItem>
+        <DropdownItem @onclick="@(e => OnCancelClick())">All upcoming shows</DropdownItem>
     </DropdownMenu>
 </Dropdown>
 @if (IsLoading) 

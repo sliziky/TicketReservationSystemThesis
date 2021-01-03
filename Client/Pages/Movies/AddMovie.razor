@@ -8,8 +8,11 @@
         <DataAnnotationsValidator />
         <Field>
             <FieldLabel>Movie</FieldLabel>
-            <TextEdit @onchange="@onMovieTitleChange" @bind-Text="Movie.Title" />
+            <TextEdit @bind-Text="Movie.Title" />
         </Field>
+
+        <Button Color="Color.Primary" Type="ButtonType.Submit" Clicked="@onMovieTitleChange" >Find movie</Button>
+        
         <Field>
             @if (LoadingMovies)
             {
@@ -32,12 +35,12 @@
     {
         <LoadingCircle />
     }
-    <Alert Class="alert__success" Visible="@(Submitted && (int)Response.StatusCode == 200)" Style="margin-top: 10px;">
-        <AlertMessage>Movie was added</AlertMessage>
-    </Alert>
-    <Alert Color="Color.Danger" Visible="@(Submitted && (int)Response.StatusCode != 200)" Style="margin-top: 10px;">
-        <AlertMessage>Error occured during movie adding</AlertMessage>
-    </Alert>
+<Alert Class="alert__success" Visible="@(Submitted && (int)Response.StatusCode == 200)" Style="margin-top: 10px; width: 30%; margin-left: 35%; margin-right: 35%">
+    <AlertMessage>Movie was added</AlertMessage>
+</Alert>
+<Alert Color="Color.Danger" Visible="@(Submitted && (int)Response.StatusCode != 200)" Style="margin-top: 10px; width: 30%; margin-left: 35%; margin-right: 35%">
+    <AlertMessage>Error occured during movie adding</AlertMessage>
+</Alert>
 </Authorized>
 @code {
     public int SelectedMovie { get; set; }
