@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Http;
 using Hangfire;
 using Hangfire.MemoryStorage;
 using Microsoft.OpenApi.Models;
+using TicketReservationSystem.Server.Services.Security;
 
 namespace TicketReservationSystem.Server
 {
@@ -99,7 +100,10 @@ namespace TicketReservationSystem.Server
             app.UseHttpsRedirection();
       app.UseBlazorFrameworkFiles();
       app.UseStaticFiles();
-            app.UseHangfireDashboard("/mydashboard");
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions()
+            {
+                Authorization = new[] { new AllowAllDashboardAuthorizationFilter() }
+            });
 
             app.UseRouting();
             app.UseDeveloperExceptionPage();

@@ -1,6 +1,7 @@
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using MimeKit;
 using QRCoder;
 using SendGrid;
@@ -21,9 +22,10 @@ namespace TicketReservationSystem.Server.Services
    {
 
         private MyContext _context;
-
-        public MailService(MyContext context)
+        private IConfiguration _config;
+        public MailService(MyContext context, IConfiguration config)
         {
+            _config = config;
             _context = context;
         }
 
@@ -47,7 +49,7 @@ namespace TicketReservationSystem.Server.Services
             var file = Convert.ToBase64String(bytes);
 
 
-            var from = new EmailAddress("cinematest@gmail.com", "Tickets " + reservation.MovieShow.Movie.Title);
+            var from = new EmailAddress(_config.GetConnectionString("Email"), "Tickets " + reservation.MovieShow.Movie.Title);
             var to = new EmailAddress(reservation.EmailForTickets);
             var plainTextContent = " ";
             var htmlContent = "Tickets for you";
