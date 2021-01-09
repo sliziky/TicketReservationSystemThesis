@@ -6,7 +6,7 @@
   <p @onclick="(e => Callback.Invoke(item))">
   @ChildContent(item)
   </p>
-  <Blazorise.Icons.FontAwesome.Icon Name="@IconName" @onclick="(e => Callback.Invoke(item))" />
+  <Blazorise.Icons.FontAwesome.Icon Name="@IconName" @onclick="(e => Callback.Invoke(item))" Style="cursor: pointer" />
 </div>
 }
 

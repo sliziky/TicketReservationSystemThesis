@@ -99,6 +99,10 @@ namespace TicketReservationSystem.Server.Data.Repository
         cinema.GatewayApiSecretKey = cinema.GatewayApiSecretKey;
         cinema.GatewayApiKey = entity.GatewayApiKey;
         cinema.SendGridApiKey = entity.SendGridApiKey;
+        cinema.TicketPriceAdult = entity.TicketPriceAdult;
+        cinema.TicketPriceChild = entity.TicketPriceChild;
+        cinema.TicketPriceSenior = entity.TicketPriceSenior;
+        cinema.TicketPriceStudent = entity.TicketPriceStudent;
         await _context.SaveChangesAsync();
         return cinema;
       }

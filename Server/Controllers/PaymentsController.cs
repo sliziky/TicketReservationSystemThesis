@@ -84,7 +84,7 @@ namespace TicketReservationSystem.Server.Controllers
           {
             PriceData = new SessionLineItemPriceDataOptions
             {
-              UnitAmount = reservation.Payment.TotalPrice,
+              UnitAmount = (long)reservation.Payment.TotalPrice,
               Currency = "eur",
               ProductData = new SessionLineItemPriceDataProductDataOptions
               {
@@ -98,7 +98,7 @@ namespace TicketReservationSystem.Server.Controllers
         },
         Mode = "payment",
         SuccessUrl = "https://" + _httpContextAccessor.HttpContext.Request.Host.Value + "/payment/" + reservation.PaymentId  + "/success?sessionId={CHECKOUT_SESSION_ID}",
-        CancelUrl = "https://" + _httpContextAccessor.HttpContext.Request.Host.Value + "/payment/" + reservation.PaymentId + "/cancel",
+        CancelUrl = "https://" + _httpContextAccessor.HttpContext.Request.Host.Value + "/payment/" + reservation.PaymentId + "/cancel?sessionId={CHECKOUT_SESSION_ID}",
       };
 
       var service = new SessionService();

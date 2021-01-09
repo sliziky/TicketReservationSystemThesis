@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketReservationSystem.Server.Context;
 
 namespace TicketReservationSystem.Server.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20210109153920_TicketPrices")]
+    partial class TicketPrices
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -190,8 +192,8 @@ namespace TicketReservationSystem.Server.Migrations
                     b.Property<string>("SessionId")
                         .HasColumnType("TEXT");
 
-                    b.Property<float>("TotalPrice")
-                        .HasColumnType("REAL");
+                    b.Property<int>("TotalPrice")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("PaymentId");
 
@@ -277,8 +279,8 @@ namespace TicketReservationSystem.Server.Migrations
                     b.Property<int>("MovieShowId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<float>("Price")
-                        .HasColumnType("REAL");
+                    b.Property<int>("Price")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("ReservationId")
                         .HasColumnType("INTEGER");
@@ -335,8 +337,8 @@ namespace TicketReservationSystem.Server.Migrations
                             AdminId = 1,
                             Deleted = false,
                             Email = "admin@admin.com",
-                            Password = "$2b$10$4RJtYU6aF26yIJDW5IttC.9A75rUUhWrfePFcwuhL6A11.4sD31iS",
-                            Salt = "$2b$06$3qS4FYOiAl.r6JH5VzWjne"
+                            Password = "$2b$10$jgSKxETX89WZicA3t2hrTun2dCFUH3fpC1ch0vZ.yGULYgxf9aYyy",
+                            Salt = "$2b$06$tTJj4E83Gg1j1naShPgxs."
                         });
                 });
 

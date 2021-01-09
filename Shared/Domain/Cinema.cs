@@ -25,12 +25,17 @@ namespace TicketReservationSystem.Shared.Domain
     [Required]
     public string Name { get; set; }
 
-     public bool IsObsolete { get; set; } = false;
+        public string TicketPriceAdult { get; set; } = "6";
+        public string TicketPriceStudent { get; set; } = "5";
+        public string TicketPriceChild { get; set; } = "4.50";
+        public string TicketPriceSenior { get; set; } = "4";
 
-    [Required]
+        public bool IsObsolete { get; set; } = false;
+
     public string City { get; set; }
 
     [Required]
     public List<Hall> Halls { get; set; } = new List<Hall>();
   }
+
 }

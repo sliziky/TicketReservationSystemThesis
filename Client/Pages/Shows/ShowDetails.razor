@@ -43,7 +43,7 @@ else
     }
     @if (ShowEmail)
     {
-        <TicketBuyingEmailForm Model="EmailModel" OnProceedToPayment="BuyTicketsCallback" />
+        <TicketBuyingEmailForm Model="EmailModel" OnProceedToPayment="BuyTicketsCallback" CreatingReservation="CreatingReservation" />
     }
 }
 
@@ -60,7 +60,7 @@ else
     public HallDetailsModel HallDetails { get; set; }
     public bool ShowEmail { get; set; } = false;
     public TicketBuyingEmailModel EmailModel { get; set; } = new TicketBuyingEmailModel();
-
+    public bool CreatingReservation { get; set; } = false;
     public Reservation Reservation { get; set; }
 
     public bool ReservationContainsAlreadyReservedSeat { get; set; } = false;
@@ -116,9 +116,17 @@ else
         CurrentNumberOfTickets += value;
         StateHasChanged();
     }
-    int CalculateTotalPrice()
+    float ParseString(string s) 
     {
-        return SeatPickerModel.Adults * 200 + SeatPickerModel.Kids * 150 + SeatPickerModel.Seniors * 150 + SeatPickerModel.Students * 180;
+        return float.Parse(s, System.Globalization.CultureInfo.InvariantCulture) * 100;
+    }
+    async Task<float> CalculateTotalPrice()
+    {
+        Cinema cinema = await Http.GetFromJsonAsync<Cinema>("api/cinemas/first");
+        return SeatPickerModel.Adults * ParseString(cinema.TicketPriceAdult) + 
+            SeatPickerModel.Kids * ParseString(cinema.TicketPriceChild) + 
+            SeatPickerModel.Seniors * ParseString(cinema.TicketPriceSenior) + 
+            SeatPickerModel.Students * ParseString(cinema.TicketPriceStudent);
     }
     async void BuyTicketsCallback(TicketBuyingEmailModel model)
     {
@@ -147,14 +155,17 @@ else
 
     async Task OnBuyTickets()
     {
+        CreatingReservation = true;
+        StateHasChanged();
+        var totalPrice = await CalculateTotalPrice();
         Reservation = new Reservation() { EmailForTickets = EmailModel.Email, Created = DateTime.Now, Status = Reservation.ReservationStatus.NotPaid };
-        Reservation.Payment = new Payment() { TotalPrice = CalculateTotalPrice(), Created = DateTime.Now };
+        Reservation.Payment = new Payment() { TotalPrice = totalPrice, Created = DateTime.Now };
         var resp = await Http.PostAsJsonAsync<Reservation>("api/shows/" + Id + "/reservations", Reservation);
         if (resp.StatusCode == System.Net.HttpStatusCode.OK)
         {
             var body = await resp.Content.ReadAsStringAsync();
             var desBody = JsonConvert.DeserializeObject<DeserializedReservationResponse>(body);
-            var sr = new SeatReservation() { Price = CalculateTotalPrice() };
+            var sr = new SeatReservation() { Price = totalPrice };
             Reservation.ReservationId = desBody.ReservationId;
             var r = await Http.PostAsJsonAsync<SeatReservation>("api/reservations/" + desBody.ReservationId + "/seatreservation", sr);
             var body2 = await r.Content.ReadAsStringAsync();
@@ -167,6 +178,8 @@ else
             }
             ShowEmail = true;
         }
+        CreatingReservation = false;
+        StateHasChanged();
         await StartPaymentClick();
 
     }

@@ -3,7 +3,7 @@
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @using Newtonsoft.Json
-@if (Paid)
+@if (Deleted)
 {
     <div class="payment__error">
         <h3>Payment Error</h3>
@@ -19,19 +19,21 @@ else
 @code {
     [Parameter]
     public int Id { get; set; }
-    public bool Paid { get; set; } = false;
+    public bool Deleted { get; set; } = false;
     public Reservation Reservation { get; set; }
+    public TicketReservationSystem.Shared.Domain.Payment Payment { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
-        Payment payment = await Http.GetFromJsonAsync<Payment>("api/payments/" + Id);
-        await Http.DeleteAsync("api/reservations/" + payment.Reservation.ReservationId);
-        Paid = true;
-        StateHasChanged();
-        //if (res.Status == Reservation.ReservationStatus.Paid) { await StopAsync(); return; }
-
-        //var response = await _client.PostAsync("https://api.stripe.com/v1/payment_intents/" + intentId + "/cancel", null);
-        //var body = await response.Content.ReadAsStringAsync();
-        //var response2 = await _client.DeleteAsync("api/reservations/" + reservationId);
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var parameters = uri.Query.Split("=");
+        var sessionId = parameters.Count() >= 1 ? parameters[1] : null;
+        Payment = await Http.GetFromJsonAsync<TicketReservationSystem.Shared.Domain.Payment>("api/payments/" + Id);
+        if (Payment.SessionId == sessionId)
+        {
+            await Http.DeleteAsync("api/reservations/" + Payment.Reservation.ReservationId);
+            Deleted = true;
+            StateHasChanged();
+        }
     }
 }

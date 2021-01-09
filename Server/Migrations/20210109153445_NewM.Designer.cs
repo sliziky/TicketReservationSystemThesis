@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TicketReservationSystem.Server.Context;
 
 namespace TicketReservationSystem.Server.Migrations
 {
     [DbContext(typeof(MyContext))]
-    partial class MyContextModelSnapshot : ModelSnapshot
+    [Migration("20210109153445_NewM")]
+    partial class NewM
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,19 +67,12 @@ namespace TicketReservationSystem.Server.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("TicketPriceAdult")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("TicketPriceChild")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("TicketPriceSenior")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("TicketPriceStudent")
-                        .HasColumnType("TEXT");
+                    b.Property<int?>("TicketPriceId")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("CinemaId");
+
+                    b.HasIndex("TicketPriceId");
 
                     b.ToTable("Cinemas");
                 });
@@ -190,8 +185,8 @@ namespace TicketReservationSystem.Server.Migrations
                     b.Property<string>("SessionId")
                         .HasColumnType("TEXT");
 
-                    b.Property<float>("TotalPrice")
-                        .HasColumnType("REAL");
+                    b.Property<int>("TotalPrice")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("PaymentId");
 
@@ -277,8 +272,8 @@ namespace TicketReservationSystem.Server.Migrations
                     b.Property<int>("MovieShowId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<float>("Price")
-                        .HasColumnType("REAL");
+                    b.Property<int>("Price")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("ReservationId")
                         .HasColumnType("INTEGER");
@@ -290,6 +285,29 @@ namespace TicketReservationSystem.Server.Migrations
                     b.HasIndex("ReservationId");
 
                     b.ToTable("ReservationSeats");
+                });
+
+            modelBuilder.Entity("TicketReservationSystem.Shared.Domain.TicketPrices", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Adult")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Child")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Senior")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Student")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TicketPrices");
                 });
 
             modelBuilder.Entity("TicketReservationSystem.Shared.Domain.User", b =>
@@ -335,9 +353,18 @@ namespace TicketReservationSystem.Server.Migrations
                             AdminId = 1,
                             Deleted = false,
                             Email = "admin@admin.com",
-                            Password = "$2b$10$4RJtYU6aF26yIJDW5IttC.9A75rUUhWrfePFcwuhL6A11.4sD31iS",
-                            Salt = "$2b$06$3qS4FYOiAl.r6JH5VzWjne"
+                            Password = "$2b$10$8/g7.VhMKvdwDIMHgxyFoOhOouTGLylRN7epO7pZfwuVqwmKNvyEy",
+                            Salt = "$2b$06$3prM9nvWkmj2rKGCmfMspO"
                         });
+                });
+
+            modelBuilder.Entity("TicketReservationSystem.Shared.Domain.Cinema", b =>
+                {
+                    b.HasOne("TicketReservationSystem.Shared.Domain.TicketPrices", "TicketPrice")
+                        .WithMany()
+                        .HasForeignKey("TicketPriceId");
+
+                    b.Navigation("TicketPrice");
                 });
 
             modelBuilder.Entity("TicketReservationSystem.Shared.Domain.Hall", b =>

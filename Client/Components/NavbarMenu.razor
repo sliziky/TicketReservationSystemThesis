@@ -1,9 +1,18 @@
 ﻿@inject IAuthenticationService AuthenticationService
 @if (IsAdmin)
 {
-    <BarItem>
-        <NavbarDropdownMenu Title="CINEMAS" Url="/cinema" />
-    </BarItem>
+    <BarDropdown>
+        <BarDropdownToggle Class="navbar__link">CINEMAS</BarDropdownToggle>
+        <BarDropdownMenu Class="navbar__dropdown__menu">
+            <BarDropdownItem Class="navbar__dropdown__menu__item">
+                <BarLink To=@("cinema/new") Style="" Class="navbar__link">@("Add Cinema")</BarLink>
+            </BarDropdownItem>
+            <BarDropdownItem Class="navbar__dropdown__menu__item">
+                <BarLink To=@("cinema/edit") Style="" Class="navbar__link">@("Edit Cinema")</BarLink>
+            </BarDropdownItem>
+        </BarDropdownMenu>
+    </BarDropdown>
+
 
 
     <BarDropdown>
@@ -15,15 +24,29 @@
         </BarDropdownMenu>
     </BarDropdown>
 
+    <BarDropdown>
+        <BarDropdownToggle Class="navbar__link">HALLS</BarDropdownToggle>
+        <BarDropdownMenu Class="navbar__dropdown__menu">
+            <BarDropdownItem Class="navbar__dropdown__menu__item">
+                <BarLink To=@("hall/new") Style="" Class="navbar__link">@("Add Hall")</BarLink>
+            </BarDropdownItem>
+            <BarDropdownItem Class="navbar__dropdown__menu__item">
+                <BarLink To=@("hall/edit") Style="" Class="navbar__link">@("Edit Hall")</BarLink>
+            </BarDropdownItem>
+        </BarDropdownMenu>
+    </BarDropdown>
 
-    <BarItem>
-        <NavbarDropdownMenu Title="HALLS" Url="/hall" />
-    </BarItem>
-
-
-    <BarItem>
-        <NavbarDropdownMenu Title="SHOWS" Url="/show" />
-    </BarItem>
+    <BarDropdown>
+        <BarDropdownToggle Class="navbar__link">SHOWS</BarDropdownToggle>
+        <BarDropdownMenu Class="navbar__dropdown__menu">
+            <BarDropdownItem Class="navbar__dropdown__menu__item">
+                <BarLink To=@("show/new") Style="" Class="navbar__link">@("Add Show")</BarLink>
+            </BarDropdownItem>
+            <BarDropdownItem Class="navbar__dropdown__menu__item">
+                <BarLink To=@("show/delete") Style="" Class="navbar__link">@("Delete Show")</BarLink>
+            </BarDropdownItem>
+        </BarDropdownMenu>
+    </BarDropdown>
 }
 else if (IsLoggedIn)
 {
@@ -45,7 +68,7 @@ else if (IsLoggedIn)
     </BarDropdown>
 }
 else
-{ 
+{
 
 }
 @code {

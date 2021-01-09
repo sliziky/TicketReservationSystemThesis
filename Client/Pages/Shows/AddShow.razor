@@ -5,68 +5,70 @@
 @using Blazorise.Components;
 <Authorized>
 
-<EditForm Model="@ShowDetails" OnValidSubmit="@HandleValidSubmit" Class="hall-form">
-    <DataAnnotationsValidator />
-    @if (Halls.Count == 0 || Movies.Count == 0) 
-    {
-        <Alert Color="Color.Danger" Visible="true" Style="margin-top: 10px; width: 30%; margin-left: 35%; margin-right: 35%">
-            <AlertMessage>There must be a hall and a movie added</AlertMessage>
-        </Alert>
-    }
-    else 
-    {
-   
-    <Validations Mode="ValidationMode.Auto" Model="@ShowDetails">
-        <Fields Class="show-adder__form__row">
-            <Validation>
-                <Field Class="hall-form__field" ColumnSize="ColumnSize.Is2.OnDesktop">
-                    <FieldLabel>Movie</FieldLabel>
-                    <SelectList TItem="@Movie"
-                                TValue="int"
-                                Data="@Movies"
-                                TextField="@((item) => item.Title + "  " + item.Length)"
-                                ValueField="@((item) => item.MovieId)"
-                                SelectedValue="@SelectedMovie.MovieId"
-                                SelectedValueChanged="@MovieValueChangedHandler" />
-                </Field>
-            </Validation>
-            <Validation>
-                <Field Class="hall-form__field" ColumnSize="ColumnSize.Is2.OnDesktop">
-                    <FieldLabel>Hall</FieldLabel>
-                    <SelectList TItem="@Hall"
-                                TValue="int"
-                                Data="@Halls"
-                                TextField="@((item) => item.Name)"
-                                ValueField="@((item) => item.HallId)"
-                                SelectedValue="@SelectedHall.HallId"
-                                SelectedValueChanged="@HallValueChangedHandler" />
-                </Field>
-            </Validation>
-            <Validation>
-                <Field>
-                    <FieldLabel>Show Date</FieldLabel>
-                    <DateEdit TValue="DateTime?" Date="@ShowDetails.ShowDate" DateChanged="@OnShowDateChanged" />
-                </Field>
-                <Field>
-                    <FieldLabel>Start Time</FieldLabel>
-                    <TimeEdit TValue="TimeSpan?" Time="@ShowDetails.StartTime" TimeChanged="@OnStartTimeChanged" />
-                </Field>
-            </Validation>
-        </Fields>
-    </Validations>
-    <Button Color="Color.Primary" Type="ButtonType.Submit" Class="hall-form__button" Disabled="ProcessingShow">Add show</Button>
-    }
-</EditForm>
-@if (ProcessingShow)
-{
-    <LoadingCircle />
-}
-<Alert Class="alert__success" Visible="@(Submitted && (int)Response.StatusCode == 200)" Style="margin-top: 10px;">
-    <AlertMessage>Show was created</AlertMessage>
-</Alert>
-<Alert Color="Color.Danger" Visible="@(Submitted && (int)Response.StatusCode != 200)" Style="margin-top: 10px;">
-    <AlertMessage>Error occured during creating show</AlertMessage>
-</Alert>
+    <EditForm Model="@ShowDetails" OnValidSubmit="@HandleValidSubmit" Class="hall-form">
+        <DataAnnotationsValidator />
+        @if (Halls.Count == 0 || Movies.Count == 0)
+        {
+            <Alert Color="Color.Danger" Visible="true" Style="margin-top: 10px; width: 30%; margin-left: 35%; margin-right: 35%">
+                <AlertMessage>There must be a hall and a movie added</AlertMessage>
+            </Alert>
+        }
+        else
+        {
+
+            <Validations Mode="ValidationMode.Auto" Model="@ShowDetails">
+                <Fields Class="show-adder__form__row">
+                    <Validation>
+                        <Field Class="hall-form__field" ColumnSize="ColumnSize.Is2.OnDesktop">
+                            <FieldLabel>Movie</FieldLabel>
+                            <SelectList TItem="@Movie"
+                                        TValue="int"
+                                        Data="@Movies"
+                                        TextField="@((item) => item.Title + "  " + item.Length)"
+                                        ValueField="@((item) => item.MovieId)"
+                                        SelectedValue="@SelectedMovie.MovieId"
+                                        SelectedValueChanged="@MovieValueChangedHandler" />
+                        </Field>
+                    </Validation>
+                    <Validation>
+                        <Field Class="hall-form__field" ColumnSize="ColumnSize.Is2.OnDesktop">
+                            <FieldLabel>Hall</FieldLabel>
+                            <SelectList TItem="@Hall"
+                                        TValue="int"
+                                        Data="@Halls"
+                                        TextField="@((item) => item.Name)"
+                                        ValueField="@((item) => item.HallId)"
+                                        SelectedValue="@SelectedHall.HallId"
+                                        SelectedValueChanged="@HallValueChangedHandler" />
+                        </Field>
+                    </Validation>
+                    <Validation>
+                        <Field>
+                            <FieldLabel>Show Date</FieldLabel>
+                            <DateEdit TValue="DateTime?" Date="@ShowDetails.ShowDate" DateChanged="@OnShowDateChanged" />
+                        </Field>
+                        <Field>
+                            <FieldLabel>Start Time</FieldLabel>
+                            <TimeEdit TValue="TimeSpan?" Time="@ShowDetails.StartTime" TimeChanged="@OnStartTimeChanged" />
+                        </Field>
+                    </Validation>
+                </Fields>
+            </Validations>
+            <Button Color="Color.Primary" Type="ButtonType.Submit" Class="hall-form__button" Disabled="ProcessingShow">Add show</Button>
+            @if (ProcessingShow)
+            {
+                <LoadingCircle />
+            }
+
+        }
+    </EditForm>
+    <Alert Class="alert__success" Visible="@(Submitted && (int)Response.StatusCode == 200)" Style="margin-top: 10px; width: 30%; margin-left: 35%; margin-right: 35%">
+        <AlertMessage>Show was created</AlertMessage>
+    </Alert>
+    <Alert Color="Color.Danger" Visible="@(Submitted && (int)Response.StatusCode != 200)" Style="margin-top: 10px; width: 30%; margin-left: 35%; margin-right: 35%">
+        <AlertMessage>Error occured during creating show</AlertMessage>
+    </Alert>
+
 </Authorized>
 @code { 
     public DateTime ShowDate = new DateTime();

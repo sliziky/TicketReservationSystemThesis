@@ -4,24 +4,44 @@
 @inject IJSRuntime jsRuntime
 @using System.ComponentModel.DataAnnotations;
 <Authorized>
-    <CinemaForm Model="CinemaModel" CallBack="HandleValidSubmit" ButtonText="Add new cinema" Disabled="ProcessingMovie" Title="Add Cinema" />
-    @if (ProcessingMovie)
+    @if (CinemaExists)
     {
-        <LoadingCircle />
+        <Alert Color="Color.Danger" Visible="true" Style="margin-top: 10px; width: 30%; margin-left: 35%; margin-right: 35%">
+            <AlertMessage>Cinema already exists! There can be only one cinema at the moment</AlertMessage>
+        </Alert>
     }
-    <Alert Class="alert__success" Visible="@(Submitted && (int)Response.StatusCode == 200)" Style="margin-top: 10px; width: 30%; margin-left: 35%; margin-right: 35%">
-        <AlertMessage>Cinema was added</AlertMessage>
-    </Alert>
-    <Alert Color="Color.Danger" Visible="@(Submitted && (int)Response.StatusCode != 200)" Style="margin-top: 10px; width: 30%; margin-left: 35%; margin-right: 35%">
-        <AlertMessage>Error occured during cinema adding</AlertMessage>
-    </Alert>
+    else 
+    {
+        <CinemaForm Model="CinemaModel" CallBack="HandleValidSubmit" ButtonText="Add new cinema" Disabled="ProcessingMovie" Title="Add Cinema" />
+        @if (ProcessingMovie)
+        {
+            <LoadingCircle />
+        }
+        <Alert Class="alert__success" Visible="@(Submitted && (int)Response.StatusCode == 200)" Style="margin-top: 10px; width: 30%; margin-left: 35%; margin-right: 35%">
+            <AlertMessage>Cinema was added</AlertMessage>
+        </Alert>
+        <Alert Color="Color.Danger" Visible="@(Submitted && (int)Response.StatusCode != 200)" Style="margin-top: 10px; width: 30%; margin-left: 35%; margin-right: 35%">
+            <AlertMessage>Error occured during cinema adding</AlertMessage>
+        </Alert>
+    } 
+    
 </Authorized>
     @code {
         private HttpResponseMessage Response = new HttpResponseMessage();
         public bool Submitted { get; set; } = false;
         public Cinema CinemaModel = new Cinema();
         public bool ProcessingMovie { get; set; } = false;
-
+        public bool CinemaExists { get; set; } = false;
+        protected override async Task OnInitializedAsync()
+        {
+            var cinema = await Http.GetFromJsonAsync<List<Cinema>>("api/cinemas");
+            if (cinema.Count >= 1) 
+            {
+                CinemaExists = true;
+                StateHasChanged();
+            }
+            Console.WriteLine(cinema);
+        }
         public async Task HandleValidSubmit(EditContext context)
         {
             ProcessingMovie = true;

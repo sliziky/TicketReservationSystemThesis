@@ -52,7 +52,7 @@ namespace TicketReservationSystem.Server.Controllers
     public async Task<ActionResult<Cinema>> GetAsync(int id)
     {
       var movie = await _mediator.Send(new GetCinemaQuery() { Id = id });
-      if (movie == null) { return NotFound(); }
+      if (movie == null) { return Ok(null); }
       return Ok(movie);
     }
 

@@ -6,15 +6,44 @@
         <Validation>
             <Field>
                 <FieldLabel>Title</FieldLabel>
-                <TextEdit Placeholder="Názov.." Role="TextRole.Text" @bind-Text="@Model.Name" />
+                <TextEdit Placeholder="Cinema title..." Role="TextRole.Text" @bind-Text="@Model.Name" />
             </Field>
         </Validation>
         <Validation>
             <Field>
                 <FieldLabel>City</FieldLabel>
-                <TextEdit Placeholder="Mesto.." Role="TextRole.Text" @bind-Text="@Model.City" />
+                <TextEdit Placeholder="Cinema city..." Role="TextRole.Text" @bind-Text="@Model.City" />
             </Field>
         </Validation>
+
+        <Validation>
+            <Field>
+                <FieldLabel>Price Adult ticket</FieldLabel>
+                <TextEdit Placeholder="Adult" Role="TextRole.Text" @bind-Text="@Model.TicketPriceAdult" />
+            </Field>
+        </Validation>
+
+        <Validation>
+            <Field>
+                <FieldLabel>Price Children ticket</FieldLabel>
+                <TextEdit Placeholder="Children" Role="TextRole.Text" @bind-Text="@Model.TicketPriceChild" />
+            </Field>
+        </Validation>
+
+        <Validation>
+            <Field>
+                <FieldLabel>Price Senior ticket</FieldLabel>
+                <TextEdit Placeholder="Senior" Role="TextRole.Text" @bind-Text="@Model.TicketPriceSenior" />
+            </Field>
+        </Validation>
+
+        <Validation>
+            <Field>
+                <FieldLabel>Price Student ticket</FieldLabel>
+                <TextEdit Placeholder="Student" Role="TextRole.Text" @bind-Text="@Model.TicketPriceStudent" />
+            </Field>
+        </Validation>
+
         <Validation>
             <Field>
                 <FieldLabel>Payment Gateway Publishable Key</FieldLabel>
